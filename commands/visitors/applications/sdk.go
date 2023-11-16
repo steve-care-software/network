@@ -1,8 +1,8 @@
 package applications
 
 import (
-	"steve.care/8web/commands/visitors/domain/programs"
-	"steve.care/8web/commands/visitors/domain/stacks"
+	"steve.care/network/commands/visitors/domain/programs"
+	"steve.care/network/commands/visitors/domain/stacks"
 )
 
 // Application represents the application

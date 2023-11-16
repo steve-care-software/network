@@ -1,3 +1,3 @@
-module steve.care/8web
+module steve.care/network
 
 go 1.18
