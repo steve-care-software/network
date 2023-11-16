@@ -7,6 +7,7 @@ import (
 )
 
 type application struct {
+	programAdapter         programs.Adapter
 	stackBuilder           stacks.Builder
 	stackFrameFactory      stacks.FrameFactory
 	stackFrameBuilder      stacks.FrameBuilder
@@ -16,6 +17,7 @@ type application struct {
 }
 
 func createApplication(
+	programAdapter programs.Adapter,
 	stackBuilder stacks.Builder,
 	stackFrameFactory stacks.FrameFactory,
 	stackFrameBuilder stacks.FrameBuilder,
@@ -24,6 +26,7 @@ func createApplication(
 	accountRepository accounts.Repository,
 ) Application {
 	out := application{
+		programAdapter:         programAdapter,
 		stackBuilder:           stackBuilder,
 		stackFrameFactory:      stackFrameFactory,
 		stackFrameBuilder:      stackFrameBuilder,
@@ -35,7 +38,17 @@ func createApplication(
 	return &out
 }
 
-// Execute executes the application
+// ExecuteBytes execute the application using the passed bytes
+func (app *application) ExecuteBytes(bytes []byte, stack stacks.Stack) (stacks.Stack, error) {
+	program, err := app.programAdapter.ToInstance(bytes)
+	if err != nil {
+		return nil, err
+	}
+
+	return app.Execute(program, stack)
+}
+
+// Execute executes the application using a program
 func (app *application) Execute(program programs.Program, stack stacks.Stack) (stacks.Stack, error) {
 	stackFrames := stack.List()
 	stackFrames = append(stackFrames, app.stackFrameFactory.Create())
