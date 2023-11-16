@@ -27,6 +27,7 @@ type Stack interface {
 	List() []Frame
 	Body() []Frame // returns al the frames except the last one
 	Last() Frame
+	ContainsError() bool
 }
 
 // FrameFactory represents a frame factory
@@ -47,6 +48,7 @@ type Frame interface {
 	List() []Assignment
 	Fetch(name string) (Assignable, error)
 	FetchUint(name string) (*uint, error)
+	ContainsError() bool
 }
 
 // AssignmentBuilder represents an assignment builder
