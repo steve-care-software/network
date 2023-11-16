@@ -1,11 +1,11 @@
 package applications
 
 import (
-	"steve.care/network/domain/frames"
 	"steve.care/network/domain/programs"
+	"steve.care/network/libraries/stacks"
 )
 
 // Application represents an application
 type Application interface {
-	Execute(programm programs.Program, frame frames.Frames) (frames.Frames, error)
+	Execute(programm programs.Program, stack stacks.Stack) (stacks.Stack, error)
 }

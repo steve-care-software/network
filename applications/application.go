@@ -3,7 +3,6 @@ package applications
 import (
 	"time"
 
-	"steve.care/network/domain/frames"
 	"steve.care/network/domain/programs"
 	"steve.care/network/libraries/blockchains"
 	"steve.care/network/libraries/blockchains/blocks"
@@ -11,29 +10,28 @@ import (
 	"steve.care/network/libraries/blockchains/roots"
 	"steve.care/network/libraries/blockchains/roots/resolutions"
 	"steve.care/network/libraries/commands"
+	"steve.care/network/libraries/stacks"
 )
 
 type application struct {
-	frameFactory            frames.FrameFactory
-	frameBuilder            frames.FrameBuilder
-	frameAssignablesBuilder frames.AssignablesBuilder
-	frameAssignableBuilder  frames.AssignableBuilder
-	blockchainBuilder       blockchains.Builder
-	blockchainRepository    blockchains.Repository
-	blockchainService       blockchains.Service
-	blockBuilder            blocks.Builder
-	rootBuilder             roots.Builder
-	resolutionBuilder       resolutions.Builder
-	queueBuilder            queues.Builder
-	queueRepository         queues.Repository
-	queueService            queues.Service
-	commandsBuilder         commands.Builder
+	frameFactory           stacks.FrameFactory
+	frameBuilder           stacks.FrameBuilder
+	frameAssignableBuilder stacks.AssignableBuilder
+	blockchainBuilder      blockchains.Builder
+	blockchainRepository   blockchains.Repository
+	blockchainService      blockchains.Service
+	blockBuilder           blocks.Builder
+	rootBuilder            roots.Builder
+	resolutionBuilder      resolutions.Builder
+	queueBuilder           queues.Builder
+	queueRepository        queues.Repository
+	queueService           queues.Service
+	commandsBuilder        commands.Builder
 }
 
 func createApplication(
-	frameFactory frames.FrameFactory,
-	frameBuilder frames.FrameBuilder,
-	frameAssignablesBuilder frames.AssignablesBuilder,
+	frameFactory stacks.FrameFactory,
+	frameBuilder stacks.FrameBuilder,
 	blockchainBuilder blockchains.Builder,
 	blockchainRepository blockchains.Repository,
 	blockchainService blockchains.Service,
@@ -46,27 +44,26 @@ func createApplication(
 	commandsBuilder commands.Builder,
 ) Application {
 	out := application{
-		frameFactory:            frameFactory,
-		frameBuilder:            frameBuilder,
-		frameAssignablesBuilder: frameAssignablesBuilder,
-		blockchainBuilder:       blockchainBuilder,
-		blockchainRepository:    blockchainRepository,
-		blockchainService:       blockchainService,
-		blockBuilder:            blockBuilder,
-		rootBuilder:             rootBuilder,
-		resolutionBuilder:       resolutionBuilder,
-		queueBuilder:            queueBuilder,
-		queueRepository:         queueRepository,
-		queueService:            queueService,
-		commandsBuilder:         commandsBuilder,
+		frameFactory:         frameFactory,
+		frameBuilder:         frameBuilder,
+		blockchainBuilder:    blockchainBuilder,
+		blockchainRepository: blockchainRepository,
+		blockchainService:    blockchainService,
+		blockBuilder:         blockBuilder,
+		rootBuilder:          rootBuilder,
+		resolutionBuilder:    resolutionBuilder,
+		queueBuilder:         queueBuilder,
+		queueRepository:      queueRepository,
+		queueService:         queueService,
+		commandsBuilder:      commandsBuilder,
 	}
 
 	return &out
 }
 
 // Execute executes the application
-func (app *application) Execute(programm programs.Program, frame frames.Frames) (frames.Frames, error) {
-	innerFrame, err := app.createInnerFrame(programm, frame)
+func (app *application) Execute(programm programs.Program, stack stacks.Stack) (stacks.Stack, error) {
+	innerFrame, err := app.createInnerFrame(programm, stack)
 	if err != nil {
 		return nil, err
 	}
@@ -80,7 +77,7 @@ func (app *application) Execute(programm programs.Program, frame frames.Frames) 
 	return nil, nil
 }
 
-func (app *application) executeInstructions(instructions programs.Instructions, frame frames.Frame) error {
+func (app *application) executeInstructions(instructions programs.Instructions, frame stacks.Frame) error {
 	list := instructions.List()
 	for _, oneInstruction := range list {
 		err := app.executeInstruction(oneInstruction, frame)
@@ -92,7 +89,7 @@ func (app *application) executeInstructions(instructions programs.Instructions, 
 	return nil
 }
 
-func (app *application) executeInstruction(instruction programs.Instruction, frame frames.Frame) error {
+func (app *application) executeInstruction(instruction programs.Instruction, frame stacks.Frame) error {
 	if instruction.IsAssignment() {
 
 	}
@@ -123,7 +120,7 @@ func (app *application) executeInstruction(instruction programs.Instruction, fra
 	return app.executeInit(init)
 }
 
-func (app *application) executeAssignment(assignment programs.Assignment, frame frames.Frame) (frames.Assignable, error) {
+func (app *application) executeAssignment(assignment programs.Assignment, frame stacks.Frame) (stacks.Assignable, error) {
 	assignable := assignment.Assignable()
 
 	if assignable.IsBegin() {
@@ -146,8 +143,8 @@ func (app *application) executeAssignment(assignment programs.Assignment, frame 
 	return nil, nil
 }
 
-func (app *application) fetchQueue(variable string, frame frames.Frame) (frames.Assignable, error) {
-	pContext, err := frame.FetchContext(variable)
+func (app *application) fetchQueue(variable string, frame stacks.Frame) (stacks.Assignable, error) {
+	pContext, err := frame.FetchUint(variable)
 	if err != nil {
 		return nil, err
 	}
@@ -162,9 +159,9 @@ func (app *application) fetchQueue(variable string, frame frames.Frame) (frames.
 		Now()
 }
 
-func (app *application) executeCommit(commit programs.Commit, frame frames.Frame) error {
+func (app *application) executeCommit(commit programs.Commit, frame stacks.Frame) error {
 	contextVariable := commit.Context()
-	pContext, err := frame.FetchContext(contextVariable)
+	pContext, err := frame.FetchUint(contextVariable)
 	if err != nil {
 		return err
 	}
@@ -210,8 +207,8 @@ func (app *application) executeCommit(commit programs.Commit, frame frames.Frame
 	)
 }
 
-func (app *application) executeBack(variable string, frame frames.Frame) error {
-	pContext, err := frame.FetchContext(variable)
+func (app *application) executeBack(variable string, frame stacks.Frame) error {
+	pContext, err := frame.FetchUint(variable)
 	if err != nil {
 		return err
 	}
@@ -284,15 +281,16 @@ func (app *application) executeInit(init programs.Init) error {
 	)
 }
 
-func (app *application) createInnerFrame(programm programs.Program, outerFrame frames.Frames) (frames.Frame, error) {
+func (app *application) createInnerFrame(programm programs.Program, stack stacks.Stack) (stacks.Frame, error) {
 	if !programm.HasParameters() {
 		return app.frameFactory.Create(), nil
 	}
 
-	list := []frames.Assignable{}
+	last := stack.Last()
+	list := []stacks.Assignable{}
 	parameters := programm.Parameters()
 	for _, oneParameter := range parameters {
-		assignable, err := outerFrame.Last().Fetch(oneParameter)
+		assignable, err := last.Fetch(oneParameter)
 		if err != nil {
 			// error, param is not in frame
 		}
@@ -300,15 +298,7 @@ func (app *application) createInnerFrame(programm programs.Program, outerFrame f
 		list = append(list, assignable)
 	}
 
-	assignables, err := app.frameAssignablesBuilder.Create().
-		WithList(list).
-		Now()
-
-	if err != nil {
-		return nil, err
-	}
-
 	return app.frameBuilder.Create().
-		WithAssignables(assignables).
+		WihtList(list).
 		Now()
 }
