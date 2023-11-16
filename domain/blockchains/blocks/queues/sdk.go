@@ -1,8 +1,6 @@
 package queues
 
-import (
-	"steve.care/network/commands/domain/commands"
-)
+import "steve.care/network/commands/domain/commands"
 
 // Builder represents a queue builder
 type Builder interface {
