@@ -1,6 +1,6 @@
 package applications
 
-import "steve.care/network/resources/credentials"
+import "steve.care/network/libraries/credentials"
 
 // Builder represents the application builder
 type Builder interface {
