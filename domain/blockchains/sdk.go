@@ -1,8 +1,8 @@
 package blockchains
 
 import (
-	"steve.care/network/libraries/blockchains/blocks"
-	"steve.care/network/libraries/blockchains/roots"
+	"steve.care/network/domain/blockchains/blocks"
+	"steve.care/network/domain/blockchains/roots"
 	"steve.care/network/libraries/hash"
 )
 

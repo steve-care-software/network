@@ -1,7 +1,7 @@
 package queues
 
 import (
-	"steve.care/network/libraries/commands"
+	"steve.care/network/commands/domain/commands"
 )
 
 // Builder represents a queue builder

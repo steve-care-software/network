@@ -3,7 +3,7 @@ package roots
 import (
 	"time"
 
-	"steve.care/network/libraries/blockchains/roots/resolutions"
+	"steve.care/network/domain/blockchains/roots/resolutions"
 	"steve.care/network/libraries/hash"
 )
 

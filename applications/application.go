@@ -3,14 +3,14 @@ package applications
 import (
 	"time"
 
+	"steve.care/network/commands/domain/commands"
+	"steve.care/network/domain/blockchains"
+	"steve.care/network/domain/blockchains/blocks"
+	"steve.care/network/domain/blockchains/blocks/queues"
+	"steve.care/network/domain/blockchains/roots"
+	"steve.care/network/domain/blockchains/roots/resolutions"
 	"steve.care/network/domain/programs"
-	"steve.care/network/libraries/blockchains"
-	"steve.care/network/libraries/blockchains/blocks"
-	"steve.care/network/libraries/blockchains/blocks/queues"
-	"steve.care/network/libraries/blockchains/roots"
-	"steve.care/network/libraries/blockchains/roots/resolutions"
-	"steve.care/network/libraries/commands"
-	"steve.care/network/libraries/stacks"
+	"steve.care/network/domain/stacks"
 )
 
 type application struct {

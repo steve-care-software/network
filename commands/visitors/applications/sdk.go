@@ -2,7 +2,7 @@ package applications
 
 import (
 	"steve.care/network/commands/visitors/domain/programs"
-	"steve.care/network/libraries/stacks"
+	"steve.care/network/commands/visitors/domain/stacks"
 )
 
 // Application represents the application

@@ -3,7 +3,7 @@ package blocks
 import (
 	"time"
 
-	"steve.care/network/libraries/commands"
+	"steve.care/network/commands/domain/commands"
 	"steve.care/network/libraries/hash"
 )
 

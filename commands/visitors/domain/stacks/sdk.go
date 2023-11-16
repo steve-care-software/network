@@ -1,7 +1,5 @@
 package stacks
 
-import "steve.care/network/libraries/blockchains/blocks/queues"
-
 // Builder represents the stack builder
 type Builder interface {
 	Create() Builder
@@ -51,15 +49,9 @@ type Assignment interface {
 // AssignableBuilder represents an assignable builder
 type AssignableBuilder interface {
 	Create() AssignableBuilder
-	WithUint(uintValue uint) AssignableBuilder
-	WithQueue(queue queues.Queue) AssignableBuilder
 	Now() (Assignable, error)
 }
 
 // Assignable represents an assignable
 type Assignable interface {
-	IsUint() bool
-	Uint() *uint
-	IsQueue() bool
-	Queue() queues.Queue
 }
