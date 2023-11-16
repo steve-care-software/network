@@ -1,5 +1,19 @@
 package stacks
 
+import (
+	"steve.care/network/commands/visitors/admins/domain/accounts"
+	"steve.care/network/libraries/credentials"
+	"steve.care/network/libraries/hash"
+)
+
+const (
+	// CouldNotAuthorizeError represents a could not authorize error
+	CouldNotAuthorizeError (uint) = iota
+
+	// AccountNameAlreadyExists represents an account name already exists error
+	AccountNameAlreadyExists
+)
+
 // Builder represents the stack builder
 type Builder interface {
 	Create() Builder
@@ -9,7 +23,9 @@ type Builder interface {
 
 // Stack represents a stack
 type Stack interface {
+	Hash() hash.Hash
 	List() []Frame
+	Body() []Frame // returns al the frames except the last one
 	Last() Frame
 }
 
@@ -21,13 +37,14 @@ type FrameFactory interface {
 // FrameBuilder represents a frame builder
 type FrameBuilder interface {
 	Create() FrameBuilder
-	WihtList(list []Assignable) FrameBuilder
+	WihtList(list []Assignment) FrameBuilder
 	Now() (Frame, error)
 }
 
 // Frame represents frame
 type Frame interface {
-	List() []Assignable
+	Hash() hash.Hash
+	List() []Assignment
 	Fetch(name string) (Assignable, error)
 	FetchUint(name string) (*uint, error)
 }
@@ -42,6 +59,7 @@ type AssignmentBuilder interface {
 
 // Assignment represents an assignment
 type Assignment interface {
+	Hash() hash.Hash
 	Name() string
 	Assignable() Assignable
 }
@@ -49,9 +67,22 @@ type Assignment interface {
 // AssignableBuilder represents an assignable builder
 type AssignableBuilder interface {
 	Create() AssignableBuilder
+	WithStringList(stringList []string) AssignableBuilder
+	WithError(raisedError uint) AssignableBuilder
+	WithAuthorize(authorize accounts.Account) AssignableBuilder
+	WithCreate(create credentials.Credentials) AssignableBuilder
 	Now() (Assignable, error)
 }
 
 // Assignable represents an assignable
 type Assignable interface {
+	Hash() hash.Hash
+	IsStringList() bool
+	StringList() []string
+	IsError() bool
+	Error() *uint
+	IsAuthorize() bool
+	Authorize() accounts.Account
+	IsCreate() bool
+	Create() credentials.Credentials
 }
