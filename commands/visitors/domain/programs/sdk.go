@@ -1,5 +1,11 @@
 package programs
 
+// Adapter represents a program adapter
+type Adapter interface {
+	ToBytes(ins Program) ([]byte, error)
+	ToInstance(bytes []byte) (Program, error)
+}
+
 // Builder represents a builder
 type Builder interface {
 	Create() Builder
