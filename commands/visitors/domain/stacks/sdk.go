@@ -3,6 +3,8 @@ package stacks
 import (
 	"steve.care/network/commands/visitors/admins/domain/accounts"
 	admin_stacks "steve.care/network/commands/visitors/admins/domain/stacks"
+	"steve.care/network/commands/visitors/stencils/domain/results"
+	stencil_stacks "steve.care/network/commands/visitors/stencils/domain/stacks"
 	"steve.care/network/libraries/credentials"
 	"steve.care/network/libraries/hash"
 )
@@ -18,6 +20,7 @@ const (
 // Adapter represents an adapter
 type Adapter interface {
 	ToAdmin(ins Stack) (admin_stacks.Stack, error)
+	ToStencil(ins Stack) (stencil_stacks.Stack, error)
 }
 
 // Builder represents the stack builder
@@ -80,6 +83,7 @@ type AssignableBuilder interface {
 	WithAuthorize(authorize accounts.Account) AssignableBuilder
 	WithCreate(create credentials.Credentials) AssignableBuilder
 	WithAdmin(admin admin_stacks.Stack) AssignableBuilder
+	WithStencil(stencil results.Result) AssignableBuilder
 	Now() (Assignable, error)
 }
 
@@ -96,4 +100,6 @@ type Assignable interface {
 	Create() credentials.Credentials
 	IsAdmin() bool
 	Admin() admin_stacks.Stack
+	IsStencil() bool
+	Stencil() results.Result
 }

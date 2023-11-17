@@ -5,10 +5,12 @@ import (
 	"steve.care/network/commands/visitors/admins/domain/accounts"
 	"steve.care/network/commands/visitors/domain/programs"
 	"steve.care/network/commands/visitors/domain/stacks"
+	stencil_applications "steve.care/network/commands/visitors/stencils/applications"
 )
 
 type application struct {
 	adminApp               admin_applications.Application
+	stencilApp             stencil_applications.Application
 	programAdapter         programs.Adapter
 	stackAdapter           stacks.Adapter
 	stackBuilder           stacks.Builder
@@ -21,6 +23,7 @@ type application struct {
 
 func createApplication(
 	adminApp admin_applications.Application,
+	stencilApp stencil_applications.Application,
 	programAdapter programs.Adapter,
 	stackAdapter stacks.Adapter,
 	stackBuilder stacks.Builder,
@@ -32,6 +35,7 @@ func createApplication(
 ) Application {
 	out := application{
 		adminApp:               adminApp,
+		stencilApp:             stencilApp,
 		programAdapter:         programAdapter,
 		stackAdapter:           stackAdapter,
 		stackBuilder:           stackBuilder,
@@ -168,6 +172,24 @@ func (app *application) assignable(assignable programs.Assignable, stack stacks.
 
 		return app.stackAssignableBuilder.Create().
 			WithAdmin(resultAdminStack).
+			Now()
+
+	}
+
+	if assignable.IsStencil() {
+		inputStack, err := app.stackAdapter.ToStencil(stack)
+		if err != nil {
+			return nil, err
+		}
+
+		program := assignable.Stencil()
+		result, err := app.stencilApp.Execute(program, inputStack)
+		if err != nil {
+			return nil, err
+		}
+
+		return app.stackAssignableBuilder.Create().
+			WithStencil(result).
 			Now()
 
 	}

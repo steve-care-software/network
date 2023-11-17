@@ -34,6 +34,7 @@ type Instructions interface {
 type InstructionBuilder interface {
 	Create() InstructionBuilder
 	WithAssignment(assignment Assignment) InstructionBuilder
+	WithCreateAdmin(createAdmin Credentials) InstructionBuilder
 	IsDeleteAuthorized() InstructionBuilder
 	Now() (Instruction, error)
 }
@@ -42,6 +43,8 @@ type InstructionBuilder interface {
 type Instruction interface {
 	IsAssignment() bool
 	Assignment() Assignment
+	IsCreateAdmin() bool
+	CreateAdmin() Credentials
 	IsDeleteAuthorized() bool
 }
 
@@ -62,7 +65,6 @@ type Assignment interface {
 // AssignableBuilder represents the assignable builder
 type AssignableBuilder interface {
 	Create() AssignableBuilder
-	WithCreateAdmin(createAdmin Credentials) AssignableBuilder
 	HasIdentities() AssignableBuilder
 	ListIdentities() AssignableBuilder
 	Now() (Assignable, error)
@@ -72,8 +74,6 @@ type AssignableBuilder interface {
 type Assignable interface {
 	IsHasIdentities() bool
 	IsListIdentities() bool
-	IsCreateAdmin() bool
-	CreateAdmin() Credentials
 }
 
 // CredentialsBuilder represents the credentials builder

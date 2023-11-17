@@ -56,7 +56,7 @@ func (app *application) ExecuteBytes(bytes []byte, stack stacks.Stack) (stacks.S
 
 // Execute executes the application
 func (app *application) Execute(program programs.Program, stack stacks.Stack) (stacks.Stack, error) {
-	stackFrames := stack.List()
+	/*stackFrames := stack.List()
 	stackFrames = append(stackFrames, app.stackFrameFactory.Create())
 	retStack, err := app.stackBuilder.Create().
 		WithList(stackFrames).
@@ -67,7 +67,8 @@ func (app *application) Execute(program programs.Program, stack stacks.Stack) (s
 	}
 
 	instructions := program.Instructions()
-	return app.instructions(instructions, retStack)
+	return app.instructions(instructions, retStack)*/
+	return nil, nil
 }
 
 func (app *application) instructions(instructions programs.Instructions, stack stacks.Stack) (stacks.Stack, error) {
@@ -86,7 +87,7 @@ func (app *application) instructions(instructions programs.Instructions, stack s
 }
 
 func (app *application) instruction(instruction programs.Instruction, stack stacks.Stack) (stacks.Stack, error) {
-	last := stack.Last()
+	/*last := stack.Last()
 	lastAssignments := last.List()
 	if instruction.IsAssignment() {
 		assignment := instruction.Assignment()
@@ -102,57 +103,9 @@ func (app *application) instruction(instruction programs.Instruction, stack stac
 
 	}
 
-	updatedFrame, err := app.stackFrameBuilder.Create().
-		WihtList(lastAssignments).
-		Now()
-
-	if err != nil {
-		return nil, err
-	}
-
-	bodyFrames := stack.Body()
-	bodyFrames = append(bodyFrames, updatedFrame)
-	return app.stackBuilder.Create().
-		WithList(bodyFrames).
-		Now()
-}
-
-func (app *application) assignment(assignment programs.Assignment, stack stacks.Stack) (stacks.Assignment, error) {
-	assignable := assignment.Assignable()
-	stackAssignable, err := app.assignable(assignable, stack)
-	if err != nil {
-		return nil, err
-	}
-
-	name := assignment.Name()
-	return app.stackAssignmentBuilder.Create().
-		WithName(name).
-		WithAssignable(stackAssignable).
-		Now()
-}
-
-func (app *application) assignable(assignable programs.Assignable, stack stacks.Stack) (stacks.Assignable, error) {
-	builder := app.stackAssignableBuilder.Create()
-	if assignable.IsHasIdentities() {
-		account := stack.Authorized()
-		value := account.HasIdentities()
-		builder.WithBool(value)
-	}
-
-	if assignable.IsListIdentities() {
-		account := stack.Authorized()
-		if !account.HasIdentities() {
-			return builder.WithError(stacks.AuthorizedAccountDoNotContainIdentitiesError).
-				Now()
-		}
-
-		identities := account.Identities()
-		builder.WithIdentities(identities)
-	}
-
-	if assignable.IsCreateAdmin() {
-		creator := stack.Authorized()
-		credentials := assignable.CreateAdmin()
+	if instruction.IsCreateAdmin() {
+		creator := stack.Memory().Authorized()
+		credentials := instruction.CreateAdmin()
 		username := credentials.Username()
 		exists, err := app.accountRepository.Exists(username)
 		if err != nil {
@@ -160,8 +113,14 @@ func (app *application) assignable(assignable programs.Assignable, stack stacks.
 		}
 
 		if exists {
-			return builder.WithError(stacks.AccountNameAlreadyExists).
+			assignable, err := app.stackAssignableBuilder.Create().
+				WithError(stacks.AccountNameAlreadyExists).
 				Now()
+
+			if err != nil {
+				return nil, err
+			}
+
 		}
 
 		account, err := app.accountBuilder.Create().
@@ -184,6 +143,56 @@ func (app *application) assignable(assignable programs.Assignable, stack stacks.
 		}
 
 		builder.WithCreateAccount(createAccount)
+	}
+
+	updatedFrame, err := app.stackFrameBuilder.Create().
+		WihtList(lastAssignments).
+		Now()
+
+	if err != nil {
+		return nil, err
+	}
+
+	bodyFrames := stack.Body()
+	bodyFrames = append(bodyFrames, updatedFrame)
+	return app.stackBuilder.Create().
+		WithList(bodyFrames).
+		Now()*/
+
+	return nil, nil
+}
+
+func (app *application) assignment(assignment programs.Assignment, stack stacks.Stack) (stacks.Assignment, error) {
+	assignable := assignment.Assignable()
+	stackAssignable, err := app.assignable(assignable, stack)
+	if err != nil {
+		return nil, err
+	}
+
+	name := assignment.Name()
+	return app.stackAssignmentBuilder.Create().
+		WithName(name).
+		WithAssignable(stackAssignable).
+		Now()
+}
+
+func (app *application) assignable(assignable programs.Assignable, stack stacks.Stack) (stacks.Assignable, error) {
+	builder := app.stackAssignableBuilder.Create()
+	if assignable.IsHasIdentities() {
+		account := stack.Memory().Authorized()
+		value := account.HasIdentities()
+		builder.WithBool(value)
+	}
+
+	if assignable.IsListIdentities() {
+		account := stack.Memory().Authorized()
+		if !account.HasIdentities() {
+			return builder.WithError(stacks.AuthorizedAccountDoNotContainIdentitiesError).
+				Now()
+		}
+
+		identities := account.Identities()
+		builder.WithIdentities(identities)
 	}
 
 	return builder.Now()
