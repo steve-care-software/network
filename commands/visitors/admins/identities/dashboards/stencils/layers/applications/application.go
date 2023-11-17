@@ -4,9 +4,9 @@ import (
 	"errors"
 	"fmt"
 
-	"steve.care/network/commands/visitors/admins/identities/dashboards/stencils/layers/domain/layers"
 	"steve.care/network/commands/visitors/admins/identities/dashboards/stencils/layers/domain/programs"
 	"steve.care/network/commands/visitors/admins/identities/dashboards/stencils/layers/domain/stacks"
+	"steve.care/network/commands/visitors/stencils/domain/layers"
 )
 
 type application struct {

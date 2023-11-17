@@ -2,8 +2,8 @@ package stacks
 
 import (
 	admin_accounts "steve.care/network/commands/visitors/admins/domain/accounts"
-	"steve.care/network/commands/visitors/admins/identities/dashboards/stencils/layers/domain/layers"
 	identity_accounts "steve.care/network/commands/visitors/admins/identities/domain/accounts"
+	"steve.care/network/commands/visitors/stencils/domain/layers"
 )
 
 const (

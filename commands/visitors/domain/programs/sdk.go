@@ -2,7 +2,6 @@ package programs
 
 import (
 	admin_programs "steve.care/network/commands/visitors/admins/domain/programs"
-	stencils_program "steve.care/network/commands/visitors/stencils/domain/programs"
 )
 
 // Adapter represents a program adapter
@@ -67,21 +66,20 @@ type AssignableBuilder interface {
 	Create() AssignableBuilder
 	WithAuthorize(authorize Credentials) AssignableBuilder
 	WithCreate(create Credentials) AssignableBuilder
-	WithStencil(stencil stencils_program.Program) AssignableBuilder
 	WithAdmin(admin admin_programs.Program) AssignableBuilder
 	IsListNames() AssignableBuilder
+	IsStencil() AssignableBuilder
 	Now() (Assignable, error)
 }
 
 // Assignable represents an assignable
 type Assignable interface {
+	IsStencil() bool
 	IsListNames() bool
 	IsAuthorize() bool
 	Authorize() Credentials
 	IsCreate() bool
 	Create() Credentials
-	IsStencil() bool
-	Stencil() stencils_program.Program
 	IsAdmin() bool
 	Admin() admin_programs.Program
 }

@@ -2,8 +2,9 @@ package stacks
 
 import (
 	"steve.care/network/commands/visitors/admins/domain/accounts"
+	admin_accounts "steve.care/network/commands/visitors/admins/domain/accounts"
 	admin_stacks "steve.care/network/commands/visitors/admins/domain/stacks"
-	"steve.care/network/commands/visitors/stencils/domain/results"
+	identity_accounts "steve.care/network/commands/visitors/admins/identities/domain/accounts"
 	stencil_stacks "steve.care/network/commands/visitors/stencils/domain/stacks"
 	"steve.care/network/libraries/credentials"
 	"steve.care/network/libraries/hash"
@@ -33,10 +34,27 @@ type Builder interface {
 // Stack represents a stack
 type Stack interface {
 	Hash() hash.Hash
+	Memory() Memory
 	List() []Frame
 	Body() []Frame // returns al the frames except the last one
 	Last() Frame
 	ContainsError() bool
+}
+
+// MemoryBuilder represents a memory builder
+type MemoryBuilder interface {
+	Create() MemoryBuilder
+	WithAuthorized(authorized admin_accounts.Account) MemoryBuilder
+	WithAuthenticated(authenticated identity_accounts.Account) MemoryBuilder
+	Now() (Memory, error)
+}
+
+// Memory represents memory
+type Memory interface {
+	HasAuthorized() bool
+	Authorized() admin_accounts.Account
+	HasAuthenticated() bool
+	Authenticated() identity_accounts.Account
 }
 
 // FrameFactory represents a frame factory
@@ -83,7 +101,7 @@ type AssignableBuilder interface {
 	WithAuthorize(authorize accounts.Account) AssignableBuilder
 	WithCreate(create credentials.Credentials) AssignableBuilder
 	WithAdmin(admin admin_stacks.Stack) AssignableBuilder
-	WithStencil(stencil results.Result) AssignableBuilder
+	WithBytes(bytes []byte) AssignableBuilder
 	Now() (Assignable, error)
 }
 
@@ -100,6 +118,6 @@ type Assignable interface {
 	Create() credentials.Credentials
 	IsAdmin() bool
 	Admin() admin_stacks.Stack
-	IsStencil() bool
-	Stencil() results.Result
+	IsBytes() bool
+	Bytes() []byte
 }

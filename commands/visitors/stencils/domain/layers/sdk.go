@@ -2,7 +2,6 @@ package layers
 
 // Layer represents a layer
 type Layer interface {
-	Input() string
 	Instructions() Instructions
 	Output() Output
 }
@@ -33,8 +32,16 @@ type Instruction interface {
 	RaiseError() uint
 	IsCondition() bool
 	Condition() Condition
+	IsSave() bool
+	Save() Resource
 	IsAssignment() bool
 	Assignment() Assignment
+}
+
+// Resource represents a resource
+type Resource interface {
+	Path() []string
+	Layer() Layer
 }
 
 // Condition represents a condition
@@ -67,8 +74,6 @@ type Identity interface {
 	Voter() Voter
 	IsEncryptor() bool
 	Encryptor() Encryptor
-	IsDecrypt() bool
-	Decrypt() []byte
 }
 
 // Bytes represents the bytes assignable
@@ -82,7 +87,9 @@ type Bytes interface {
 // Encryptor represents encryptor
 type Encryptor interface {
 	IsDecrypt() bool
-	Decrypt() []byte
+	Decrypt() Value
+	IsEncrypt() bool
+	Encrypt() Value
 	IsPublicKey() bool
 }
 
@@ -97,11 +104,11 @@ type Signer interface {
 // Voter represents the vote identity assignable
 type Voter interface {
 	IsVote() bool
-	Vote() []byte
+	Vote() Value
 	IsVerify() bool
-	Verify() []byte
+	Verify() Value
 	IsPublicKey() bool
-	PublicKey() []byte
+	PublicKey() Value
 }
 
 // Values represents values

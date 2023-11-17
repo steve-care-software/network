@@ -1,6 +1,6 @@
 package programs
 
-import "steve.care/network/commands/visitors/admins/identities/dashboards/stencils/layers/domain/layers"
+import "steve.care/network/commands/visitors/stencils/domain/layers"
 
 // Adapter represents the program adapter
 type Adapter interface {
