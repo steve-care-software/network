@@ -10,6 +10,7 @@ type Builder interface {
 	Create() Builder
 	WithUsername(username string) Builder
 	WithIdentities(identities Identities) Builder
+	WithCreator(creator Account) Builder
 	Now() (Account, error)
 }
 
@@ -19,6 +20,8 @@ type Account interface {
 	Username() string
 	HasIdentities() bool
 	Identities() Identities
+	HasCreator() bool
+	Creator() Account
 }
 
 // IdentitiesBuilder represents an identities builder

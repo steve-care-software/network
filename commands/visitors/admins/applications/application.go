@@ -1,45 +1,44 @@
 package applications
 
 import (
-	admin_applications "steve.care/network/commands/visitors/admins/applications"
 	"steve.care/network/commands/visitors/admins/domain/accounts"
-	"steve.care/network/commands/visitors/domain/programs"
-	"steve.care/network/commands/visitors/domain/stacks"
+	"steve.care/network/commands/visitors/admins/domain/programs"
+	"steve.care/network/commands/visitors/admins/domain/stacks"
 )
 
 type application struct {
-	adminApp               admin_applications.Application
-	programAdapter         programs.Adapter
-	stackAdapter           stacks.Adapter
-	stackBuilder           stacks.Builder
-	stackFrameFactory      stacks.FrameFactory
-	stackFrameBuilder      stacks.FrameBuilder
-	stackAssignmentBuilder stacks.AssignmentBuilder
-	stackAssignableBuilder stacks.AssignableBuilder
-	accountRepository      accounts.Repository
+	programAdapter            programs.Adapter
+	stackBuilder              stacks.Builder
+	stackFrameFactory         stacks.FrameFactory
+	stackFrameBuilder         stacks.FrameBuilder
+	stackAssignmentBuilder    stacks.AssignmentBuilder
+	stackAssignableBuilder    stacks.AssignableBuilder
+	stackCreateAccountBuilder stacks.CreateAccountBuilder
+	accountRepository         accounts.Repository
+	accountBuilder            accounts.Builder
 }
 
 func createApplication(
-	adminApp admin_applications.Application,
 	programAdapter programs.Adapter,
-	stackAdapter stacks.Adapter,
 	stackBuilder stacks.Builder,
 	stackFrameFactory stacks.FrameFactory,
 	stackFrameBuilder stacks.FrameBuilder,
 	stackAssignmentBuilder stacks.AssignmentBuilder,
 	stackAssignableBuilder stacks.AssignableBuilder,
+	stackCreateAccountBuilder stacks.CreateAccountBuilder,
 	accountRepository accounts.Repository,
+	accountBuilder accounts.Builder,
 ) Application {
 	out := application{
-		adminApp:               adminApp,
-		programAdapter:         programAdapter,
-		stackAdapter:           stackAdapter,
-		stackBuilder:           stackBuilder,
-		stackFrameFactory:      stackFrameFactory,
-		stackFrameBuilder:      stackFrameBuilder,
-		stackAssignmentBuilder: stackAssignmentBuilder,
-		stackAssignableBuilder: stackAssignableBuilder,
-		accountRepository:      accountRepository,
+		programAdapter:            programAdapter,
+		stackBuilder:              stackBuilder,
+		stackFrameFactory:         stackFrameFactory,
+		stackFrameBuilder:         stackFrameBuilder,
+		stackAssignmentBuilder:    stackAssignmentBuilder,
+		stackAssignableBuilder:    stackAssignableBuilder,
+		stackCreateAccountBuilder: stackCreateAccountBuilder,
+		accountRepository:         accountRepository,
+		accountBuilder:            accountBuilder,
 	}
 
 	return &out
@@ -55,7 +54,7 @@ func (app *application) ExecuteBytes(bytes []byte, stack stacks.Stack) (stacks.S
 	return app.Execute(program, stack)
 }
 
-// Execute executes the application using a program
+// Execute executes the application
 func (app *application) Execute(program programs.Program, stack stacks.Stack) (stacks.Stack, error) {
 	stackFrames := stack.List()
 	stackFrames = append(stackFrames, app.stackFrameFactory.Create())
@@ -99,6 +98,10 @@ func (app *application) instruction(instruction programs.Instruction, stack stac
 		lastAssignments = append(lastAssignments, stackAssignment)
 	}
 
+	if instruction.IsDeleteAuthorized() {
+
+	}
+
 	updatedFrame, err := app.stackFrameBuilder.Create().
 		WihtList(lastAssignments).
 		Now()
@@ -129,63 +132,59 @@ func (app *application) assignment(assignment programs.Assignment, stack stacks.
 }
 
 func (app *application) assignable(assignable programs.Assignable, stack stacks.Stack) (stacks.Assignable, error) {
-	if assignable.IsListNames() {
-		names, err := app.accountRepository.List()
-		if err != nil {
-			return nil, err
-		}
-
-		return app.stackAssignableBuilder.Create().
-			WithStringList(names).
-			Now()
+	builder := app.stackAssignableBuilder.Create()
+	if assignable.IsHasIdentities() {
+		account := stack.Authorized()
+		value := account.HasIdentities()
+		builder.WithBool(value)
 	}
 
-	if assignable.IsAuthorize() {
-		credentials := assignable.Authorize()
-		account, err := app.accountRepository.Retrieve(credentials)
-		if err != nil {
-			return app.stackAssignableBuilder.Create().
-				WithError(stacks.CouldNotAuthorizeError).
+	if assignable.IsListIdentities() {
+		account := stack.Authorized()
+		if !account.HasIdentities() {
+			return builder.WithError(stacks.AuthorizedAccountDoNotContainIdentitiesError).
 				Now()
 		}
 
-		return app.stackAssignableBuilder.Create().
-			WithAuthorize(account).
-			Now()
+		identities := account.Identities()
+		builder.WithIdentities(identities)
 	}
 
-	if assignable.IsAdmin() {
-		adminProgram := assignable.Admin()
-		inputAdminStack, err := app.stackAdapter.ToAdmin(stack)
+	if assignable.IsCreateAdmin() {
+		creator := stack.Authorized()
+		credentials := assignable.CreateAdmin()
+		username := credentials.Username()
+		exists, err := app.accountRepository.Exists(username)
 		if err != nil {
 			return nil, err
 		}
 
-		resultAdminStack, err := app.adminApp.Execute(adminProgram, inputAdminStack)
+		if exists {
+			return builder.WithError(stacks.AccountNameAlreadyExists).
+				Now()
+		}
+
+		account, err := app.accountBuilder.Create().
+			WithCreator(creator).
+			WithUsername(username).
+			Now()
+
 		if err != nil {
 			return nil, err
 		}
 
-		return app.stackAssignableBuilder.Create().
-			WithAdmin(resultAdminStack).
+		password := credentials.Password()
+		createAccount, err := app.stackCreateAccountBuilder.Create().
+			WithAccount(account).
+			WithPassword(password).
 			Now()
 
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithCreateAccount(createAccount)
 	}
 
-	credentials := assignable.Create()
-	username := credentials.Username()
-	exists, err := app.accountRepository.Exists(username)
-	if err != nil {
-		return nil, err
-	}
-
-	if exists {
-		return app.stackAssignableBuilder.Create().
-			WithError(stacks.AccountNameAlreadyExists).
-			Now()
-	}
-
-	return app.stackAssignableBuilder.Create().
-		WithCreate(credentials).
-		Now()
+	return builder.Now()
 }
