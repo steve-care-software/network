@@ -1,6 +1,6 @@
 package programs
 
-import admin_instructions "steve.care/network/commands/visitors/admins/domain/instructions"
+import admin_programs "steve.care/network/commands/visitors/admins/domain/programs"
 
 // Adapter represents a program adapter
 type Adapter interface {
@@ -36,7 +36,7 @@ type Instructions interface {
 type InstructionBuilder interface {
 	Create() InstructionBuilder
 	WithAssignment(assignment Assignment) InstructionBuilder
-	WithAdmin(admin admin_instructions.Instruction) InstructionBuilder
+	WithAdmin(admin admin_programs.Program) InstructionBuilder
 	Now() (Instruction, error)
 }
 
@@ -45,7 +45,7 @@ type Instruction interface {
 	IsAssignment() bool
 	Assignment() Assignment
 	IsAdmin() bool
-	Admin() admin_instructions.Instruction
+	Admin() admin_programs.Program
 }
 
 // AssignmentBuilder represents an assignment builder
