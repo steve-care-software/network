@@ -2,6 +2,12 @@ package programs
 
 import "steve.care/network/commands/visitors/admins/identities/dashboards/stencils/layers/domain/layers"
 
+// Adapter represents the program adapter
+type Adapter interface {
+	ToBytes(ins Program) ([]byte, error)
+	ToInstance(bytes []byte) (Program, error)
+}
+
 // Program represents a program
 type Program interface {
 	Instructions() Instructions
@@ -46,8 +52,8 @@ type Assignment interface {
 type Assignable interface {
 	IsExists() bool
 	Exists() []string
-	IsNames() bool
-	Names() []string
+	IsList() bool
+	List() []string
 	IsDir() bool
 	Dir() []string
 	IsRetrieve() bool

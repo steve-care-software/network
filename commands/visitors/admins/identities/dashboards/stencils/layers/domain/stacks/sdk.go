@@ -6,6 +6,14 @@ import (
 	identity_accounts "steve.care/network/commands/visitors/admins/identities/domain/accounts"
 )
 
+const (
+	// LayerAlreadyExistsError represents the layer already exists error
+	LayerAlreadyExistsError (int) = iota
+
+	// LayerDoesNotExistsError represents the layer does not exists error
+	LayerDoesNotExistsError
+)
+
 // Builder represents a stack builder
 type Builder interface {
 	Create() Builder
@@ -20,6 +28,8 @@ type Stack interface {
 	Frames() Frames
 	Body() Frames
 	Last() Frame
+	HasInstructions() bool
+	Instructions() Instructions
 }
 
 // MemoryBuilder represents a memory builder
@@ -51,7 +61,7 @@ type Frames interface {
 // FrameBuilder represents the frame builder
 type FrameBuilder interface {
 	Create() FrameBuilder
-	WithInstructions(instructions Instruction) FrameBuilder
+	WithInstructions(instructions Instructions) FrameBuilder
 	WithAssignments(assignments Assignments) FrameBuilder
 	Now() (Frame, error)
 }
@@ -82,6 +92,7 @@ type InstructionBuilder interface {
 	WithSave(save Resource) InstructionBuilder
 	WithMove(move Move) InstructionBuilder
 	WithDelete(delete []string) InstructionBuilder
+	WithErrorCode(errorCode int) InstructionBuilder
 	Now() (Instruction, error)
 }
 
@@ -93,6 +104,22 @@ type Instruction interface {
 	Move() Move
 	IsDelete() bool
 	Delete() []string
+	IsErrorCode() bool
+	ErrorCode() *int
+}
+
+// ResourceBuilder represents a resource builder
+type ResourceBuilder interface {
+	Create() ResourceBuilder
+	WithPath(path []string) ResourceBuilder
+	WithLayer(layer layers.Layer) ResourceBuilder
+	Now() (Resource, error)
+}
+
+// Resource represents a resource
+type Resource interface {
+	Path() []string
+	Layer() layers.Layer
 }
 
 // MoveBuilder represents a move builder
@@ -113,7 +140,7 @@ type Move interface {
 type AssignmentsBuilder interface {
 	Create() AssignmentsBuilder
 	WithList(list []Assignment) AssignmentsBuilder
-	Now() (Assignment, error)
+	Now() (Assignments, error)
 }
 
 // Assignments represents assignments
@@ -140,7 +167,7 @@ type AssignableBuilder interface {
 	Create() AssignableBuilder
 	WithBool(boolValue bool) AssignableBuilder
 	WithStringList(strList []string) AssignableBuilder
-	WithResource(resource Resource) AssignableBuilder
+	WithLayer(layer layers.Layer) AssignableBuilder
 	Now() (Assignable, error)
 }
 
@@ -150,20 +177,6 @@ type Assignable interface {
 	Bool() *bool
 	IsStringList() bool
 	StringList() []string
-	IsResource() bool
-	Resource() Resource
-}
-
-// ResourceBuilder represents a resource builder
-type ResourceBuilder interface {
-	Create() ResourceBuilder
-	WithPath(path []string) ResourceBuilder
-	WithLayer(layer layers.Layer) ResourceBuilder
-	Now() (Resource, error)
-}
-
-// Resource represents a resource
-type Resource interface {
-	Path() []string
+	IsLayer() bool
 	Layer() layers.Layer
 }

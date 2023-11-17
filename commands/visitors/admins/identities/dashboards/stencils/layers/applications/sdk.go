@@ -9,5 +9,5 @@ import (
 type Application interface {
 	ExecuteBytes(bytes []byte, stack stacks.Stack) (stacks.Stack, error)
 	Execute(program programs.Program, stack stacks.Stack) (stacks.Stack, error)
-	Process(stack stacks.Stack) error
+	Process(context uint, stack stacks.Stack) error
 }

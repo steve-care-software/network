@@ -116,3 +116,17 @@ type Value interface {
 	IsBytes() bool
 	Bytes() []byte
 }
+
+// Repository represents a layer repository
+type Repository interface {
+	List(basePath []string) ([]string, error)
+	Dir(basePath []string) ([]string, error)
+	Exists(path []string) (bool, error)
+	Retrieve(path []string) (Layer, error)
+}
+
+// Service represents a layer service
+type Service interface {
+	Insert(context uint, layer Layer, path []string) error
+	Delete(context uint, path []string) error
+}
