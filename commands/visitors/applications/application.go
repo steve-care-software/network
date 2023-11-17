@@ -1,13 +1,16 @@
 package applications
 
 import (
+	admin_applications "steve.care/network/commands/visitors/admins/applications"
 	"steve.care/network/commands/visitors/admins/domain/accounts"
 	"steve.care/network/commands/visitors/domain/programs"
 	"steve.care/network/commands/visitors/domain/stacks"
 )
 
 type application struct {
+	adminApp               admin_applications.Application
 	programAdapter         programs.Adapter
+	stackAdapter           stacks.Adapter
 	stackBuilder           stacks.Builder
 	stackFrameFactory      stacks.FrameFactory
 	stackFrameBuilder      stacks.FrameBuilder
@@ -17,7 +20,9 @@ type application struct {
 }
 
 func createApplication(
+	adminApp admin_applications.Application,
 	programAdapter programs.Adapter,
+	stackAdapter stacks.Adapter,
 	stackBuilder stacks.Builder,
 	stackFrameFactory stacks.FrameFactory,
 	stackFrameBuilder stacks.FrameBuilder,
@@ -26,7 +31,9 @@ func createApplication(
 	accountRepository accounts.Repository,
 ) Application {
 	out := application{
+		adminApp:               adminApp,
 		programAdapter:         programAdapter,
+		stackAdapter:           stackAdapter,
 		stackBuilder:           stackBuilder,
 		stackFrameFactory:      stackFrameFactory,
 		stackFrameBuilder:      stackFrameBuilder,
@@ -143,6 +150,24 @@ func (app *application) assignable(assignable programs.Assignable, stack stacks.
 		return app.stackAssignableBuilder.Create().
 			WithAuthorize(account).
 			Now()
+	}
+
+	if assignable.IsAdmin() {
+		adminProgram := assignable.Admin()
+		inputAdminStack, err := app.stackAdapter.ToAdmin(stack)
+		if err != nil {
+			return nil, err
+		}
+
+		resultAdminStack, err := app.adminApp.Execute(adminProgram, inputAdminStack)
+		if err != nil {
+			return nil, err
+		}
+
+		return app.stackAssignableBuilder.Create().
+			WithAdmin(resultAdminStack).
+			Now()
+
 	}
 
 	credentials := assignable.Create()

@@ -17,4 +17,8 @@ type Frame interface {
 type Assignable interface {
 	IsAuthorized() bool
 	Authorized() accounts.Account
+	IsIdentities() bool
+	Identities() accounts.Identities
+	IsError() bool
+	Error() uint
 }
