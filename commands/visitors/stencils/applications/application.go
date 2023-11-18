@@ -230,7 +230,33 @@ func (app *application) executeInstructions(
 	instructions layers.Instructions,
 	stack stacks.Stack,
 ) (stacks.Stack, results.Failure, error) {
-	return nil, nil, nil
+	updatedStack := stack
+	list := instructions.List()
+	for idx, oneInstruction := range list {
+		retStack, failure, err := app.executeInstruction(
+			authenticated,
+			oneInstruction,
+			uint(idx),
+			updatedStack,
+		)
+
+		if err != nil {
+			return nil, nil, err
+		}
+
+		if failure != nil {
+			return nil, failure, nil
+		}
+
+		// stop
+		if retStack == nil {
+			return updatedStack, nil, nil
+		}
+
+		updatedStack = retStack
+	}
+
+	return updatedStack, nil, nil
 }
 
 func (app *application) executeInstruction(
