@@ -1,11 +1,8 @@
 package results
 
 const (
-	// ErrorRaisedInLayerError represents an error raised in layer error
-	ErrorRaisedInLayerError (uint) = iota
-
 	// InputNotFoundError represents an input not found error
-	InputNotFoundError
+	InputNotFoundError (uint) = iota
 
 	// InputNotBytesError represents an input not bytes error
 	InputNotBytesError
@@ -52,16 +49,16 @@ type FailureBuilder interface {
 	Create() FailureBuilder
 	WithIndex(index uint) FailureBuilder
 	WithCode(code uint) FailureBuilder
-	WithRaisedCode(raisedCode uint) FailureBuilder
+	IsRaisedInLayer() FailureBuilder
 	Now() (Failure, error)
 }
 
 // Failure represents failure result
 type Failure interface {
-	Index() uint
 	Code() uint
-	HasRaisedCode() bool
-	RaisedCode() *uint
+	IsRaisedInLayer() bool
+	HasIndex() bool
+	Index() uint
 }
 
 // ActionBuilder represents the action builder

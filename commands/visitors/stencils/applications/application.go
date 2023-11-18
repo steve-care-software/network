@@ -109,11 +109,29 @@ func (app *application) executeLayer(
 	inputVariable := layer.Input()
 	inputAssignable, err := stack.Last().Fetch(inputVariable)
 	if err != nil {
-		// error input not found
+		failure, err := app.resultFailureBuilder.Create().
+			WithCode(results.InputNotFoundError).
+			Now()
+
+		if err != nil {
+			return nil, err
+		}
+
+		return builder.WithFailure(failure).
+			Now()
 	}
 
 	if !inputAssignable.IsBytes() {
-		// error input not bytes
+		failure, err := app.resultFailureBuilder.Create().
+			WithCode(results.InputNotBytesError).
+			Now()
+
+		if err != nil {
+			return nil, err
+		}
+
+		return builder.WithFailure(failure).
+			Now()
 	}
 
 	instructions := layer.Instructions()
@@ -136,11 +154,29 @@ func (app *application) executeLayer(
 	outputVariable := outputIns.Variable()
 	outputAssignable, err := updatedStack.Last().Fetch(outputVariable)
 	if err != nil {
-		// error output not found
+		failure, err := app.resultFailureBuilder.Create().
+			WithCode(results.OutputNotFoundError).
+			Now()
+
+		if err != nil {
+			return nil, err
+		}
+
+		return builder.WithFailure(failure).
+			Now()
 	}
 
 	if !outputAssignable.IsBytes() {
-		// error output not bytes
+		failure, err := app.resultFailureBuilder.Create().
+			WithCode(results.OutputNotBytesError).
+			Now()
+
+		if err != nil {
+			return nil, err
+		}
+
+		return builder.WithFailure(failure).
+			Now()
 	}
 
 	outputBytes := outputAssignable.Bytes()
@@ -221,8 +257,8 @@ func (app *application) executeInstruction(
 	if instruction.IsRaiseError() {
 		code := instruction.RaiseError()
 		failure, err := app.resultFailureBuilder.Create().
-			WithCode(results.ErrorRaisedInLayerError).
-			WithRaisedCode(code).
+			WithCode(code).
+			IsRaisedInLayer().
 			Now()
 
 		if err != nil {
