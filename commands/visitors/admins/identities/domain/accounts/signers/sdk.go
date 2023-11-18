@@ -24,8 +24,8 @@ import (
  * 8. x is the private key
  */
 
-const delimiter = "######"
-const elementDelimiter = "|||||"
+const delimiter = "#"
+const elementDelimiter = "|"
 
 var curve = edwards25519.NewBlakeSHA256Ed25519()
 
