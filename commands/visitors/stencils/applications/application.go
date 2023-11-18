@@ -10,17 +10,20 @@ import (
 )
 
 type application struct {
+	layerRepository           layers.Repository
 	linkRepository            links.Repository
 	stackAssignableBuilder    stacks.AssignableBuilder
 	encryptorPublicKeyAdapter encryptors.PublicKeyAdapter
 }
 
 func createApplication(
+	layerRepository layers.Repository,
 	linkRepository links.Repository,
 	stackAssignableBuilder stacks.AssignableBuilder,
 	encryptorPublicKeyAdapter encryptors.PublicKeyAdapter,
 ) Application {
 	out := application{
+		layerRepository:           layerRepository,
 		linkRepository:            linkRepository,
 		stackAssignableBuilder:    stackAssignableBuilder,
 		encryptorPublicKeyAdapter: encryptorPublicKeyAdapter,
@@ -35,7 +38,12 @@ func (app *application) Execute(
 	authenticated identity_accounts.Account,
 	stack stacks.Stack,
 ) ([]byte, error) {
-	root := authenticated.Root()
+	path := authenticated.Root()
+	root, err := app.layerRepository.Retrieve(path)
+	if err != nil {
+		return nil, err
+	}
+
 	return app.executeLayer(root, stack)
 }
 

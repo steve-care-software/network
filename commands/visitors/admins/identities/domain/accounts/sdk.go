@@ -2,16 +2,18 @@ package accounts
 
 import (
 	"steve.care/network/commands/visitors/admins/identities/domain/accounts/encryptors"
-	"steve.care/network/commands/visitors/admins/identities/domain/accounts/profiles"
 	"steve.care/network/commands/visitors/admins/identities/domain/accounts/signers"
-	"steve.care/network/commands/visitors/stencils/domain/layers"
 )
+
+// NewBuilder creates a new builder instance
+func NewBuilder() Builder {
+	return createBuilder()
+}
 
 // Builder represents an account builder
 type Builder interface {
 	Create() Builder
-	WithRoot(root layers.Layer) Builder
-	WithProfile(profile profiles.Profile) Builder
+	WithRoot(root []string) Builder
 	WithEncryptor(encryptor encryptors.Encryptor) Builder
 	WithSigner(signer signers.Signer) Builder
 	Now() (Account, error)
@@ -19,8 +21,7 @@ type Builder interface {
 
 // Account represents the identity account
 type Account interface {
-	Root() layers.Layer
-	Profile() profiles.Profile
+	Root() []string
 	Encryptor() encryptors.Encryptor
 	Signer() signers.Signer
 }
