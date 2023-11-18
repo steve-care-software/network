@@ -4,7 +4,6 @@ import (
 	"steve.care/network/commands/visitors/admins/identities/domain/accounts/encryptors"
 	"steve.care/network/commands/visitors/admins/identities/domain/accounts/profiles"
 	"steve.care/network/commands/visitors/admins/identities/domain/accounts/signers"
-	"steve.care/network/commands/visitors/admins/identities/domain/accounts/voters"
 	"steve.care/network/commands/visitors/stencils/domain/layers"
 )
 
@@ -15,7 +14,6 @@ type Builder interface {
 	WithProfile(profile profiles.Profile) Builder
 	WithEncryptor(encryptor encryptors.Encryptor) Builder
 	WithSigner(signer signers.Signer) Builder
-	WithVoter(voter voters.Voter) Builder
 	Now() (Account, error)
 }
 
@@ -25,5 +23,4 @@ type Account interface {
 	Profile() profiles.Profile
 	Encryptor() encryptors.Encryptor
 	Signer() signers.Signer
-	Voter() voters.Voter
 }
