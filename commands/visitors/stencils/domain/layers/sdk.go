@@ -1,5 +1,14 @@
 package layers
 
+// Builder represents a layer builder
+type Builder interface {
+	Create() Builder
+	WithPath(path []string) Builder
+	WithInput(input string) Builder
+	WithInstructions(instructions Instructions) Builder
+	Now() (Layer, error)
+}
+
 // Layer represents a layer
 type Layer interface {
 	Path() []string
@@ -8,23 +17,58 @@ type Layer interface {
 	Output() Output
 }
 
+// OutputBuilder represents an output builder
+type OutputBuilder interface {
+	Create() OutputBuilder
+	WithVariable(variable string) OutputBuilder
+	WithKind(kind Kind) OutputBuilder
+	WithExecute(execute string) OutputBuilder
+	Now() (Output, error)
+}
+
 // Output represents the output
 type Output interface {
 	Variable() string
 	Kind() Kind
+	HasExecute() bool
+	Execute() string
+}
+
+// KindBuilder represents a kind builder
+type KindBuilder interface {
+	Create() KindBuilder
+	IsPrompt() KindBuilder
+	IsContinue() KindBuilder
+	Now() (Kind, error)
 }
 
 // Kind represents the output kind
 type Kind interface {
 	IsPrompt() bool
 	IsContinue() bool
-	HasExecute() bool
-	Execute() string
+}
+
+// InstructionsBuilder represents instructions builder
+type InstructionsBuilder interface {
+	Create() InstructionsBuilder
+	WithList(list []Instruction) InstructionsBuilder
+	Now() (Instructions, error)
 }
 
 // Instructions represents instructions
 type Instructions interface {
 	List() []Instruction
+}
+
+// InstructionBuilder represents an instruction builder
+type InstructionBuilder interface {
+	Create() InstructionBuilder
+	WithRaiseError(raiseError uint) InstructionBuilder
+	WithCondition(condition Condition) InstructionBuilder
+	WthSave(save Layer) InstructionBuilder
+	WithAssignment(assignment Assignment) InstructionBuilder
+	IsStop() InstructionBuilder
+	Now() (Instruction, error)
 }
 
 // Instruction represents an instruction
@@ -40,16 +84,40 @@ type Instruction interface {
 	Assignment() Assignment
 }
 
+// ConditionBuilder represents a condition builder
+type ConditionBuilder interface {
+	Create() ConditionBuilder
+	WithVariable(variable string) ConditionBuilder
+	WithInstructions(instructions Instructions) ConditionBuilder
+	Now() (Condition, error)
+}
+
 // Condition represents a condition
 type Condition interface {
 	Variable() string
 	Instructions() Instructions
 }
 
+// AssignmentBuilder represents an assignment builder
+type AssignmentBuilder interface {
+	Create() AssignmentBuilder
+	WithName(name string) AssignmentBuilder
+	WithAssignable(assignable Assignable) AssignmentBuilder
+	Now() (Assignment, error)
+}
+
 // Assignment represents an assignment
 type Assignment interface {
 	Name() string
 	Assignable() Assignable
+}
+
+// AssignableBuilder represents an assignable builder
+type AssignableBuilder interface {
+	Create() AssignableBuilder
+	WithBytes(bytes Bytes) AssignableBuilder
+	WithIdentity(identity Identity) AssignableBuilder
+	Now() (Assignable, error)
 }
 
 // Assignable represents an assignable
@@ -60,12 +128,28 @@ type Assignable interface {
 	Identity() Identity
 }
 
+// IdentityBuilder represents an identity builder
+type IdentityBuilder interface {
+	Create() IdentityBuilder
+	WithSigner(signer Signer) IdentityBuilder
+	WithEncryptor(encryptor Encryptor) IdentityBuilder
+	Now() (Identity, error)
+}
+
 // Identity represents the assignable identity
 type Identity interface {
 	IsSigner() bool
 	Signer() Signer
 	IsEncryptor() bool
 	Encryptor() Encryptor
+}
+
+// BytesBuilder represents a bytes builder
+type BytesBuilder interface {
+	Create() BytesBuilder
+	WithJoin(join BytesReferences) BytesBuilder
+	WithCompare(compare BytesReferences) BytesBuilder
+	Now() (Bytes, error)
 }
 
 // Bytes represents the bytes assignable
@@ -76,6 +160,15 @@ type Bytes interface {
 	Compare() BytesReferences
 }
 
+// EncryptorBuilder represents an encryptor builder
+type EncryptorBuilder interface {
+	Create() EncryptorBuilder
+	WithDecrypt(decrypt BytesReference) EncryptorBuilder
+	WithEncrypt(encrypt BytesReference) EncryptorBuilder
+	IsPublicKey() EncryptorBuilder
+	Now() (Encryptor, error)
+}
+
 // Encryptor represents encryptor
 type Encryptor interface {
 	IsDecrypt() bool
@@ -83,6 +176,20 @@ type Encryptor interface {
 	IsEncrypt() bool
 	Encrypt() BytesReference
 	IsPublicKey() bool
+}
+
+// SignerBuilder represents a signer builder
+type SignerBuilder interface {
+	Create() SignerBuilder
+	WithSign(sign BytesReference) SignerBuilder
+	WithVote(vote Vote) SignerBuilder
+	WithGenerateSignerPublicKey(genPubKey uint) SignerBuilder
+	WithHashPublicKeys(hashPubKeys string) SignerBuilder
+	WithVoteVErify(voteVerify VoteVerify) SignerBuilder
+	WithSignatureVerify(sigVerify SignatureVerify) SignerBuilder
+	WithBytes(bytes string) SignerBuilder
+	IsPublicKey() SignerBuilder
+	Now() (Signer, error)
 }
 
 // Signer represents the signer identity assignable
@@ -104,10 +211,27 @@ type Signer interface {
 	IsPublicKey() bool
 }
 
+// SignatureVerifyBuilder represents a signature verify builder
+type SignatureVerifyBuilder interface {
+	Create() SignatureVerifyBuilder
+	WithSignature(signature string) SignatureVerifyBuilder
+	WithMessage(message BytesReference) SignatureVerifyBuilder
+	Now() (SignatureVerify, error)
+}
+
 // SignatureVerify represents a signature verify
 type SignatureVerify interface {
 	Signature() string
 	Message() BytesReference
+}
+
+// VoteVerifyBuilder represents a vote verify builder
+type VoteVerifyBuilder interface {
+	Create() VoteVerifyBuilder
+	WithVote(vote string) VoteVerifyBuilder
+	WithMessage(msg BytesReference) VoteVerifyBuilder
+	WithHashedRing(hashedRing string) VoteVerifyBuilder
+	Now() (VoteVerify, error)
 }
 
 // VoteVerify represents a vote verify
@@ -117,15 +241,38 @@ type VoteVerify interface {
 	HashedRing() string
 }
 
+// VoteBuilder represents a vote builder
+type VoteBuilder interface {
+	Crate() VoteBuilder
+	WithRing(ring string) VoteBuilder
+	WithMessage(message BytesReference) VoteBuilder
+	Now() (Vote, error)
+}
+
 // Vote represents a vote
 type Vote interface {
 	Ring() string
 	Message() BytesReference
 }
 
+// BytesReferencesBuilder represents the bytes references builder
+type BytesReferencesBuilder interface {
+	Create() BytesReferencesBuilder
+	WithList(list []BytesReference) BytesReferencesBuilder
+	Now() (BytesReferences, error)
+}
+
 // BytesReferences represents bytes values
 type BytesReferences interface {
 	List() []BytesReference
+}
+
+// BytesReferenceBuilder represents the bytes reference builder
+type BytesReferenceBuilder interface {
+	Create() BytesReferenceBuilder
+	WithVariable(variable string) BytesReferenceBuilder
+	WithBytes(bytes []byte) BytesReferenceBuilder
+	Now() (BytesReference, error)
 }
 
 // BytesReference a bytes value

@@ -180,9 +180,8 @@ func (app *application) executeLayer(
 	}
 
 	outputBytes := outputAssignable.Bytes()
-	kind := outputIns.Kind()
-	if kind.HasExecute() {
-		command := kind.Execute()
+	if outputIns.HasExecute() {
+		command := outputIns.Execute()
 		retOutputBytes, err := app.executeNativeCode(outputBytes, command)
 		if err != nil {
 			return nil, err
@@ -191,6 +190,7 @@ func (app *application) executeLayer(
 		outputBytes = retOutputBytes
 	}
 
+	kind := outputIns.Kind()
 	actionBuilder := app.resultActionBuilder.Create()
 	if kind.IsContinue() {
 		actionBuilder.IsContinue()
