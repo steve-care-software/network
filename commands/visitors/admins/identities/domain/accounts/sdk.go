@@ -13,6 +13,7 @@ func NewBuilder() Builder {
 // Builder represents an account builder
 type Builder interface {
 	Create() Builder
+	WithUsername(username string) Builder
 	WithRoot(root []string) Builder
 	WithEncryptor(encryptor encryptors.Encryptor) Builder
 	WithSigner(signer signers.Signer) Builder
@@ -21,6 +22,7 @@ type Builder interface {
 
 // Account represents the identity account
 type Account interface {
+	Username() string
 	Root() []string
 	Encryptor() encryptors.Encryptor
 	Signer() signers.Signer

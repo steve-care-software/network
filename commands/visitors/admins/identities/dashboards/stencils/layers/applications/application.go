@@ -148,7 +148,7 @@ func (app *application) executeInstruction(instruction programs.Instruction, sta
 	updatedFrameBuilder := app.stackFrameBuilder.Create()
 	if len(currentFrameInstructionList) > 0 {
 		updatedStackInstructions, err := app.stackInstructionsBuilder.Create().
-			WithInstructions(currentFrameInstructionList).
+			WithList(currentFrameInstructionList).
 			Now()
 
 		if err != nil {

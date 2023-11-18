@@ -193,13 +193,13 @@ func (app *application) assignable(assignable programs.Assignable, stack stacks.
 
 		authorized := memory.Authorized()
 		authenticated := memory.Authenticated()
-		bytes, err := app.stencilApp.Execute(authorized, authenticated, inputStack)
+		stencilResult, err := app.stencilApp.Execute(authorized, authenticated, inputStack)
 		if err != nil {
 			return nil, err
 		}
 
 		return app.stackAssignableBuilder.Create().
-			WithBytes(bytes).
+			WithStencil(stencilResult).
 			Now()
 
 	}

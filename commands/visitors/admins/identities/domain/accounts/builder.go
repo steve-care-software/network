@@ -8,6 +8,7 @@ import (
 )
 
 type builder struct {
+	username  string
 	root      []string
 	encryptor encryptors.Encryptor
 	signer    signers.Signer
@@ -15,6 +16,7 @@ type builder struct {
 
 func createBuilder() Builder {
 	out := builder{
+		username:  "",
 		root:      nil,
 		encryptor: nil,
 		signer:    nil,
@@ -26,6 +28,12 @@ func createBuilder() Builder {
 // Create initializes the builder
 func (app *builder) Create() Builder {
 	return createBuilder()
+}
+
+// WithUsername adds a username to the builder
+func (app *builder) WithUsername(username string) Builder {
+	app.username = username
+	return app
 }
 
 // WithRoot adds a root to the builder
@@ -48,6 +56,10 @@ func (app *builder) WithSigner(signer signers.Signer) Builder {
 
 // Now builds a new Account instance
 func (app *builder) Now() (Account, error) {
+	if app.username == "" {
+		return nil, errors.New("the username is mandatory in order to build an Account instance")
+	}
+
 	if app.root != nil && len(app.root) <= 0 {
 		app.root = nil
 	}
@@ -65,6 +77,7 @@ func (app *builder) Now() (Account, error) {
 	}
 
 	return createAccount(
+		app.username,
 		app.root,
 		app.encryptor,
 		app.signer,

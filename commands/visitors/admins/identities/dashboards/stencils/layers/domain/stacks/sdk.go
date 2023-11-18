@@ -77,7 +77,7 @@ type Frame interface {
 // InstructionsBuilder represents an instructions builder
 type InstructionsBuilder interface {
 	Create() InstructionsBuilder
-	WithInstructions(instructions []Instruction) InstructionsBuilder
+	WithList(list []Instruction) InstructionsBuilder
 	Now() (Instructions, error)
 }
 

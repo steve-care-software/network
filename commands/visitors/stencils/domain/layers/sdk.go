@@ -2,6 +2,8 @@ package layers
 
 // Layer represents a layer
 type Layer interface {
+	Path() []string
+	Input() string
 	Instructions() Instructions
 	Output() Output
 }
@@ -16,7 +18,7 @@ type Output interface {
 type Kind interface {
 	IsPrompt() bool
 	IsContinue() bool
-	IsExecute() bool
+	HasExecute() bool
 	Execute() string
 }
 
@@ -33,15 +35,9 @@ type Instruction interface {
 	IsCondition() bool
 	Condition() Condition
 	IsSave() bool
-	Save() Resource
+	Save() Layer
 	IsAssignment() bool
 	Assignment() Assignment
-}
-
-// Resource represents a resource
-type Resource interface {
-	Path() []string
-	Layer() Layer
 }
 
 // Condition represents a condition
@@ -60,8 +56,6 @@ type Assignment interface {
 type Assignable interface {
 	IsBytes() bool
 	Bytes() Bytes
-	IsAuthorized() bool
-	IsAuthenticated() bool
 	IsIdentity() bool
 	Identity() Identity
 }
@@ -70,8 +64,6 @@ type Assignable interface {
 type Identity interface {
 	IsSigner() bool
 	Signer() Signer
-	IsVoter() bool
-	Voter() Voter
 	IsEncryptor() bool
 	Encryptor() Encryptor
 }
@@ -79,45 +71,65 @@ type Identity interface {
 // Bytes represents the bytes assignable
 type Bytes interface {
 	IsJoin() bool
-	Join() Values
+	Join() BytesReferences
 	IsCompare() bool
-	Compare() Values
+	Compare() BytesReferences
 }
 
 // Encryptor represents encryptor
 type Encryptor interface {
 	IsDecrypt() bool
-	Decrypt() Value
+	Decrypt() BytesReference
 	IsEncrypt() bool
-	Encrypt() Value
+	Encrypt() BytesReference
 	IsPublicKey() bool
 }
 
 // Signer represents the signer identity assignable
 type Signer interface {
 	IsSign() bool
-	Sign() []byte
-	IsVerify() bool
-	IsPublicKey() bool
-}
-
-// Voter represents the vote identity assignable
-type Voter interface {
+	Sign() BytesReference
 	IsVote() bool
-	Vote() Value
-	IsVerify() bool
-	Verify() Value
+	Vote() Vote
+	IsGenerateSignerPublicKeys() bool
+	GenerateSignerPublicKeys() uint
+	IsHashPublicKeys() bool
+	HashPublicKeys() string
+	IsVoteVerify() bool
+	VoteVerify() VoteVerify
+	IsSignatureVerify() bool
+	SignatureVerify() SignatureVerify
+	IsBytes() bool
+	Bytes() string
 	IsPublicKey() bool
-	PublicKey() Value
 }
 
-// Values represents values
-type Values interface {
-	List() []Value
+// SignatureVerify represents a signature verify
+type SignatureVerify interface {
+	Signature() string
+	Message() BytesReference
 }
 
-// Value a value
-type Value interface {
+// VoteVerify represents a vote verify
+type VoteVerify interface {
+	Vote() string
+	Message() BytesReference
+	HashedRing() string
+}
+
+// Vote represents a vote
+type Vote interface {
+	Ring() string
+	Message() BytesReference
+}
+
+// BytesReferences represents bytes values
+type BytesReferences interface {
+	List() []BytesReference
+}
+
+// BytesReference a bytes value
+type BytesReference interface {
 	IsVariable() bool
 	Variable() string
 	IsBytes() bool

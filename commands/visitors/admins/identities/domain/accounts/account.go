@@ -6,23 +6,31 @@ import (
 )
 
 type account struct {
+	username  string
 	root      []string
 	encryptor encryptors.Encryptor
 	signer    signers.Signer
 }
 
 func createAccount(
+	username string,
 	root []string,
 	encryptor encryptors.Encryptor,
 	signer signers.Signer,
 ) Account {
 	out := account{
+		username:  username,
 		root:      root,
 		encryptor: encryptor,
 		signer:    signer,
 	}
 
 	return &out
+}
+
+// Username returns the username
+func (obj *account) Username() string {
+	return obj.username
 }
 
 // Root returns the root

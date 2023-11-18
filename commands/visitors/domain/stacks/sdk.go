@@ -5,6 +5,7 @@ import (
 	admin_accounts "steve.care/network/commands/visitors/admins/domain/accounts"
 	admin_stacks "steve.care/network/commands/visitors/admins/domain/stacks"
 	identity_accounts "steve.care/network/commands/visitors/admins/identities/domain/accounts"
+	stencil_results "steve.care/network/commands/visitors/stencils/domain/results"
 	stencil_stacks "steve.care/network/commands/visitors/stencils/domain/stacks"
 	"steve.care/network/libraries/credentials"
 	"steve.care/network/libraries/hash"
@@ -101,6 +102,7 @@ type AssignableBuilder interface {
 	WithAuthorize(authorize accounts.Account) AssignableBuilder
 	WithCreate(create credentials.Credentials) AssignableBuilder
 	WithAdmin(admin admin_stacks.Stack) AssignableBuilder
+	WithStencil(stencil stencil_results.Result) AssignableBuilder
 	WithBytes(bytes []byte) AssignableBuilder
 	Now() (Assignable, error)
 }
@@ -118,6 +120,8 @@ type Assignable interface {
 	Create() credentials.Credentials
 	IsAdmin() bool
 	Admin() admin_stacks.Stack
+	IsStencil() bool
+	Stencil() stencil_results.Result
 	IsBytes() bool
 	Bytes() []byte
 }
