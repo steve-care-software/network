@@ -1,6 +1,8 @@
 package results
 
-import "hash"
+import (
+	"steve.care/network/libraries/hash"
+)
 
 const (
 	// InputNotFoundError represents an input not found error

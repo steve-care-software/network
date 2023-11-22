@@ -1,5 +1,9 @@
 package layers
 
+import (
+	"steve.care/network/libraries/hash"
+)
+
 // Builder represents a layer builder
 type Builder interface {
 	Create() Builder
@@ -11,6 +15,7 @@ type Builder interface {
 
 // Layer represents a layer
 type Layer interface {
+	Hash() hash.Hash
 	Path() []string
 	Input() string
 	Instructions() Instructions
@@ -28,6 +33,7 @@ type OutputBuilder interface {
 
 // Output represents the output
 type Output interface {
+	Hash() hash.Hash
 	Variable() string
 	Kind() Kind
 	HasExecute() bool
@@ -44,6 +50,7 @@ type KindBuilder interface {
 
 // Kind represents the output kind
 type Kind interface {
+	Hash() hash.Hash
 	IsPrompt() bool
 	IsContinue() bool
 }
@@ -57,6 +64,7 @@ type InstructionsBuilder interface {
 
 // Instructions represents instructions
 type Instructions interface {
+	Hash() hash.Hash
 	List() []Instruction
 }
 
@@ -73,6 +81,7 @@ type InstructionBuilder interface {
 
 // Instruction represents an instruction
 type Instruction interface {
+	Hash() hash.Hash
 	IsStop() bool
 	IsRaiseError() bool
 	RaiseError() uint
@@ -94,6 +103,7 @@ type ConditionBuilder interface {
 
 // Condition represents a condition
 type Condition interface {
+	Hash() hash.Hash
 	Variable() string
 	Instructions() Instructions
 }
@@ -108,6 +118,7 @@ type AssignmentBuilder interface {
 
 // Assignment represents an assignment
 type Assignment interface {
+	Hash() hash.Hash
 	Name() string
 	Assignable() Assignable
 }
@@ -122,6 +133,7 @@ type AssignableBuilder interface {
 
 // Assignable represents an assignable
 type Assignable interface {
+	Hash() hash.Hash
 	IsBytes() bool
 	Bytes() Bytes
 	IsIdentity() bool
@@ -138,6 +150,7 @@ type IdentityBuilder interface {
 
 // Identity represents the assignable identity
 type Identity interface {
+	Hash() hash.Hash
 	IsSigner() bool
 	Signer() Signer
 	IsEncryptor() bool
@@ -154,6 +167,7 @@ type BytesBuilder interface {
 
 // Bytes represents the bytes assignable
 type Bytes interface {
+	Hash() hash.Hash
 	IsJoin() bool
 	Join() BytesReferences
 	IsCompare() bool
@@ -171,6 +185,7 @@ type EncryptorBuilder interface {
 
 // Encryptor represents encryptor
 type Encryptor interface {
+	Hash() hash.Hash
 	IsDecrypt() bool
 	Decrypt() BytesReference
 	IsEncrypt() bool
@@ -194,6 +209,7 @@ type SignerBuilder interface {
 
 // Signer represents the signer identity assignable
 type Signer interface {
+	Hash() hash.Hash
 	IsSign() bool
 	Sign() BytesReference
 	IsVote() bool
@@ -221,6 +237,7 @@ type SignatureVerifyBuilder interface {
 
 // SignatureVerify represents a signature verify
 type SignatureVerify interface {
+	Hash() hash.Hash
 	Signature() string
 	Message() BytesReference
 }
@@ -236,6 +253,7 @@ type VoteVerifyBuilder interface {
 
 // VoteVerify represents a vote verify
 type VoteVerify interface {
+	Hash() hash.Hash
 	Vote() string
 	Message() BytesReference
 	HashedRing() string
@@ -251,6 +269,7 @@ type VoteBuilder interface {
 
 // Vote represents a vote
 type Vote interface {
+	Hash() hash.Hash
 	Ring() string
 	Message() BytesReference
 }
@@ -264,6 +283,7 @@ type BytesReferencesBuilder interface {
 
 // BytesReferences represents bytes values
 type BytesReferences interface {
+	Hash() hash.Hash
 	List() []BytesReference
 }
 
@@ -277,6 +297,7 @@ type BytesReferenceBuilder interface {
 
 // BytesReference a bytes value
 type BytesReference interface {
+	Hash() hash.Hash
 	IsVariable() bool
 	Variable() string
 	IsBytes() bool
