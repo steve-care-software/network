@@ -4,6 +4,14 @@ import (
 	"steve.care/network/libraries/hash"
 )
 
+// NewIdentityBuilder creates a new identity builder
+func NewIdentityBuilder() IdentityBuilder {
+	hashAdapter := hash.NewAdapter()
+	return createIdentityBuilder(
+		hashAdapter,
+	)
+}
+
 // NewEncryptorBuilder creates a new encryptor builder
 func NewEncryptorBuilder() EncryptorBuilder {
 	hashAdapter := hash.NewAdapter()
@@ -196,23 +204,6 @@ type Assignable interface {
 	Identity() Identity
 }
 
-// IdentityBuilder represents an identity builder
-type IdentityBuilder interface {
-	Create() IdentityBuilder
-	WithSigner(signer Signer) IdentityBuilder
-	WithEncryptor(encryptor Encryptor) IdentityBuilder
-	Now() (Identity, error)
-}
-
-// Identity represents the assignable identity
-type Identity interface {
-	Hash() hash.Hash
-	IsSigner() bool
-	Signer() Signer
-	IsEncryptor() bool
-	Encryptor() Encryptor
-}
-
 // BytesBuilder represents a bytes builder
 type BytesBuilder interface {
 	Create() BytesBuilder
@@ -228,6 +219,23 @@ type Bytes interface {
 	Join() BytesReferences
 	IsCompare() bool
 	Compare() BytesReferences
+}
+
+// IdentityBuilder represents an identity builder
+type IdentityBuilder interface {
+	Create() IdentityBuilder
+	WithSigner(signer Signer) IdentityBuilder
+	WithEncryptor(encryptor Encryptor) IdentityBuilder
+	Now() (Identity, error)
+}
+
+// Identity represents the assignable identity
+type Identity interface {
+	Hash() hash.Hash
+	IsSigner() bool
+	Signer() Signer
+	IsEncryptor() bool
+	Encryptor() Encryptor
 }
 
 // EncryptorBuilder represents an encryptor builder
