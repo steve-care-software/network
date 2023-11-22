@@ -53,7 +53,7 @@ type ConditionBuilder interface {
 	Create() ConditionBuilder
 	WithValue(value ConditionValue) ConditionBuilder
 	WithOperator(operator Operator) ConditionBuilder
-	WithNext(next ConditionNext) ConditionBuilder
+	WithNext(next ConditionValue) ConditionBuilder
 	Now() (Condition, error)
 }
 
@@ -62,36 +62,36 @@ type Condition interface {
 	Hash() hash.Hash
 	Value() ConditionValue
 	Operator() Operator
-	Next() ConditionNext
-}
-
-// ConditionNextBuilder represents a condition next builder
-type ConditionNextBuilder interface {
-	Create() ConditionNextBuilder
-	WithValue(value ConditionValue) ConditionNextBuilder
-	WithCondition(condition Condition) ConditionNextBuilder
-	Now() (ConditionNext, error)
-}
-
-// ConditionNext represents a condition next
-type ConditionNext interface {
-	Hash() hash.Hash
-	IsValue() bool
-	Value() ConditionValue
-	IsCondition() bool
-	Condition() Condition
+	Next() ConditionValue
 }
 
 // ConditionValueBuilder represents a condition value builder
 type ConditionValueBuilder interface {
 	Create() ConditionValueBuilder
-	WithCode(code uint) ConditionValueBuilder
-	IsRaisedInLayer() ConditionValueBuilder
+	WithResource(resource ConditionResource) ConditionValueBuilder
+	WithCondition(condition Condition) ConditionValueBuilder
 	Now() (ConditionValue, error)
 }
 
 // ConditionValue represents a condition value
 type ConditionValue interface {
+	Hash() hash.Hash
+	IsResource() bool
+	Resource() ConditionResource
+	IsCondition() bool
+	Condition() Condition
+}
+
+// ConditionResourceBuilder represents a condition resource builder
+type ConditionResourceBuilder interface {
+	Create() ConditionResourceBuilder
+	WithCode(code uint) ConditionResourceBuilder
+	IsRaisedInLayer() ConditionResourceBuilder
+	Now() (ConditionResource, error)
+}
+
+// ConditionResource represents a condition resource
+type ConditionResource interface {
 	Hash() hash.Hash
 	Code() uint
 	IsRaisedInLayer() bool
@@ -100,47 +100,47 @@ type ConditionValue interface {
 // OriginBuilder represents the origin builder
 type OriginBuilder interface {
 	Create() OriginBuilder
-	WithLayer(layer Layer) OriginBuilder
+	WithResource(resource OriginResource) OriginBuilder
 	WithOperator(operator Operator) OriginBuilder
-	WithNext(next Resource) OriginBuilder
+	WithNext(next OriginValue) OriginBuilder
 	Now() (Origin, error)
 }
 
 // Origin represents an origin
 type Origin interface {
 	Hash() hash.Hash
-	Layer() Layer
+	Resource() OriginResource
 	Operator() Operator
-	Next() Resource
+	Next() OriginValue
 }
 
-// ResourceBuilder represents the resource builder
-type ResourceBuilder interface {
-	Create() ResourceBuilder
-	WithLayer(layer Layer) ResourceBuilder
-	WithOrigin(origin Origin) ResourceBuilder
-	Now() (Resource, error)
+// OriginValueBuilder represents the originValue builder
+type OriginValueBuilder interface {
+	Create() OriginValueBuilder
+	WithResource(resource OriginResource) OriginValueBuilder
+	WithOrigin(origin Origin) OriginValueBuilder
+	Now() (OriginValue, error)
 }
 
-// Resource represents a resource
-type Resource interface {
+// OriginValue represents an origin value
+type OriginValue interface {
 	Hash() hash.Hash
-	IsLayer() bool
-	Layer() Layer
+	IsResource() bool
+	Resource() OriginResource
 	IsOrigin() bool
 	Origin() Origin
 }
 
-// LayerBuilder represents the layer builder
-type LayerBuilder interface {
-	Create() LayerBuilder
-	WithContainer(container []string) LayerBuilder
-	IsMandatory() LayerBuilder
-	Now() (Layer, error)
+// OriginResourceBuilder represents the origin resource builder
+type OriginResourceBuilder interface {
+	Create() OriginResourceBuilder
+	WithContainer(container []string) OriginResourceBuilder
+	IsMandatory() OriginResourceBuilder
+	Now() (OriginResource, error)
 }
 
-// Layer represents a layer
-type Layer interface {
+// OriginResource represents an origin resource
+type OriginResource interface {
 	Hash() hash.Hash
 	Container() []string
 	IsMandatory() bool
