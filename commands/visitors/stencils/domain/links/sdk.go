@@ -35,19 +35,66 @@ type Elements interface {
 // ElementBuilder represents the element builder
 type ElementBuilder interface {
 	Create() ElementBuilder
-	WithWeight(weight uint) ElementBuilder
 	WithContainer(container []string) ElementBuilder
-	OnFailure(onFailure Element) ElementBuilder
+	WithCondition(condition Condition) ElementBuilder
 	Now() (Element, error)
 }
 
 // Element represents an element
 type Element interface {
 	Hash() hash.Hash
-	Weight() uint
 	Container() []string
-	HasOnFailure() bool
-	OnFailure() Element
+	HasCondition() bool
+	Condition() Condition
+}
+
+// ConditionBuilder represents condition builder
+type ConditionBuilder interface {
+	Create() ConditionBuilder
+	WithValue(value ConditionValue) ConditionBuilder
+	WithOperator(operator Operator) ConditionBuilder
+	WithNext(next ConditionNext) ConditionBuilder
+	Now() (Condition, error)
+}
+
+// Condition represents a condition
+type Condition interface {
+	Hash() hash.Hash
+	Value() ConditionValue
+	Operator() Operator
+	Next() ConditionNext
+}
+
+// ConditionNextBuilder represents a condition next builder
+type ConditionNextBuilder interface {
+	Create() ConditionNextBuilder
+	WithValue(value ConditionValue) ConditionNextBuilder
+	WithCondition(condition Condition) ConditionNextBuilder
+	Now() (ConditionNext, error)
+}
+
+// ConditionNext represents a condition next
+type ConditionNext interface {
+	Hash() hash.Hash
+	IsValue() bool
+	Value() ConditionValue
+	IsCondition() bool
+	Condition() Condition
+}
+
+// ConditionValueBuilder represents a condition value builder
+type ConditionValueBuilder interface {
+	Create() ConditionValueBuilder
+	WithCode(code uint) ConditionValueBuilder
+	IsRaisedInLayer() ConditionValueBuilder
+	Now() (ConditionValue, error)
+}
+
+// ConditionValue represents a condition value
+type ConditionValue interface {
+	Hash() hash.Hash
+	Code() uint
+	IsRaisedInLayer() bool
 }
 
 // OriginBuilder represents the origin builder
