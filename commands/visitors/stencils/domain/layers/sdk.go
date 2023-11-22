@@ -4,6 +4,14 @@ import (
 	"steve.care/network/libraries/hash"
 )
 
+// NewAssignmentBuilder creates a new assignment builder
+func NewAssignmentBuilder() AssignmentBuilder {
+	hashAdapter := hash.NewAdapter()
+	return createAssignmentBuilder(
+		hashAdapter,
+	)
+}
+
 // NewAssignableBuilder creates a new assignable builder
 func NewAssignableBuilder() AssignableBuilder {
 	hashAdapter := hash.NewAdapter()
