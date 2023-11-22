@@ -4,6 +4,14 @@ import (
 	"steve.care/network/libraries/hash"
 )
 
+// NewSignatureVerifyBuilder creates a new signature verify builder
+func NewSignatureVerifyBuilder() SignatureVerifyBuilder {
+	hashAdapter := hash.NewAdapter()
+	return createSignatureVerifyBuilder(
+		hashAdapter,
+	)
+}
+
 // NewVoteBuilder creates a new vote builder
 func NewVoteBuilder() VoteBuilder {
 	hashAdapter := hash.NewAdapter()
