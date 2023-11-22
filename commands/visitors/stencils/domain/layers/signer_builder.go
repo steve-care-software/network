@@ -131,7 +131,7 @@ func (app *signerBuilder) Now() (Signer, error) {
 	}
 
 	if app.isPubKey {
-		data = append(data, []byte("isPubKey"))
+		data = append(data, []byte("isPublicKey"))
 	}
 
 	if len(data) <= 0 {

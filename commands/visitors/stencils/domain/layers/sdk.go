@@ -4,6 +4,14 @@ import (
 	"steve.care/network/libraries/hash"
 )
 
+// NewEncryptorBuilder creates a new encryptor builder
+func NewEncryptorBuilder() EncryptorBuilder {
+	hashAdapter := hash.NewAdapter()
+	return createEncryptorBuilder(
+		hashAdapter,
+	)
+}
+
 // NewSignerBuilder creates a new signer builder
 func NewSignerBuilder() SignerBuilder {
 	hashAdapter := hash.NewAdapter()
