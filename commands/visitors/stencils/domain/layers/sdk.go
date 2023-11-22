@@ -4,6 +4,14 @@ import (
 	"steve.care/network/libraries/hash"
 )
 
+// NewBytesReferencesBuilder creates a new bytes references builder
+func NewBytesReferencesBuilder() BytesReferencesBuilder {
+	hashAdapter := hash.NewAdapter()
+	return createBytesReferencesBuilder(
+		hashAdapter,
+	)
+}
+
 // NewBytesReferenceBuilder creates a new bytes reference builder
 func NewBytesReferenceBuilder() BytesReferenceBuilder {
 	hashAdapter := hash.NewAdapter()
