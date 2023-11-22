@@ -120,3 +120,10 @@ type Operator interface {
 type Repository interface {
 	Retrieve(executedLayers [][]string) (Link, error)
 }
+
+// Service represents the link service
+type Service interface {
+	Insert(link Link) error
+	Update(origin hash.Hash, updated Link) error
+	Delete(hash hash.Hash) error
+}
