@@ -4,6 +4,14 @@ import (
 	"steve.care/network/libraries/hash"
 )
 
+// NewVoteBuilder creates a new vote builder
+func NewVoteBuilder() VoteBuilder {
+	hashAdapter := hash.NewAdapter()
+	return createVoteBuilder(
+		hashAdapter,
+	)
+}
+
 // NewVoteVerifyBuilder creates a new vote verify builder
 func NewVoteVerifyBuilder() VoteVerifyBuilder {
 	hashAdapter := hash.NewAdapter()
@@ -285,7 +293,7 @@ type VoteVerify interface {
 
 // VoteBuilder represents a vote builder
 type VoteBuilder interface {
-	Crate() VoteBuilder
+	Create() VoteBuilder
 	WithRing(ring string) VoteBuilder
 	WithMessage(message BytesReference) VoteBuilder
 	Now() (Vote, error)
