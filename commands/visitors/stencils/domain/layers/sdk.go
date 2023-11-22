@@ -4,6 +4,14 @@ import (
 	"steve.care/network/libraries/hash"
 )
 
+// NewSignerBuilder creates a new signer builder
+func NewSignerBuilder() SignerBuilder {
+	hashAdapter := hash.NewAdapter()
+	return createSignerBuilder(
+		hashAdapter,
+	)
+}
+
 // NewSignatureVerifyBuilder creates a new signature verify builder
 func NewSignatureVerifyBuilder() SignatureVerifyBuilder {
 	hashAdapter := hash.NewAdapter()
@@ -240,7 +248,7 @@ type SignerBuilder interface {
 	WithVote(vote Vote) SignerBuilder
 	WithGenerateSignerPublicKey(genPubKey uint) SignerBuilder
 	WithHashPublicKeys(hashPubKeys string) SignerBuilder
-	WithVoteVErify(voteVerify VoteVerify) SignerBuilder
+	WithVoteVerify(voteVerify VoteVerify) SignerBuilder
 	WithSignatureVerify(sigVerify SignatureVerify) SignerBuilder
 	WithBytes(bytes string) SignerBuilder
 	IsPublicKey() SignerBuilder
