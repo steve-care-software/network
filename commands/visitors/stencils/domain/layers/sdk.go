@@ -4,6 +4,14 @@ import (
 	"steve.care/network/libraries/hash"
 )
 
+// NewOutputBuilder creates a new output builder
+func NewOutputBuilder() OutputBuilder {
+	hashAdapter := hash.NewAdapter()
+	return createOutputBuilder(
+		hashAdapter,
+	)
+}
+
 // NewKindBuilder creates a new kind builder
 func NewKindBuilder() KindBuilder {
 	hashAdapter := hash.NewAdapter()
