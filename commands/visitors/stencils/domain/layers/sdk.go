@@ -4,6 +4,14 @@ import (
 	"steve.care/network/libraries/hash"
 )
 
+// NewBytesReferenceBuilder creates a new bytes reference builder
+func NewBytesReferenceBuilder() BytesReferenceBuilder {
+	hashAdapter := hash.NewAdapter()
+	return createBytesReferenceBuilder(
+		hashAdapter,
+	)
+}
+
 // Builder represents a layer builder
 type Builder interface {
 	Create() Builder
