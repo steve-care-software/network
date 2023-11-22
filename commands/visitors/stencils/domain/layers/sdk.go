@@ -4,6 +4,14 @@ import (
 	"steve.care/network/libraries/hash"
 )
 
+// NewInstructionsBuilder creates a new instructions builder
+func NewInstructionsBuilder() InstructionsBuilder {
+	hashAdapter := hash.NewAdapter()
+	return createInstructionsBuilder(
+		hashAdapter,
+	)
+}
+
 // NewInstructionBuilder creates a new instruction builder
 func NewInstructionBuilder() InstructionBuilder {
 	hashAdapter := hash.NewAdapter()
