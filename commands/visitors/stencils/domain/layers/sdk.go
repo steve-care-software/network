@@ -4,6 +4,14 @@ import (
 	"steve.care/network/libraries/hash"
 )
 
+// NewBuilder creates a new builder instance
+func NewBuilder() Builder {
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(
+		hashAdapter,
+	)
+}
+
 // NewOutputBuilder creates a new output builder
 func NewOutputBuilder() OutputBuilder {
 	hashAdapter := hash.NewAdapter()
@@ -138,6 +146,7 @@ type Builder interface {
 	WithPath(path []string) Builder
 	WithInput(input string) Builder
 	WithInstructions(instructions Instructions) Builder
+	WithOutput(output Output) Builder
 	Now() (Layer, error)
 }
 
