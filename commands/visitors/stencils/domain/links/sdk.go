@@ -4,6 +4,14 @@ import (
 	"steve.care/network/libraries/hash"
 )
 
+// NewOperatorBuilder creates a new operator builder
+func NewOperatorBuilder() OperatorBuilder {
+	hashAdapter := hash.NewAdapter()
+	return createOperatorBuilder(
+		hashAdapter,
+	)
+}
+
 // Builder represents a link builder
 type Builder interface {
 	Create() Builder
