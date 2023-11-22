@@ -1,5 +1,7 @@
 package results
 
+import "hash"
+
 const (
 	// InputNotFoundError represents an input not found error
 	InputNotFoundError (uint) = iota
@@ -24,6 +26,7 @@ type Builder interface {
 
 // Result represents result
 type Result interface {
+	Hash() hash.Hash
 	IsSuccess() bool
 	Success() []byte
 	IsFailure() bool
@@ -40,6 +43,7 @@ type SuccessBuilder interface {
 
 // Success represents success result
 type Success interface {
+	Hash() hash.Hash
 	Bytes() []byte
 	Action() Action
 }
@@ -55,6 +59,7 @@ type FailureBuilder interface {
 
 // Failure represents failure result
 type Failure interface {
+	Hash() hash.Hash
 	Code() uint
 	IsRaisedInLayer() bool
 	HasIndex() bool
@@ -71,6 +76,7 @@ type ActionBuilder interface {
 
 // Action represents the action
 type Action interface {
+	Hash() hash.Hash
 	IsPrompt() bool
 	ISContinue() bool
 }
