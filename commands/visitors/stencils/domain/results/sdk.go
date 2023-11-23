@@ -19,6 +19,14 @@ const (
 	OutputNotBytesError
 )
 
+// NewSuccessBuilder creates a new success builder
+func NewSuccessBuilder() SuccessBuilder {
+	hashAdapter := hash.NewAdapter()
+	return createSuccessBuilder(
+		hashAdapter,
+	)
+}
+
 // NewFailureBuilder creates a new failure builder
 func NewFailureBuilder() FailureBuilder {
 	hashAdapter := hash.NewAdapter()
