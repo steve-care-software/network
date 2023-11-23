@@ -4,6 +4,14 @@ import (
 	"steve.care/network/libraries/hash"
 )
 
+// NewConditionBuilder creates a new condition builder
+func NewConditionBuilder() ConditionBuilder {
+	hashAdapter := hash.NewAdapter()
+	return createConditionBuilder(
+		hashAdapter,
+	)
+}
+
 // NewConditionValueBuilder creates a new condition value builder
 func NewConditionValueBuilder() ConditionValueBuilder {
 	hashAdapter := hash.NewAdapter()
@@ -99,7 +107,7 @@ type Element interface {
 // ConditionBuilder represents condition builder
 type ConditionBuilder interface {
 	Create() ConditionBuilder
-	WithValue(value ConditionValue) ConditionBuilder
+	WithResource(resource ConditionResource) ConditionBuilder
 	WithOperator(operator Operator) ConditionBuilder
 	WithNext(next ConditionValue) ConditionBuilder
 	Now() (Condition, error)
@@ -108,7 +116,7 @@ type ConditionBuilder interface {
 // Condition represents a condition
 type Condition interface {
 	Hash() hash.Hash
-	Value() ConditionValue
+	Resource() ConditionResource
 	Operator() Operator
 	Next() ConditionValue
 }
