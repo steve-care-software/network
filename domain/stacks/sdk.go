@@ -5,6 +5,11 @@ import (
 	"steve.care/network/domain/hash"
 )
 
+// NewAssignableBuilder creates a new assignable builder
+func NewAssignableBuilder() AssignableBuilder {
+	return createAssignableBuilder()
+}
+
 // Factory represents the stack factory
 type Factory interface {
 	Create() Stack
@@ -19,9 +24,12 @@ type Builder interface {
 
 // Stack represents a stack
 type Stack interface {
+	HasFrames() bool
 	Frames() Frames
+	HasBody() bool
 	Body() Frames
-	Last() Frame
+	HasHead() bool
+	Head() Frame
 }
 
 // FramesBuilder represents the frames builder
@@ -88,9 +96,10 @@ type AssignableBuilder interface {
 	WithBytes(bytes []byte) AssignableBuilder
 	WithSignerPublicKey(signerPublicKey signers.PublicKey) AssignableBuilder
 	WithSignerPublicKeys(signerPubKeys []signers.PublicKey) AssignableBuilder
-	WithHashList(hashList []hash.Hash) AssignableBuilder
 	WithSignature(signature signers.Signature) AssignableBuilder
 	WithVote(vote signers.Vote) AssignableBuilder
+	WithHashList(hashList []hash.Hash) AssignableBuilder
+	WithHash(hash hash.Hash) AssignableBuilder
 	Now() (Assignable, error)
 }
 
@@ -104,10 +113,12 @@ type Assignable interface {
 	SignerPublicKey() signers.PublicKey
 	IsSignerPublicKeys() bool
 	SignerPublicKeys() []signers.PublicKey
-	IsHashList() bool
-	HashList() []hash.Hash
 	IsSignature() bool
 	Signature() signers.Signature
 	IsVote() bool
 	Vote() signers.Vote
+	IsHashList() bool
+	HashList() []hash.Hash
+	IsHash() bool
+	Hash() hash.Hash
 }

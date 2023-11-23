@@ -132,7 +132,7 @@ func (app *application) executeLayer(
 ) (results.Result, error) {
 	builder := app.resultBuilder.Create()
 	inputVariable := layer.Input()
-	inputAssignable, err := stack.Last().Fetch(inputVariable)
+	inputAssignable, err := stack.Head().Fetch(inputVariable)
 	if err != nil {
 		failure, err := app.resultFailureBuilder.Create().
 			WithCode(results.InputNotFoundError).
@@ -178,7 +178,7 @@ func (app *application) executeLayer(
 
 	outputIns := layer.Output()
 	outputVariable := outputIns.Variable()
-	outputAssignable, err := updatedStack.Last().Fetch(outputVariable)
+	outputAssignable, err := updatedStack.Head().Fetch(outputVariable)
 	if err != nil {
 		failure, err := app.resultFailureBuilder.Create().
 			WithCode(results.OutputNotFoundError).
@@ -280,7 +280,7 @@ func (app *application) executeInstruction(
 	index uint,
 	stack stacks.Stack,
 ) (stacks.Stack, results.Failure, error) {
-	last := stack.Last()
+	last := stack.Head()
 	currentFrameAssignments := []stacks.Assignment{}
 	if last.HasAssignments() {
 		currentFrameAssignments = last.Assignments().List()
@@ -307,7 +307,7 @@ func (app *application) executeInstruction(
 	if instruction.IsCondition() {
 		condition := instruction.Condition()
 		variable := condition.Variable()
-		boolValue, err := stack.Last().FetchBool(variable)
+		boolValue, err := stack.Head().FetchBool(variable)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -534,7 +534,7 @@ func (app *application) executeAssignableIdentitySigner(
 	builder := app.stackAssignableBuilder.Create()
 	if signer.IsBytes() {
 		variable := signer.Bytes()
-		assignable, err := stack.Last().Fetch(variable)
+		assignable, err := stack.Head().Fetch(variable)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -599,13 +599,13 @@ func (app *application) executeAssignableIdentitySigner(
 	if signer.IsVoteVerify() {
 		voteVerify := signer.VoteVerify()
 		voteVariable := voteVerify.Vote()
-		vote, err := stack.Last().FetchVote(voteVariable)
+		vote, err := stack.Head().FetchVote(voteVariable)
 		if err != nil {
 			return nil, nil, err
 		}
 
 		hashedRingVariable := voteVerify.HashedRing()
-		hashedRing, err := stack.Last().FetchHashList(hashedRingVariable)
+		hashedRing, err := stack.Head().FetchHashList(hashedRingVariable)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -627,7 +627,7 @@ func (app *application) executeAssignableIdentitySigner(
 	if signer.IsSignatureVerify() {
 		signatureVerify := signer.SignatureVerify()
 		sigVariable := signatureVerify.Signature()
-		sig, err := stack.Last().FetchSignature(sigVariable)
+		sig, err := stack.Head().FetchSignature(sigVariable)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -662,7 +662,7 @@ func (app *application) executeAssignableIdentitySigner(
 
 	if signer.IsHashPublicKeys() {
 		variable := signer.HashPublicKeys()
-		pubKeys, err := stack.Last().FetchSignerPublicKeys(variable)
+		pubKeys, err := stack.Head().FetchSignerPublicKeys(variable)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -688,7 +688,7 @@ func (app *application) executeAssignableIdentitySigner(
 	if signer.IsVote() {
 		signerVote := signer.Vote()
 		ringVariable := signerVote.Ring()
-		ring, err := stack.Last().FetchSignerPublicKeys(ringVariable)
+		ring, err := stack.Head().FetchSignerPublicKeys(ringVariable)
 		if err != nil {
 			return nil, nil, err
 		}
