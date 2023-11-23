@@ -4,6 +4,14 @@ import (
 	"steve.care/network/libraries/hash"
 )
 
+// NewConditionResourceBuilder creates a new condition resource builder
+func NewConditionResourceBuilder() ConditionResourceBuilder {
+	hashAdapter := hash.NewAdapter()
+	return createConditionResourceBuilder(
+		hashAdapter,
+	)
+}
+
 // NewOriginBuilder creates a new origin builder
 func NewOriginBuilder() OriginBuilder {
 	hashAdapter := hash.NewAdapter()
