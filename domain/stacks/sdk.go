@@ -5,6 +5,11 @@ import (
 	"steve.care/network/domain/hash"
 )
 
+// NewAssignmentBuilder creates a new assignment builder
+func NewAssignmentBuilder() AssignmentBuilder {
+	return createAssignmentBuilder()
+}
+
 // NewAssignableBuilder creates a new assignable builder
 func NewAssignableBuilder() AssignableBuilder {
 	return createAssignableBuilder()
