@@ -7,7 +7,7 @@ import (
 
 const (
 	// InputNotFoundError represents an input not found error
-	InputNotFoundError (uint) = iota
+	InputNotFoundError (uint) = 1
 
 	// InputNotBytesError represents an input not bytes error
 	InputNotBytesError
@@ -18,6 +18,14 @@ const (
 	// OutputNotBytesError represents an output not bytes error
 	OutputNotBytesError
 )
+
+// NewFailureBuilder creates a new failure builder
+func NewFailureBuilder() FailureBuilder {
+	hashAdapter := hash.NewAdapter()
+	return createFailureBuilder(
+		hashAdapter,
+	)
+}
 
 // Builder represents the result builder
 type Builder interface {
@@ -66,5 +74,5 @@ type Failure interface {
 	Code() uint
 	IsRaisedInLayer() bool
 	HasIndex() bool
-	Index() uint
+	Index() *uint
 }
