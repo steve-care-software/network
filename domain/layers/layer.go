@@ -4,7 +4,6 @@ import "steve.care/network/domain/hash"
 
 type layer struct {
 	hash         hash.Hash
-	path         []string
 	input        string
 	instructions Instructions
 	output       Output
@@ -12,14 +11,12 @@ type layer struct {
 
 func createLayer(
 	hash hash.Hash,
-	path []string,
 	input string,
 	instructions Instructions,
 	output Output,
 ) Layer {
 	out := layer{
 		hash:         hash,
-		path:         path,
 		input:        input,
 		instructions: instructions,
 		output:       output,
@@ -31,11 +28,6 @@ func createLayer(
 // Hash returns the hash
 func (obj *layer) Hash() hash.Hash {
 	return obj.hash
-}
-
-// Path returns the path
-func (obj *layer) Path() []string {
-	return obj.path
 }
 
 // Input returns the input

@@ -4,18 +4,18 @@ import "steve.care/network/domain/hash"
 
 type originResource struct {
 	hash        hash.Hash
-	container   []string
+	layer       hash.Hash
 	isMandatory bool
 }
 
 func createOriginResource(
 	hash hash.Hash,
-	container []string,
+	layer hash.Hash,
 	isMandatory bool,
 ) OriginResource {
 	out := originResource{
 		hash:        hash,
-		container:   container,
+		layer:       layer,
 		isMandatory: isMandatory,
 	}
 
@@ -27,9 +27,9 @@ func (obj *originResource) Hash() hash.Hash {
 	return obj.hash
 }
 
-// Container returns the container
-func (obj *originResource) Container() []string {
-	return obj.container
+// Layer returns the layer
+func (obj *originResource) Layer() hash.Hash {
+	return obj.layer
 }
 
 // IsMandatory returns true if mandatory, false otherwise

@@ -115,7 +115,7 @@ type Elements interface {
 // ElementBuilder represents the element builder
 type ElementBuilder interface {
 	Create() ElementBuilder
-	WithContainer(container []string) ElementBuilder
+	WithLayer(layer hash.Hash) ElementBuilder
 	WithCondition(condition Condition) ElementBuilder
 	Now() (Element, error)
 }
@@ -123,7 +123,7 @@ type ElementBuilder interface {
 // Element represents an element
 type Element interface {
 	Hash() hash.Hash
-	Container() []string
+	Layer() hash.Hash
 	HasCondition() bool
 	Condition() Condition
 }
@@ -214,7 +214,7 @@ type OriginValue interface {
 // OriginResourceBuilder represents the origin resource builder
 type OriginResourceBuilder interface {
 	Create() OriginResourceBuilder
-	WithContainer(container []string) OriginResourceBuilder
+	WithLayer(layer hash.Hash) OriginResourceBuilder
 	IsMandatory() OriginResourceBuilder
 	Now() (OriginResource, error)
 }
@@ -222,7 +222,7 @@ type OriginResourceBuilder interface {
 // OriginResource represents an origin resource
 type OriginResource interface {
 	Hash() hash.Hash
-	Container() []string
+	Layer() hash.Hash
 	IsMandatory() bool
 }
 
@@ -245,7 +245,7 @@ type Operator interface {
 
 // Repository represents the link repository
 type Repository interface {
-	Retrieve(executedLayers [][]string) (Link, error)
+	Retrieve(executedLayers []hash.Hash) (Link, error)
 }
 
 // Service represents the link service

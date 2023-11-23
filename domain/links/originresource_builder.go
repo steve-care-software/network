@@ -2,14 +2,13 @@ package links
 
 import (
 	"errors"
-	"strings"
 
 	"steve.care/network/domain/hash"
 )
 
 type originResourceBuilder struct {
 	hashAdapter hash.Adapter
-	container   []string
+	layer       hash.Hash
 	isMandatory bool
 }
 
@@ -18,7 +17,7 @@ func createOriginResourceBuilder(
 ) OriginResourceBuilder {
 	out := originResourceBuilder{
 		hashAdapter: hashAdapter,
-		container:   nil,
+		layer:       nil,
 		isMandatory: false,
 	}
 
@@ -32,9 +31,9 @@ func (app *originResourceBuilder) Create() OriginResourceBuilder {
 	)
 }
 
-// WithContainer adds container to the builder
-func (app *originResourceBuilder) WithContainer(container []string) OriginResourceBuilder {
-	app.container = container
+// WithLayer adds a layer to the builder
+func (app *originResourceBuilder) WithLayer(layer hash.Hash) OriginResourceBuilder {
+	app.layer = layer
 	return app
 }
 
@@ -46,12 +45,8 @@ func (app *originResourceBuilder) IsMandatory() OriginResourceBuilder {
 
 // Now builds a new OriginResource instance
 func (app *originResourceBuilder) Now() (OriginResource, error) {
-	if app.container != nil && len(app.container) <= 0 {
-		app.container = nil
-	}
-
-	if app.container == nil {
-		return nil, errors.New("the container is mandatory in order to build an OriginResouce instance")
+	if app.layer == nil {
+		return nil, errors.New("the layer hash is mandatory in order to build an OriginResouce instance")
 	}
 
 	isMandatory := "false"
@@ -60,7 +55,7 @@ func (app *originResourceBuilder) Now() (OriginResource, error) {
 	}
 
 	pHash, err := app.hashAdapter.FromMultiBytes([][]byte{
-		[]byte(strings.Join(app.container, "/")),
+		app.layer.Bytes(),
 		[]byte(isMandatory),
 	})
 
@@ -68,5 +63,5 @@ func (app *originResourceBuilder) Now() (OriginResource, error) {
 		return nil, err
 	}
 
-	return createOriginResource(*pHash, app.container, app.isMandatory), nil
+	return createOriginResource(*pHash, app.layer, app.isMandatory), nil
 }

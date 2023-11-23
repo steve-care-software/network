@@ -4,33 +4,33 @@ import "steve.care/network/domain/hash"
 
 type element struct {
 	hash      hash.Hash
-	container []string
+	layer     hash.Hash
 	condition Condition
 }
 
 func createElement(
 	hash hash.Hash,
-	container []string,
+	layer hash.Hash,
 ) Element {
-	return createElementInternally(hash, container, nil)
+	return createElementInternally(hash, layer, nil)
 }
 
 func createElementWithCondition(
 	hash hash.Hash,
-	container []string,
+	layer hash.Hash,
 	condition Condition,
 ) Element {
-	return createElementInternally(hash, container, condition)
+	return createElementInternally(hash, layer, condition)
 }
 
 func createElementInternally(
 	hash hash.Hash,
-	container []string,
+	layer hash.Hash,
 	condition Condition,
 ) Element {
 	out := element{
 		hash:      hash,
-		container: container,
+		layer:     layer,
 		condition: condition,
 	}
 
@@ -42,9 +42,9 @@ func (obj *element) Hash() hash.Hash {
 	return obj.hash
 }
 
-// Container returns the container
-func (obj *element) Container() []string {
-	return obj.container
+//  Layer returns the layer
+func (obj *element) Layer() hash.Hash {
+	return obj.layer
 }
 
 // HasCondition returns true if there is a condition, false otheriwse

@@ -160,7 +160,6 @@ func NewBytesReferenceBuilder() BytesReferenceBuilder {
 // Builder represents a layer builder
 type Builder interface {
 	Create() Builder
-	WithPath(path []string) Builder
 	WithInput(input string) Builder
 	WithInstructions(instructions Instructions) Builder
 	WithOutput(output Output) Builder
@@ -170,7 +169,6 @@ type Builder interface {
 // Layer represents a layer
 type Layer interface {
 	Hash() hash.Hash
-	Path() []string
 	Input() string
 	Instructions() Instructions
 	Output() Output

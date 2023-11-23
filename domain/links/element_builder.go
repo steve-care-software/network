@@ -2,14 +2,13 @@ package links
 
 import (
 	"errors"
-	"strings"
 
 	"steve.care/network/domain/hash"
 )
 
 type elementBuilder struct {
 	hashAdapter hash.Adapter
-	container   []string
+	layer       hash.Hash
 	condition   Condition
 }
 
@@ -18,7 +17,7 @@ func createElementBuilder(
 ) ElementBuilder {
 	out := elementBuilder{
 		hashAdapter: hashAdapter,
-		container:   nil,
+		layer:       nil,
 		condition:   nil,
 	}
 
@@ -32,9 +31,9 @@ func (app *elementBuilder) Create() ElementBuilder {
 	)
 }
 
-// WithContainer adds a container to the builder
-func (app *elementBuilder) WithContainer(container []string) ElementBuilder {
-	app.container = container
+// WithLayer adds a layer to the builder
+func (app *elementBuilder) WithLayer(layer hash.Hash) ElementBuilder {
+	app.layer = layer
 	return app
 }
 
@@ -46,16 +45,12 @@ func (app *elementBuilder) WithCondition(condition Condition) ElementBuilder {
 
 // Now builds a new Element instance
 func (app *elementBuilder) Now() (Element, error) {
-	if app.container != nil && len(app.container) <= 0 {
-		app.container = nil
-	}
-
-	if app.container == nil {
-		return nil, errors.New("the container is mandatory in order to build an Element instance")
+	if app.layer == nil {
+		return nil, errors.New("the layer hash is mandatory in order to build an Element instance")
 	}
 
 	data := [][]byte{
-		[]byte(strings.Join(app.container, "/")),
+		app.layer.Bytes(),
 	}
 
 	if app.condition != nil {
@@ -68,8 +63,8 @@ func (app *elementBuilder) Now() (Element, error) {
 	}
 
 	if app.condition != nil {
-		return createElementWithCondition(*pHash, app.container, app.condition), nil
+		return createElementWithCondition(*pHash, app.layer, app.condition), nil
 	}
 
-	return createElement(*pHash, app.container), nil
+	return createElement(*pHash, app.layer), nil
 }
