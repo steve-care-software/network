@@ -7,8 +7,9 @@ type instruction struct {
 	isStop     bool
 	raiseError uint
 	condition  Condition
-	save       Layer
 	assignment Assignment
+	link       LinkInstruction
+	layer      LayerInstruction
 }
 
 func createInstructionWithIsStop(
@@ -18,6 +19,7 @@ func createInstructionWithIsStop(
 		hash,
 		true,
 		0,
+		nil,
 		nil,
 		nil,
 		nil,
@@ -35,6 +37,7 @@ func createInstructionWithRaiseError(
 		nil,
 		nil,
 		nil,
+		nil,
 	)
 }
 
@@ -49,19 +52,6 @@ func createInstructionWithCondition(
 		condition,
 		nil,
 		nil,
-	)
-}
-
-func createInstructionWithSave(
-	hash hash.Hash,
-	save Layer,
-) Instruction {
-	return createInstructionInternally(
-		hash,
-		false,
-		0,
-		nil,
-		save,
 		nil,
 	)
 }
@@ -75,8 +65,39 @@ func createInstructionWithAssignment(
 		false,
 		0,
 		nil,
-		nil,
 		assignment,
+		nil,
+		nil,
+	)
+}
+
+func createInstructionWithLink(
+	hash hash.Hash,
+	link LinkInstruction,
+) Instruction {
+	return createInstructionInternally(
+		hash,
+		false,
+		0,
+		nil,
+		nil,
+		link,
+		nil,
+	)
+}
+
+func createInstructionWithLayer(
+	hash hash.Hash,
+	layer LayerInstruction,
+) Instruction {
+	return createInstructionInternally(
+		hash,
+		false,
+		0,
+		nil,
+		nil,
+		nil,
+		layer,
 	)
 }
 
@@ -85,16 +106,18 @@ func createInstructionInternally(
 	isStop bool,
 	raiseError uint,
 	condition Condition,
-	save Layer,
 	assignment Assignment,
+	link LinkInstruction,
+	layer LayerInstruction,
 ) Instruction {
 	out := instruction{
 		hash:       hash,
 		isStop:     isStop,
 		raiseError: raiseError,
 		condition:  condition,
-		save:       save,
 		assignment: assignment,
+		link:       link,
+		layer:      layer,
 	}
 
 	return &out
@@ -130,16 +153,6 @@ func (obj *instruction) Condition() Condition {
 	return obj.condition
 }
 
-// IsSave returns true if save, false otherwise
-func (obj *instruction) IsSave() bool {
-	return obj.save != nil
-}
-
-// Save returns the save, if any
-func (obj *instruction) Save() Layer {
-	return obj.save
-}
-
 // IsAssignment returns true if assignment, false otherwise
 func (obj *instruction) IsAssignment() bool {
 	return obj.assignment != nil
@@ -148,4 +161,24 @@ func (obj *instruction) IsAssignment() bool {
 // Assignment returns the assignment, if any
 func (obj *instruction) Assignment() Assignment {
 	return obj.assignment
+}
+
+// IsLink returns true if link, false otherwise
+func (obj *instruction) IsLink() bool {
+	return obj.link != nil
+}
+
+// Link returns the link, if any
+func (obj *instruction) Link() LinkInstruction {
+	return obj.link
+}
+
+// IsLayer returns true if layer, false otherwise
+func (obj *instruction) IsLayer() bool {
+	return obj.layer != nil
+}
+
+// Layer returns the layer, if any
+func (obj *instruction) Layer() LayerInstruction {
+	return obj.layer
 }

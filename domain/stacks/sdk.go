@@ -3,7 +3,6 @@ package stacks
 import (
 	"steve.care/network/domain/accounts/signers"
 	"steve.care/network/domain/hash"
-	"steve.care/network/domain/layers"
 )
 
 // Builder represents a stack builder
@@ -18,8 +17,6 @@ type Stack interface {
 	Frames() Frames
 	Body() Frames
 	Last() Frame
-	HasInstructions() bool
-	Instructions() Instructions
 }
 
 // FramesBuilder represents the frames builder
@@ -37,7 +34,6 @@ type Frames interface {
 // FrameBuilder represents the frame builder
 type FrameBuilder interface {
 	Create() FrameBuilder
-	WithInstructions(instructions Instructions) FrameBuilder
 	WithAssignments(assignments Assignments) FrameBuilder
 	Now() (Frame, error)
 }
@@ -52,33 +48,6 @@ type Frame interface {
 	FetchHashList(name string) ([]hash.Hash, error)
 	HasAssignments() bool
 	Assignments() Assignments
-	HasInstructions() bool
-	Instructions() Instructions
-}
-
-// InstructionsBuilder represents an instructions builder
-type InstructionsBuilder interface {
-	Create() InstructionsBuilder
-	WithList(list []Instruction) InstructionsBuilder
-	Now() (Instructions, error)
-}
-
-// Instructions represents instructions
-type Instructions interface {
-	List() []Instruction
-}
-
-// InstructionBuilder represents an instruction builder
-type InstructionBuilder interface {
-	Create() InstructionBuilder
-	WithSave(save layers.Layer) InstructionBuilder
-	Now() (Instruction, error)
-}
-
-// Instruction represents an instruction
-type Instruction interface {
-	IsSave() bool
-	Save() layers.Layer
 }
 
 // AssignmentsBuilder represents an assignments builder

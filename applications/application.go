@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 
+	"steve.care/network/domain/databases"
 	"steve.care/network/domain/hash"
 
 	identity_accounts "steve.care/network/domain/accounts"
@@ -12,20 +13,16 @@ import (
 	"steve.care/network/domain/accounts/signers"
 	identity_accounts_signers "steve.care/network/domain/accounts/signers"
 	"steve.care/network/domain/layers"
-	"steve.care/network/domain/links"
 	"steve.care/network/domain/results"
 	"steve.care/network/domain/stacks"
 )
 
 type application struct {
 	hashAdapter               hash.Adapter
-	layerRepository           layers.Repository
-	linkRepository            links.Repository
+	database                  databases.Database
 	stackBuilder              stacks.Builder
 	stackFramesBuilder        stacks.FramesBuilder
 	stackFrameBuilder         stacks.FrameBuilder
-	stackInstructionsBuilder  stacks.InstructionsBuilder
-	stackInstructionBuilder   stacks.InstructionBuilder
 	stackAssignmentsBuilder   stacks.AssignmentsBuilder
 	stackAssignmentBuilder    stacks.AssignmentBuilder
 	stackAssignableBuilder    stacks.AssignableBuilder
@@ -35,16 +32,14 @@ type application struct {
 	resultBuilder             results.Builder
 	resultSuccessBuilder      results.SuccessBuilder
 	resultFailureBuilder      results.FailureBuilder
+	authenticated             identity_accounts.Account
 }
 
 func createApplication(
-	layerRepository layers.Repository,
-	linkRepository links.Repository,
+	database databases.Database,
 	stackBuilder stacks.Builder,
 	stackFramesBuilder stacks.FramesBuilder,
 	stackFrameBuilder stacks.FrameBuilder,
-	stackInstructionsBuilder stacks.InstructionsBuilder,
-	stackInstructionBuilder stacks.InstructionBuilder,
 	stackAssignmentsBuilder stacks.AssignmentsBuilder,
 	stackAssignmentBuilder stacks.AssignmentBuilder,
 	stackAssignableBuilder stacks.AssignableBuilder,
@@ -56,13 +51,10 @@ func createApplication(
 	resultFailureBuilder results.FailureBuilder,
 ) Application {
 	out := application{
-		layerRepository:           layerRepository,
-		linkRepository:            linkRepository,
+		database:                  database,
 		stackBuilder:              stackBuilder,
 		stackFramesBuilder:        stackFramesBuilder,
 		stackFrameBuilder:         stackFrameBuilder,
-		stackInstructionsBuilder:  stackInstructionsBuilder,
-		stackInstructionBuilder:   stackInstructionBuilder,
 		stackAssignmentsBuilder:   stackAssignmentsBuilder,
 		stackAssignmentBuilder:    stackAssignmentBuilder,
 		stackAssignableBuilder:    stackAssignableBuilder,
@@ -72,6 +64,7 @@ func createApplication(
 		resultBuilder:             resultBuilder,
 		resultSuccessBuilder:      resultSuccessBuilder,
 		resultFailureBuilder:      resultFailureBuilder,
+		authenticated:             nil,
 	}
 
 	return &out
@@ -79,23 +72,33 @@ func createApplication(
 
 // Execute executes the program
 func (app *application) Execute(
-	authenticated identity_accounts.Account,
+	hash hash.Hash,
 	stack stacks.Stack,
 ) (results.Result, error) {
-	path := authenticated.Root()
-	root, err := app.layerRepository.Retrieve(path)
+	if app.authenticated == nil {
+		// failure, not authenticated
+	}
+
+	root, err := app.database.Repository().Layer().Retrieve(hash)
+	if err != nil {
+		return nil, err
+	}
+
+	service, err := app.database.Begin()
 	if err != nil {
 		return nil, err
 	}
 
 	return app.executeLayer(
-		authenticated,
+		service,
+		app.authenticated,
 		root,
 		stack,
 	)
 }
 
 func (app *application) executeLayer(
+	service databases.Service,
 	authenticated identity_accounts.Account,
 	layer layers.Layer,
 	stack stacks.Stack,
@@ -131,6 +134,7 @@ func (app *application) executeLayer(
 
 	instructions := layer.Instructions()
 	updatedStack, failure, err := app.executeInstructions(
+		service,
 		authenticated,
 		instructions,
 		stack,
@@ -207,6 +211,7 @@ func (app *application) executeNativeCode(
 }
 
 func (app *application) executeInstructions(
+	service databases.Service,
 	authenticated identity_accounts.Account,
 	instructions layers.Instructions,
 	stack stacks.Stack,
@@ -215,6 +220,7 @@ func (app *application) executeInstructions(
 	list := instructions.List()
 	for idx, oneInstruction := range list {
 		retStack, failure, err := app.executeInstruction(
+			service,
 			authenticated,
 			oneInstruction,
 			uint(idx),
@@ -241,17 +247,13 @@ func (app *application) executeInstructions(
 }
 
 func (app *application) executeInstruction(
+	service databases.Service,
 	authenticated identity_accounts.Account,
 	instruction layers.Instruction,
 	index uint,
 	stack stacks.Stack,
 ) (stacks.Stack, results.Failure, error) {
-	currentFrameInstructionList := []stacks.Instruction{}
 	last := stack.Last()
-	if last.HasInstructions() {
-		currentFrameInstructionList = last.Instructions().List()
-	}
-
 	currentFrameAssignments := []stacks.Assignment{}
 	if last.HasAssignments() {
 		currentFrameAssignments = last.Assignments().List()
@@ -286,6 +288,7 @@ func (app *application) executeInstruction(
 		if boolValue {
 			conditionalInstructons := condition.Instructions()
 			return app.executeInstructions(
+				service,
 				authenticated,
 				conditionalInstructons,
 				stack,
@@ -293,22 +296,6 @@ func (app *application) executeInstruction(
 		}
 
 		return stack, nil, nil
-	}
-
-	if instruction.IsSave() {
-		newLayer := instruction.Save()
-		instruction, err := app.stackInstructionBuilder.Create().
-			WithSave(newLayer).
-			Now()
-
-		if err != nil {
-			return nil, nil, err
-		}
-
-		currentFrameInstructionList = append(
-			currentFrameInstructionList,
-			instruction,
-		)
 	}
 
 	if instruction.IsAssignment() {
@@ -325,19 +312,27 @@ func (app *application) executeInstruction(
 		currentFrameAssignments = append(currentFrameAssignments, stackAssignment)
 	}
 
-	updatedFrameBuilder := app.stackFrameBuilder.Create()
-	if len(currentFrameInstructionList) > 0 {
-		updatedStackInstructions, err := app.stackInstructionsBuilder.Create().
-			WithList(currentFrameInstructionList).
-			Now()
+	if instruction.IsLayer() {
+		layerService := service.Layer()
+		layerInstruction := instruction.Layer()
+		if layerInstruction.IsSave() {
 
-		if err != nil {
-			return nil, nil, err
 		}
 
-		updatedFrameBuilder.WithInstructions(updatedStackInstructions)
+		if layerInstruction.IsDelete() {
+			hash := layerInstruction.Delete()
+			err := layerService.Delete(hash)
+			if err != nil {
+				// failure
+			}
+		}
 	}
 
+	if instruction.IsLink() {
+
+	}
+
+	updatedFrameBuilder := app.stackFrameBuilder.Create()
 	if len(currentFrameAssignments) > 0 {
 		updatedStackAssignments, err := app.stackAssignmentsBuilder.Create().
 			WithList(currentFrameAssignments).
@@ -468,6 +463,10 @@ func (app *application) executeAssignableBytes(
 		}
 
 		builder.WithBool(isEqual)
+	}
+
+	if bytesIns.IsHashBytes() {
+
 	}
 
 	ins, err := builder.Now()

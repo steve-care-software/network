@@ -10,6 +10,7 @@ type bytesBuilder struct {
 	hashAdapter hash.Adapter
 	join        BytesReferences
 	compare     BytesReferences
+	hashBytes   BytesReference
 }
 
 func createBytesBuilder(
@@ -19,6 +20,7 @@ func createBytesBuilder(
 		hashAdapter: hashAdapter,
 		join:        nil,
 		compare:     nil,
+		hashBytes:   nil,
 	}
 
 	return &out
@@ -43,6 +45,12 @@ func (app *bytesBuilder) WithCompare(compare BytesReferences) BytesBuilder {
 	return app
 }
 
+// WithHashBytes adds an hashBytes to the builder
+func (app *bytesBuilder) WithHashBytes(hashBytes BytesReference) BytesBuilder {
+	app.hashBytes = hashBytes
+	return app
+}
+
 // Now builds a new Bytes instance
 func (app *bytesBuilder) Now() (Bytes, error) {
 	data := [][]byte{}
@@ -56,6 +64,11 @@ func (app *bytesBuilder) Now() (Bytes, error) {
 		data = append(data, app.compare.Hash().Bytes())
 	}
 
+	if app.hashBytes != nil {
+		data = append(data, []byte("hash"))
+		data = append(data, app.hashBytes.Hash().Bytes())
+	}
+
 	if len(data) <= 0 {
 		return nil, errors.New("the Bytes is invalid")
 	}
@@ -67,6 +80,10 @@ func (app *bytesBuilder) Now() (Bytes, error) {
 
 	if app.join != nil {
 		return createBytesWithJoin(*pHash, app.join), nil
+	}
+
+	if app.hashBytes != nil {
+		return createBytesWithHashBytes(*pHash, app.hashBytes), nil
 	}
 
 	return createBytesWithCompare(*pHash, app.compare), nil

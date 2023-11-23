@@ -14,7 +14,6 @@ func NewBuilder() Builder {
 type Builder interface {
 	Create() Builder
 	WithUsername(username string) Builder
-	WithRoot(root []string) Builder
 	WithEncryptor(encryptor encryptors.Encryptor) Builder
 	WithSigner(signer signers.Signer) Builder
 	Now() (Account, error)
@@ -23,7 +22,14 @@ type Builder interface {
 // Account represents the identity account
 type Account interface {
 	Username() string
-	Root() []string
 	Encryptor() encryptors.Encryptor
 	Signer() signers.Signer
+}
+
+// Repository represents the account repository
+type Repository interface {
+}
+
+// Service represents the account service
+type Service interface {
 }

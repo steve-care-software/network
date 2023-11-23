@@ -12,8 +12,9 @@ type instructionBuilder struct {
 	isStop      bool
 	raiseError  uint
 	condition   Condition
-	save        Layer
 	assignment  Assignment
+	link        LinkInstruction
+	layer       LayerInstruction
 }
 
 func createInstructionBuilder(
@@ -24,8 +25,9 @@ func createInstructionBuilder(
 		isStop:      false,
 		raiseError:  0,
 		condition:   nil,
-		save:        nil,
 		assignment:  nil,
+		link:        nil,
+		layer:       nil,
 	}
 
 	return &out
@@ -50,15 +52,21 @@ func (app *instructionBuilder) WithCondition(condition Condition) InstructionBui
 	return app
 }
 
-// WthSave saves a layer to the builder
-func (app *instructionBuilder) WthSave(save Layer) InstructionBuilder {
-	app.save = save
-	return app
-}
-
 // WithAssignment adds an assignment to the builder
 func (app *instructionBuilder) WithAssignment(assignment Assignment) InstructionBuilder {
 	app.assignment = assignment
+	return app
+}
+
+// WithLink adds a link to the builder
+func (app *instructionBuilder) WithLink(link LinkInstruction) InstructionBuilder {
+	app.link = link
+	return app
+}
+
+// WithLayer adds a layer to the builder
+func (app *instructionBuilder) WithLayer(layer LayerInstruction) InstructionBuilder {
+	app.layer = layer
 	return app
 }
 
@@ -85,14 +93,19 @@ func (app *instructionBuilder) Now() (Instruction, error) {
 		data = append(data, app.condition.Hash().Bytes())
 	}
 
-	if app.save != nil {
-		data = append(data, []byte("save"))
-		data = append(data, app.save.Hash().Bytes())
-	}
-
 	if app.assignment != nil {
 		data = append(data, []byte("assignment"))
 		data = append(data, app.assignment.Hash().Bytes())
+	}
+
+	if app.link != nil {
+		data = append(data, []byte("link"))
+		data = append(data, app.link.Hash().Bytes())
+	}
+
+	if app.layer != nil {
+		data = append(data, []byte("layer"))
+		data = append(data, app.layer.Hash().Bytes())
 	}
 
 	if len(data) <= 0 {
@@ -116,8 +129,12 @@ func (app *instructionBuilder) Now() (Instruction, error) {
 		return createInstructionWithCondition(*pHash, app.condition), nil
 	}
 
-	if app.save != nil {
-		return createInstructionWithSave(*pHash, app.save), nil
+	if app.link != nil {
+		return createInstructionWithLink(*pHash, app.link), nil
+	}
+
+	if app.layer != nil {
+		return createInstructionWithLayer(*pHash, app.layer), nil
 	}
 
 	return createInstructionWithAssignment(*pHash, app.assignment), nil

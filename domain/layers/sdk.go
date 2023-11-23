@@ -2,6 +2,7 @@ package layers
 
 import (
 	"steve.care/network/domain/hash"
+	"steve.care/network/domain/links"
 )
 
 // NewBuilder creates a new builder instance
@@ -40,6 +41,22 @@ func NewInstructionsBuilder() InstructionsBuilder {
 func NewInstructionBuilder() InstructionBuilder {
 	hashAdapter := hash.NewAdapter()
 	return createInstructionBuilder(
+		hashAdapter,
+	)
+}
+
+// NewLinkInstructionBuilder creates a new link instruction builder
+func NewLinkInstructionBuilder() LinkInstructionBuilder {
+	hashAdapter := hash.NewAdapter()
+	return createLinkInstructionBuilder(
+		hashAdapter,
+	)
+}
+
+// NewLayerInstructionBuilder creates a new layer instruction builder
+func NewLayerInstructionBuilder() LayerInstructionBuilder {
+	hashAdapter := hash.NewAdapter()
+	return createLayerInstructionBuilder(
 		hashAdapter,
 	)
 }
@@ -210,8 +227,9 @@ type InstructionBuilder interface {
 	Create() InstructionBuilder
 	WithRaiseError(raiseError uint) InstructionBuilder
 	WithCondition(condition Condition) InstructionBuilder
-	WthSave(save Layer) InstructionBuilder
 	WithAssignment(assignment Assignment) InstructionBuilder
+	WithLink(link LinkInstruction) InstructionBuilder
+	WithLayer(layer LayerInstruction) InstructionBuilder
 	IsStop() InstructionBuilder
 	Now() (Instruction, error)
 }
@@ -224,10 +242,46 @@ type Instruction interface {
 	RaiseError() uint
 	IsCondition() bool
 	Condition() Condition
-	IsSave() bool
-	Save() Layer
 	IsAssignment() bool
 	Assignment() Assignment
+	IsLink() bool
+	Link() LinkInstruction
+	IsLayer() bool
+	Layer() LayerInstruction
+}
+
+// LinkInstructionBuilder represents a link instruction builder
+type LinkInstructionBuilder interface {
+	Create() LinkInstructionBuilder
+	WithSave(save links.Link) LinkInstructionBuilder
+	WithDelete(delete hash.Hash) LinkInstructionBuilder
+	Now() (LinkInstruction, error)
+}
+
+// LinkInstruction represents a link instruction
+type LinkInstruction interface {
+	Hash() hash.Hash
+	IsSave() bool
+	Save() links.Link
+	IsDelete() bool
+	Delete() hash.Hash
+}
+
+// LayerInstructionBuilder represents a layer instruction builder
+type LayerInstructionBuilder interface {
+	Create() LayerInstructionBuilder
+	WithSave(save Layer) LayerInstructionBuilder
+	WithDelete(delete hash.Hash) LayerInstructionBuilder
+	Now() (LayerInstruction, error)
+}
+
+// LayerInstruction represents a layer instruction
+type LayerInstruction interface {
+	Hash() hash.Hash
+	IsSave() bool
+	Save() Layer
+	IsDelete() bool
+	Delete() hash.Hash
 }
 
 // ConditionBuilder represents a condition builder
@@ -282,6 +336,7 @@ type BytesBuilder interface {
 	Create() BytesBuilder
 	WithJoin(join BytesReferences) BytesBuilder
 	WithCompare(compare BytesReferences) BytesBuilder
+	WithHashBytes(hashBytes BytesReference) BytesBuilder
 	Now() (Bytes, error)
 }
 
@@ -292,6 +347,8 @@ type Bytes interface {
 	Join() BytesReferences
 	IsCompare() bool
 	Compare() BytesReferences
+	IsHashBytes() bool
+	HashBytes() BytesReference
 }
 
 // IdentityBuilder represents an identity builder
@@ -443,14 +500,12 @@ type BytesReference interface {
 
 // Repository represents a layer repository
 type Repository interface {
-	List(basePath []string) ([]string, error)
-	Dir(basePath []string) ([]string, error)
-	Exists(path []string) (bool, error)
-	Retrieve(path []string) (Layer, error)
+	Exists(hash hash.Hash) (bool, error)
+	Retrieve(hash hash.Hash) (Layer, error)
 }
 
 // Service represents a layer service
 type Service interface {
-	Insert(context uint, layer Layer, path []string) error
-	Delete(context uint, path []string) error
+	Insert(layer Layer) error
+	Delete(hash hash.Hash) error
 }

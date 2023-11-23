@@ -9,7 +9,6 @@ import (
 
 type builder struct {
 	username  string
-	root      []string
 	encryptor encryptors.Encryptor
 	signer    signers.Signer
 }
@@ -17,7 +16,6 @@ type builder struct {
 func createBuilder() Builder {
 	out := builder{
 		username:  "",
-		root:      nil,
 		encryptor: nil,
 		signer:    nil,
 	}
@@ -33,12 +31,6 @@ func (app *builder) Create() Builder {
 // WithUsername adds a username to the builder
 func (app *builder) WithUsername(username string) Builder {
 	app.username = username
-	return app
-}
-
-// WithRoot adds a root to the builder
-func (app *builder) WithRoot(root []string) Builder {
-	app.root = root
 	return app
 }
 
@@ -60,14 +52,6 @@ func (app *builder) Now() (Account, error) {
 		return nil, errors.New("the username is mandatory in order to build an Account instance")
 	}
 
-	if app.root != nil && len(app.root) <= 0 {
-		app.root = nil
-	}
-
-	if app.root == nil {
-		return nil, errors.New("the root layer path is mandatory in order to build an Account instance")
-	}
-
 	if app.encryptor == nil {
 		return nil, errors.New("the encryptor is mandatory in order to build an Account instance")
 	}
@@ -78,7 +62,6 @@ func (app *builder) Now() (Account, error) {
 
 	return createAccount(
 		app.username,
-		app.root,
 		app.encryptor,
 		app.signer,
 	), nil
