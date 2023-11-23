@@ -89,11 +89,15 @@ func (app *assignableBuilder) WithHash(hash hash.Hash) AssignableBuilder {
 // Now builds a new Assignable instance
 func (app *assignableBuilder) Now() (Assignable, error) {
 	if app.pBool != nil {
-		return createAssignableWithBool(*&app.pBool), nil
+		return createAssignableWithBool(app.pBool), nil
 	}
 
 	if app.bytes != nil && len(app.bytes) <= 0 {
 		app.bytes = nil
+	}
+
+	if app.bytes != nil {
+		return createAssignableWithBytes(app.bytes), nil
 	}
 
 	if app.signerPubKey != nil {
