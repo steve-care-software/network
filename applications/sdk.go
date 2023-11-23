@@ -1,11 +1,12 @@
 package applications
 
 import (
-	"steve.care/network/domain/programs"
+	identity_accounts "steve.care/network/domain/accounts"
+	"steve.care/network/domain/results"
 	"steve.care/network/domain/stacks"
 )
 
-// Application represents an application
+// Application represents a stencil application
 type Application interface {
-	Execute(programm programs.Program, stack stacks.Stack) (stacks.Stack, error)
+	Execute(authenticated identity_accounts.Account, stack stacks.Stack) (results.Result, error)
 }
