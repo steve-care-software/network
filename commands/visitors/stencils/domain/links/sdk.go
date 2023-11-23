@@ -4,6 +4,14 @@ import (
 	"steve.care/network/libraries/hash"
 )
 
+// NewElementsBuilder creates a new elements builder
+func NewElementsBuilder() ElementsBuilder {
+	hashAdapter := hash.NewAdapter()
+	return createElementsBuilder(
+		hashAdapter,
+	)
+}
+
 // NewElementBuilder creates a new element builder
 func NewElementBuilder() ElementBuilder {
 	hashAdapter := hash.NewAdapter()
