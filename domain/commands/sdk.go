@@ -7,13 +7,34 @@ import (
 	"steve.care/network/domain/hash"
 )
 
-// Builder represents a command
+// NewLinkBuilder creates a new link builder
+func NewLinkBuilder() LinkBuilder {
+	hashAdapter := hash.NewAdapter()
+	return createLinkBuilder(
+		hashAdapter,
+	)
+}
+
+// Builder represents a commands builder
 type Builder interface {
 	Create() Builder
-	WithInput(input []byte) Builder
-	WithLayer(layer layers.Layer) Builder
-	WithResult(result results.Result) Builder
-	WithParent(parent Link) Builder
+	WithList(list []Command) Builder
+	Now() (Commands, error)
+}
+
+// Commands represents commands
+type Commands interface {
+	Hash() hash.Hash
+	List() []Command
+}
+
+// CommandBuilder represents a command builder
+type CommandBuilder interface {
+	Create() CommandBuilder
+	WithInput(input []byte) CommandBuilder
+	WithLayer(layer layers.Layer) CommandBuilder
+	WithResult(result results.Result) CommandBuilder
+	WithParent(parent Link) CommandBuilder
 	Now() (Command, error)
 }
 
