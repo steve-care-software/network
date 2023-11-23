@@ -5,6 +5,11 @@ import (
 	"steve.care/network/domain/hash"
 )
 
+// NewFramesBuilder creates a new frames builder
+func NewFramesBuilder() FramesBuilder {
+	return createFramesBuilder()
+}
+
 // NewFrameBuilder creates a new frame builder
 func NewFrameBuilder() FrameBuilder {
 	return createFrameBuilder()
