@@ -4,6 +4,14 @@ import (
 	"steve.care/network/libraries/hash"
 )
 
+// NewOriginBuilder creates a new origin builder
+func NewOriginBuilder() OriginBuilder {
+	hashAdapter := hash.NewAdapter()
+	return createOriginBuilder(
+		hashAdapter,
+	)
+}
+
 // NewOriginValueBuilder creates a new origin value builder
 func NewOriginValueBuilder() OriginValueBuilder {
 	hashAdapter := hash.NewAdapter()
