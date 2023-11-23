@@ -5,6 +5,16 @@ import (
 	"steve.care/network/domain/hash"
 )
 
+// NewFrameBuilder creates a new frame builder
+func NewFrameBuilder() FrameBuilder {
+	return createFrameBuilder()
+}
+
+// NewAssignmentsBuilder creates a new assignments builder
+func NewAssignmentsBuilder() AssignmentsBuilder {
+	return createAssignmentsBuilder()
+}
+
 // NewAssignmentBuilder creates a new assignment builder
 func NewAssignmentBuilder() AssignmentBuilder {
 	return createAssignmentBuilder()
@@ -78,6 +88,7 @@ type AssignmentsBuilder interface {
 // Assignments represents assignments
 type Assignments interface {
 	List() []Assignment
+	Fetch(name string) (Assignable, error)
 }
 
 // AssignmentBuilder represents an assignment builder
