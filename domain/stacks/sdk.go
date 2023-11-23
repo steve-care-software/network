@@ -5,6 +5,19 @@ import (
 	"steve.care/network/domain/hash"
 )
 
+// NewFactory creates a new factory
+func NewFactory() Factory {
+	return createFactory()
+}
+
+// NewBuilder creates a new builder
+func NewBuilder() Builder {
+	framesBuilder := NewFramesBuilder()
+	return createBuilder(
+		framesBuilder,
+	)
+}
+
 // NewFramesBuilder creates a new frames builder
 func NewFramesBuilder() FramesBuilder {
 	return createFramesBuilder()
