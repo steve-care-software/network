@@ -19,6 +19,14 @@ const (
 	OutputNotBytesError
 )
 
+// NewBuilder creates a new builder instance
+func NewBuilder() Builder {
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(
+		hashAdapter,
+	)
+}
+
 // NewSuccessBuilder creates a new success builder
 func NewSuccessBuilder() SuccessBuilder {
 	hashAdapter := hash.NewAdapter()
@@ -47,7 +55,7 @@ type Builder interface {
 type Result interface {
 	Hash() hash.Hash
 	IsSuccess() bool
-	Success() []byte
+	Success() Success
 	IsFailure() bool
 	Failure() Failure
 }
