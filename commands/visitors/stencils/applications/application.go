@@ -35,7 +35,6 @@ type application struct {
 	accountSignerVoteAdapter  identity_accounts_signers.VoteAdapter
 	resultBuilder             results.Builder
 	resultSuccessBuilder      results.SuccessBuilder
-	resultActionBuilder       results.ActionBuilder
 	resultFailureBuilder      results.FailureBuilder
 }
 
@@ -55,7 +54,6 @@ func createApplication(
 	accountSignerVoteAdapter identity_accounts_signers.VoteAdapter,
 	resultBuilder results.Builder,
 	resultSuccessBuilder results.SuccessBuilder,
-	resultActionBuilder results.ActionBuilder,
 	resultFailureBuilder results.FailureBuilder,
 ) Application {
 	out := application{
@@ -74,7 +72,6 @@ func createApplication(
 		accountSignerVoteAdapter:  accountSignerVoteAdapter,
 		resultBuilder:             resultBuilder,
 		resultSuccessBuilder:      resultSuccessBuilder,
-		resultActionBuilder:       resultActionBuilder,
 		resultFailureBuilder:      resultFailureBuilder,
 	}
 
@@ -191,23 +188,9 @@ func (app *application) executeLayer(
 	}
 
 	kind := outputIns.Kind()
-	actionBuilder := app.resultActionBuilder.Create()
-	if kind.IsContinue() {
-		actionBuilder.IsContinue()
-	}
-
-	if kind.IsPrompt() {
-		actionBuilder.IsPrompt()
-	}
-
-	action, err := actionBuilder.Now()
-	if err != nil {
-		return nil, err
-	}
-
 	success, err := app.resultSuccessBuilder.Create().
 		WithBytes(outputBytes).
-		WithAction(action).
+		WithKind(kind).
 		Now()
 
 	if err != nil {

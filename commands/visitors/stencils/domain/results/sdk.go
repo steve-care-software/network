@@ -1,6 +1,7 @@
 package results
 
 import (
+	"steve.care/network/commands/visitors/stencils/domain/layers"
 	"steve.care/network/libraries/hash"
 )
 
@@ -39,7 +40,7 @@ type Result interface {
 type SuccessBuilder interface {
 	Create() SuccessBuilder
 	WithBytes(bytes []byte) SuccessBuilder
-	WithAction(action Action) SuccessBuilder
+	WithKind(kind layers.Kind) SuccessBuilder
 	Now() (Success, error)
 }
 
@@ -47,7 +48,7 @@ type SuccessBuilder interface {
 type Success interface {
 	Hash() hash.Hash
 	Bytes() []byte
-	Action() Action
+	Kind() layers.Kind
 }
 
 // FailureBuilder represents the failure builder
@@ -66,19 +67,4 @@ type Failure interface {
 	IsRaisedInLayer() bool
 	HasIndex() bool
 	Index() uint
-}
-
-// ActionBuilder represents the action builder
-type ActionBuilder interface {
-	Create() ActionBuilder
-	IsPrompt() ActionBuilder
-	IsContinue() ActionBuilder
-	Now() (Action, error)
-}
-
-// Action represents the action
-type Action interface {
-	Hash() hash.Hash
-	IsPrompt() bool
-	ISContinue() bool
 }
