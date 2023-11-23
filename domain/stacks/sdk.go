@@ -5,6 +5,11 @@ import (
 	"steve.care/network/domain/hash"
 )
 
+// Factory represents the stack factory
+type Factory interface {
+	Create() Stack
+}
+
 // Builder represents a stack builder
 type Builder interface {
 	Create() Builder

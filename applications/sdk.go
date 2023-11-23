@@ -1,12 +1,13 @@
 package applications
 
 import (
-	"steve.care/network/domain/hash"
-	"steve.care/network/domain/results"
-	"steve.care/network/domain/stacks"
+	"steve.care/network/applications/authenticates"
+	"steve.care/network/domain/credentials"
 )
 
 // Application represents a stencil application
 type Application interface {
-	Execute(hash hash.Hash, stack stacks.Stack) (results.Result, error)
+	List() ([]string, error)
+	Insert(credentials credentials.Credentials) error
+	Authenticate(credentials credentials.Credentials) (authenticates.Application, error)
 }

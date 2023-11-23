@@ -1,4 +1,4 @@
-package applications
+package authenticates
 
 import (
 	"bytes"
@@ -7,12 +7,13 @@ import (
 
 	"steve.care/network/domain/databases"
 	"steve.care/network/domain/hash"
+	"steve.care/network/domain/layers"
+	"steve.care/network/domain/links"
 
 	identity_accounts "steve.care/network/domain/accounts"
 	"steve.care/network/domain/accounts/encryptors"
 	"steve.care/network/domain/accounts/signers"
 	identity_accounts_signers "steve.care/network/domain/accounts/signers"
-	"steve.care/network/domain/layers"
 	"steve.care/network/domain/results"
 	"steve.care/network/domain/stacks"
 )
@@ -20,6 +21,7 @@ import (
 type application struct {
 	hashAdapter               hash.Adapter
 	database                  databases.Database
+	stackFactory              stacks.Factory
 	stackBuilder              stacks.Builder
 	stackFramesBuilder        stacks.FramesBuilder
 	stackFrameBuilder         stacks.FrameBuilder
@@ -37,6 +39,7 @@ type application struct {
 
 func createApplication(
 	database databases.Database,
+	stackFactory stacks.Factory,
 	stackBuilder stacks.Builder,
 	stackFramesBuilder stacks.FramesBuilder,
 	stackFrameBuilder stacks.FrameBuilder,
@@ -52,6 +55,7 @@ func createApplication(
 ) Application {
 	out := application{
 		database:                  database,
+		stackFactory:              stackFactory,
 		stackBuilder:              stackBuilder,
 		stackFramesBuilder:        stackFramesBuilder,
 		stackFrameBuilder:         stackFrameBuilder,
@@ -70,11 +74,23 @@ func createApplication(
 	return &out
 }
 
-// Execute executes the program
-func (app *application) Execute(
-	hash hash.Hash,
-	stack stacks.Stack,
-) (results.Result, error) {
+// Delete deletes the authenticated account
+func (app *application) Delete(password []byte) error {
+	return nil
+}
+
+// Update updates the authenticated account
+func (app *application) Update(currentPassword []byte, newPassword []byte) error {
+	return nil
+}
+
+// Exists returns true if the layer exists, false otherwise
+func (app *application) Exists(hash hash.Hash) (bool, error) {
+	return false, nil
+}
+
+// Execute executes a layer
+func (app *application) Execute(hash hash.Hash) (results.Result, error) {
 	if app.authenticated == nil {
 		// failure, not authenticated
 	}
@@ -89,12 +105,23 @@ func (app *application) Execute(
 		return nil, err
 	}
 
+	stack := app.stackFactory.Create()
 	return app.executeLayer(
 		service,
 		app.authenticated,
 		root,
 		stack,
 	)
+}
+
+// Links returns the link based on the executed layers
+func (app *application) Links(executed []hash.Hash) (links.Link, error) {
+	return nil, nil
+}
+
+// Clear clears the session
+func (app *application) Clear() error {
+	return nil
 }
 
 func (app *application) executeLayer(
