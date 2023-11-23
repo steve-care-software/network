@@ -1,5 +1,7 @@
 package stacks
 
+import "errors"
+
 type builder struct {
 	framesBuilder FramesBuilder
 	frames        Frames
@@ -32,7 +34,7 @@ func (app *builder) WithFrames(frames Frames) Builder {
 // Now builds a new Stack instance
 func (app *builder) Now() (Stack, error) {
 	if app.frames == nil {
-		return createStack(), nil
+		return nil, errors.New("the frames is mandatory in order to build a stack instance")
 	}
 
 	list := app.frames.List()

@@ -5,11 +5,6 @@ import (
 	"steve.care/network/domain/hash"
 )
 
-// NewFactory creates a new factory
-func NewFactory() Factory {
-	return createFactory()
-}
-
 // NewBuilder creates a new builder
 func NewBuilder() Builder {
 	framesBuilder := NewFramesBuilder()
@@ -57,12 +52,10 @@ type Builder interface {
 
 // Stack represents a stack
 type Stack interface {
-	HasFrames() bool
 	Frames() Frames
+	Head() Frame
 	HasBody() bool
 	Body() Frames
-	HasHead() bool
-	Head() Frame
 }
 
 // FramesBuilder represents the frames builder

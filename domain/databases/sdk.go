@@ -2,8 +2,8 @@ package databases
 
 import (
 	"steve.care/network/domain/accounts"
-	"steve.care/network/domain/layers"
-	"steve.care/network/domain/links"
+	"steve.care/network/domain/commands/layers"
+	"steve.care/network/domain/commands/links"
 )
 
 // Database represents a database

@@ -3,8 +3,8 @@ package results
 import (
 	"errors"
 
+	"steve.care/network/domain/commands/layers"
 	"steve.care/network/domain/hash"
-	"steve.care/network/domain/layers"
 )
 
 type successBuilder struct {

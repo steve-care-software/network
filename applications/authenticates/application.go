@@ -5,23 +5,22 @@ import (
 	"errors"
 	"fmt"
 
+	"steve.care/network/domain/commands/layers"
+	"steve.care/network/domain/commands/links"
 	"steve.care/network/domain/databases"
 	"steve.care/network/domain/hash"
-	"steve.care/network/domain/layers"
-	"steve.care/network/domain/links"
 
 	identity_accounts "steve.care/network/domain/accounts"
 	"steve.care/network/domain/accounts/encryptors"
 	"steve.care/network/domain/accounts/signers"
 	identity_accounts_signers "steve.care/network/domain/accounts/signers"
-	"steve.care/network/domain/results"
+	"steve.care/network/domain/commands/results"
 	"steve.care/network/domain/stacks"
 )
 
 type application struct {
 	hashAdapter               hash.Adapter
 	database                  databases.Database
-	stackFactory              stacks.Factory
 	stackBuilder              stacks.Builder
 	stackFramesBuilder        stacks.FramesBuilder
 	stackFrameBuilder         stacks.FrameBuilder
@@ -39,7 +38,6 @@ type application struct {
 
 func createApplication(
 	database databases.Database,
-	stackFactory stacks.Factory,
 	stackBuilder stacks.Builder,
 	stackFramesBuilder stacks.FramesBuilder,
 	stackFrameBuilder stacks.FrameBuilder,
@@ -55,7 +53,6 @@ func createApplication(
 ) Application {
 	out := application{
 		database:                  database,
-		stackFactory:              stackFactory,
 		stackBuilder:              stackBuilder,
 		stackFramesBuilder:        stackFramesBuilder,
 		stackFrameBuilder:         stackFrameBuilder,
@@ -90,7 +87,7 @@ func (app *application) Exists(hash hash.Hash) (bool, error) {
 }
 
 // Execute executes a layer
-func (app *application) Execute(hash hash.Hash) (results.Result, error) {
+func (app *application) Execute(hash hash.Hash, input []byte) (results.Result, error) {
 	if app.authenticated == nil {
 		// failure, not authenticated
 	}
@@ -105,7 +102,58 @@ func (app *application) Execute(hash hash.Hash) (results.Result, error) {
 		return nil, err
 	}
 
-	stack := app.stackFactory.Create()
+	assignable, err := app.stackAssignableBuilder.Create().
+		WithBytes(input).
+		Now()
+
+	if err != nil {
+		return nil, err
+	}
+
+	variable := root.Input()
+	assignment, err := app.stackAssignmentBuilder.Create().
+		WithName(variable).
+		WithAssignable(assignable).
+		Now()
+
+	if err != nil {
+		return nil, err
+	}
+
+	assignments, err := app.stackAssignmentsBuilder.Create().
+		WithList([]stacks.Assignment{
+			assignment,
+		}).Now()
+
+	if err != nil {
+		return nil, err
+	}
+
+	frame, err := app.stackFrameBuilder.Create().
+		WithAssignments(assignments).
+		Now()
+
+	if err != nil {
+		return nil, err
+	}
+
+	frames, err := app.stackFramesBuilder.Create().
+		WithList([]stacks.Frame{
+			frame,
+		}).Now()
+
+	if err != nil {
+		return nil, err
+	}
+
+	stack, err := app.stackBuilder.Create().
+		WithFrames(frames).
+		Now()
+
+	if err != nil {
+		return nil, err
+	}
+
 	return app.executeLayer(
 		service,
 		app.authenticated,

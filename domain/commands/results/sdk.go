@@ -1,8 +1,8 @@
 package results
 
 import (
+	"steve.care/network/domain/commands/layers"
 	"steve.care/network/domain/hash"
-	"steve.care/network/domain/layers"
 )
 
 const (

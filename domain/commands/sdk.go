@@ -1,0 +1,45 @@
+package commands
+
+import (
+	"steve.care/network/domain/commands/layers"
+	"steve.care/network/domain/commands/links"
+	"steve.care/network/domain/commands/results"
+	"steve.care/network/domain/hash"
+)
+
+// Builder represents a command
+type Builder interface {
+	Create() Builder
+	WithInput(input []byte) Builder
+	WithLayer(layer layers.Layer) Builder
+	WithResult(result results.Result) Builder
+	WithParent(parent Link) Builder
+	Now() (Command, error)
+}
+
+// Command represents a command
+type Command interface {
+	Hash() hash.Hash
+	Input() []byte
+	Layer() layers.Layer
+	Result() results.Result
+	HasParent() bool
+	Parent() Link
+}
+
+// LinkBuilder represents a link builder
+type LinkBuilder interface {
+	Create() LinkBuilder
+	WithInput(input []byte) LinkBuilder
+	WithLink(link links.Link) LinkBuilder
+	WithCommand(command Command) LinkBuilder
+	Now() (Link, error)
+}
+
+// Link represents a link execution
+type Link interface {
+	Hash() hash.Hash
+	Input() []byte
+	Link() links.Link
+	Command() Command
+}
