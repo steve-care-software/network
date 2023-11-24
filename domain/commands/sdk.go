@@ -7,6 +7,14 @@ import (
 	"steve.care/network/domain/hash"
 )
 
+// NewCommandBuilder creates a new command builder
+func NewCommandBuilder() CommandBuilder {
+	hashAdapter := hash.NewAdapter()
+	return createCommandBuilder(
+		hashAdapter,
+	)
+}
+
 // NewLinkBuilder creates a new link builder
 func NewLinkBuilder() LinkBuilder {
 	hashAdapter := hash.NewAdapter()
