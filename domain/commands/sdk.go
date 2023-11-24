@@ -7,6 +7,14 @@ import (
 	"steve.care/network/domain/hash"
 )
 
+// NewBuilder creates a new builder instance
+func NewBuilder() Builder {
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(
+		hashAdapter,
+	)
+}
+
 // NewCommandBuilder creates a new command builder
 func NewCommandBuilder() CommandBuilder {
 	hashAdapter := hash.NewAdapter()
