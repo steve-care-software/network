@@ -1,12 +1,14 @@
-package authenticates
+package commands
 
 import (
 	"bytes"
 	"errors"
 	"fmt"
 
+	"steve.care/network/applications/authenticates/accounts"
 	"steve.care/network/domain/databases"
 	"steve.care/network/domain/hash"
+	"steve.care/network/domain/receipts"
 	"steve.care/network/domain/receipts/commands/layers"
 	"steve.care/network/domain/receipts/commands/links"
 
@@ -19,6 +21,7 @@ import (
 )
 
 type application struct {
+	accountApp                accounts.Application
 	hashAdapter               hash.Adapter
 	database                  databases.Database
 	stackBuilder              stacks.Builder
@@ -33,10 +36,10 @@ type application struct {
 	resultBuilder             results.Builder
 	resultSuccessBuilder      results.SuccessBuilder
 	resultFailureBuilder      results.FailureBuilder
-	authenticated             identity_accounts.Account
 }
 
 func createApplication(
+	accountApp accounts.Application,
 	database databases.Database,
 	stackBuilder stacks.Builder,
 	stackFramesBuilder stacks.FramesBuilder,
@@ -52,6 +55,7 @@ func createApplication(
 	resultFailureBuilder results.FailureBuilder,
 ) Application {
 	out := application{
+		accountApp:                accountApp,
 		database:                  database,
 		stackBuilder:              stackBuilder,
 		stackFramesBuilder:        stackFramesBuilder,
@@ -65,7 +69,6 @@ func createApplication(
 		resultBuilder:             resultBuilder,
 		resultSuccessBuilder:      resultSuccessBuilder,
 		resultFailureBuilder:      resultFailureBuilder,
-		authenticated:             nil,
 	}
 
 	return &out
@@ -87,9 +90,10 @@ func (app *application) Exists(hash hash.Hash) (bool, error) {
 }
 
 // Execute executes a layer
-func (app *application) Execute(hash hash.Hash, input []byte) (results.Result, error) {
-	if app.authenticated == nil {
-		// failure, not authenticated
+func (app *application) Execute(hash hash.Hash, input []byte) (receipts.Receipt, error) {
+	authenticated, err := app.accountApp.Retrieve()
+	if err != nil {
+		// failure
 	}
 
 	root, err := app.database.Repository().Layer().Retrieve(hash)
@@ -154,12 +158,18 @@ func (app *application) Execute(hash hash.Hash, input []byte) (results.Result, e
 		return nil, err
 	}
 
-	return app.executeLayer(
+	_, err = app.executeLayer(
 		service,
-		app.authenticated,
+		authenticated,
 		root,
 		stack,
 	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return nil, nil
 }
 
 // Links returns the link based on the executed layers
