@@ -3,9 +3,9 @@ package commands
 import (
 	"errors"
 
-	"steve.care/network/domain/commands/layers"
-	"steve.care/network/domain/commands/results"
 	"steve.care/network/domain/hash"
+	"steve.care/network/domain/receipts/commands/layers"
+	"steve.care/network/domain/receipts/commands/results"
 )
 
 type commandBuilder struct {

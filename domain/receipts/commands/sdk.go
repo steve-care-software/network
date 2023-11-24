@@ -1,10 +1,10 @@
 package commands
 
 import (
-	"steve.care/network/domain/commands/layers"
-	"steve.care/network/domain/commands/links"
-	"steve.care/network/domain/commands/results"
 	"steve.care/network/domain/hash"
+	"steve.care/network/domain/receipts/commands/layers"
+	"steve.care/network/domain/receipts/commands/links"
+	"steve.care/network/domain/receipts/commands/results"
 )
 
 // NewBuilder creates a new builder instance

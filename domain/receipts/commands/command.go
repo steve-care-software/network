@@ -1,9 +1,9 @@
 package commands
 
 import (
-	"steve.care/network/domain/commands/layers"
-	"steve.care/network/domain/commands/results"
 	"steve.care/network/domain/hash"
+	"steve.care/network/domain/receipts/commands/layers"
+	"steve.care/network/domain/receipts/commands/results"
 )
 
 type command struct {

@@ -1,8 +1,8 @@
 package commands
 
 import (
-	"steve.care/network/domain/commands/links"
 	"steve.care/network/domain/hash"
+	"steve.care/network/domain/receipts/commands/links"
 )
 
 type link struct {

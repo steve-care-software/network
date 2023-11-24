@@ -5,16 +5,16 @@ import (
 	"errors"
 	"fmt"
 
-	"steve.care/network/domain/commands/layers"
-	"steve.care/network/domain/commands/links"
 	"steve.care/network/domain/databases"
 	"steve.care/network/domain/hash"
+	"steve.care/network/domain/receipts/commands/layers"
+	"steve.care/network/domain/receipts/commands/links"
 
 	identity_accounts "steve.care/network/domain/accounts"
 	"steve.care/network/domain/accounts/encryptors"
 	"steve.care/network/domain/accounts/signers"
 	identity_accounts_signers "steve.care/network/domain/accounts/signers"
-	"steve.care/network/domain/commands/results"
+	"steve.care/network/domain/receipts/commands/results"
 	"steve.care/network/domain/stacks"
 )
 

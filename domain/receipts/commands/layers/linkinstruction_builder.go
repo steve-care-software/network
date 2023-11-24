@@ -3,8 +3,8 @@ package layers
 import (
 	"errors"
 
-	"steve.care/network/domain/commands/links"
 	"steve.care/network/domain/hash"
+	"steve.care/network/domain/receipts/commands/links"
 )
 
 type linkInstructionBuilder struct {
