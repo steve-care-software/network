@@ -1,22 +1,24 @@
 package authenticates
 
 import (
-	accounts_application "steve.care/network/applications/authenticates/accounts"
-	commands_appication "steve.care/network/applications/authenticates/commands"
+	commands_application "steve.care/network/applications/authenticates/commands"
+	layers_application "steve.care/network/applications/authenticates/layers"
+	links_application "steve.care/network/applications/authenticates/links"
 	receipts_application "steve.care/network/applications/authenticates/receipts"
-	"steve.care/network/domain/accounts"
+	"steve.care/network/domain/credentials"
 )
 
 // Builder represents an application builder
 type Builder interface {
 	Create() Builder
-	WithAccount(account accounts.Account) Builder
-	NOw() (Application, error)
+	WithCredentials(credentials credentials.Credentials) Builder
+	Now() Builder
 }
 
 // Application represents an authenticated application
 type Application interface {
-	Account() accounts_application.Application
-	Receipt() receipts_application.Application
-	Command() commands_appication.Application
+	Receipts() receipts_application.Application
+	Layers() layers_application.Application
+	Links() links_application.Application
+	Commands() commands_application.Application
 }

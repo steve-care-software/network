@@ -1,6 +1,7 @@
 package links
 
 import (
+	"steve.care/network/domain/accounts"
 	"steve.care/network/domain/hash"
 )
 
@@ -243,14 +244,27 @@ type Operator interface {
 	IsXor() bool
 }
 
+// RepositoryBuilder represents the repository builder
+type RepositoryBuilder interface {
+	Create() RepositoryBuilder
+	WithAccount(account accounts.Account) RepositoryBuilder
+	Now() (Repository, error)
+}
+
 // Repository represents the link repository
 type Repository interface {
 	Retrieve(executedLayers []hash.Hash) (Link, error)
 }
 
+// ServiceBuilder represents the service builder
+type ServiceBuilder interface {
+	Create() ServiceBuilder
+	WithAccount(account accounts.Account) ServiceBuilder
+	Now() (Service, error)
+}
+
 // Service represents the link service
 type Service interface {
 	Insert(link Link) error
-	Update(origin hash.Hash, updated Link) error
 	Delete(hash hash.Hash) error
 }

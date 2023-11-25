@@ -5,12 +5,12 @@ import (
 	"errors"
 	"fmt"
 
-	"steve.care/network/applications/authenticates/accounts"
+	"steve.care/network/applications/accounts"
+	"steve.care/network/domain/credentials"
 	"steve.care/network/domain/databases"
 	"steve.care/network/domain/hash"
 	"steve.care/network/domain/receipts"
 	"steve.care/network/domain/receipts/commands/layers"
-	"steve.care/network/domain/receipts/commands/links"
 
 	identity_accounts "steve.care/network/domain/accounts"
 	"steve.care/network/domain/accounts/encryptors"
@@ -74,24 +74,19 @@ func createApplication(
 	return &out
 }
 
-// Delete deletes the authenticated account
-func (app *application) Delete(password []byte) error {
-	return nil
+// Begin begins an execution context
+func (app *application) Begin() (*uint, error) {
+	return nil, nil
 }
 
-// Update updates the authenticated account
-func (app *application) Update(currentPassword []byte, newPassword []byte) error {
-	return nil
+//  End ends the context and returns the receipt
+func (app *application) End(context uint) (receipts.Receipt, error) {
+	return nil, nil
 }
 
-// Exists returns true if the layer exists, false otherwise
-func (app *application) Exists(hash hash.Hash) (bool, error) {
-	return false, nil
-}
-
-// Execute executes a layer
-func (app *application) Execute(hash hash.Hash, input []byte) (receipts.Receipt, error) {
-	authenticated, err := app.accountApp.Retrieve()
+// Execute executes the application
+func (app *application) Execute(context uint, credentials credentials.Credentials, hash hash.Hash, input []byte) (results.Result, error) {
+	authenticated, err := app.accountApp.Retrieve(credentials)
 	if err != nil {
 		// failure
 	}
@@ -158,28 +153,12 @@ func (app *application) Execute(hash hash.Hash, input []byte) (receipts.Receipt,
 		return nil, err
 	}
 
-	_, err = app.executeLayer(
+	return app.executeLayer(
 		service,
 		authenticated,
 		root,
 		stack,
 	)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return nil, nil
-}
-
-// Links returns the link based on the executed layers
-func (app *application) Links(executed []hash.Hash) (links.Link, error) {
-	return nil, nil
-}
-
-// Clear clears the session
-func (app *application) Clear() error {
-	return nil
 }
 
 func (app *application) executeLayer(
