@@ -1,13 +1,11 @@
 package applications
 
-import (
-	accounts_application "steve.care/network/applications/accounts"
-	"steve.care/network/applications/authenticates"
-	"steve.care/network/domain/credentials"
-)
+import "steve.care/network/applications/applications"
 
-// Application represents a stencil application
+// Application represents the core application
 type Application interface {
-	Accounts() accounts_application.Application
-	Authenticate(credentials credentials.Credentials) (authenticates.Application, error)
+	Begin() (applications.Application, error)
+	Commit(applications.Application) error
+	Cancel(applications.Application) error
+	Rollback(applications.Application) error
 }

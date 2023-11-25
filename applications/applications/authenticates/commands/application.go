@@ -5,9 +5,9 @@ import (
 	"errors"
 	"fmt"
 
-	"steve.care/network/applications/accounts"
+	"steve.care/network/applications/applications/accounts"
+	layers_application "steve.care/network/applications/applications/authenticates/layers"
 	"steve.care/network/domain/credentials"
-	"steve.care/network/domain/databases"
 	"steve.care/network/domain/hash"
 	"steve.care/network/domain/receipts"
 	"steve.care/network/domain/receipts/commands/layers"
@@ -22,8 +22,8 @@ import (
 
 type application struct {
 	accountApp                accounts.Application
+	layerApp                  layers_application.Application
 	hashAdapter               hash.Adapter
-	database                  databases.Database
 	stackBuilder              stacks.Builder
 	stackFramesBuilder        stacks.FramesBuilder
 	stackFrameBuilder         stacks.FrameBuilder
@@ -40,7 +40,7 @@ type application struct {
 
 func createApplication(
 	accountApp accounts.Application,
-	database databases.Database,
+	layerApp layers_application.Application,
 	stackBuilder stacks.Builder,
 	stackFramesBuilder stacks.FramesBuilder,
 	stackFrameBuilder stacks.FrameBuilder,
@@ -56,7 +56,7 @@ func createApplication(
 ) Application {
 	out := application{
 		accountApp:                accountApp,
-		database:                  database,
+		layerApp:                  layerApp,
 		stackBuilder:              stackBuilder,
 		stackFramesBuilder:        stackFramesBuilder,
 		stackFrameBuilder:         stackFrameBuilder,
@@ -91,12 +91,7 @@ func (app *application) Execute(context uint, credentials credentials.Credential
 		// failure
 	}
 
-	root, err := app.database.Repository().Layer().Retrieve(hash)
-	if err != nil {
-		return nil, err
-	}
-
-	service, err := app.database.Begin()
+	root, err := app.layerApp.Retrieve(hash)
 	if err != nil {
 		return nil, err
 	}
@@ -154,7 +149,6 @@ func (app *application) Execute(context uint, credentials credentials.Credential
 	}
 
 	return app.executeLayer(
-		service,
 		authenticated,
 		root,
 		stack,
@@ -162,7 +156,6 @@ func (app *application) Execute(context uint, credentials credentials.Credential
 }
 
 func (app *application) executeLayer(
-	service databases.Service,
 	authenticated identity_accounts.Account,
 	layer layers.Layer,
 	stack stacks.Stack,
@@ -198,7 +191,6 @@ func (app *application) executeLayer(
 
 	instructions := layer.Instructions()
 	updatedStack, failure, err := app.executeInstructions(
-		service,
 		authenticated,
 		instructions,
 		stack,
@@ -275,7 +267,6 @@ func (app *application) executeNativeCode(
 }
 
 func (app *application) executeInstructions(
-	service databases.Service,
 	authenticated identity_accounts.Account,
 	instructions layers.Instructions,
 	stack stacks.Stack,
@@ -284,7 +275,6 @@ func (app *application) executeInstructions(
 	list := instructions.List()
 	for idx, oneInstruction := range list {
 		retStack, failure, err := app.executeInstruction(
-			service,
 			authenticated,
 			oneInstruction,
 			uint(idx),
@@ -311,7 +301,6 @@ func (app *application) executeInstructions(
 }
 
 func (app *application) executeInstruction(
-	service databases.Service,
 	authenticated identity_accounts.Account,
 	instruction layers.Instruction,
 	index uint,
@@ -352,7 +341,6 @@ func (app *application) executeInstruction(
 		if boolValue {
 			conditionalInstructons := condition.Instructions()
 			return app.executeInstructions(
-				service,
 				authenticated,
 				conditionalInstructons,
 				stack,
@@ -377,7 +365,6 @@ func (app *application) executeInstruction(
 	}
 
 	if instruction.IsLayer() {
-		layerService := service.Layer()
 		layerInstruction := instruction.Layer()
 		if layerInstruction.IsSave() {
 
@@ -385,7 +372,7 @@ func (app *application) executeInstruction(
 
 		if layerInstruction.IsDelete() {
 			hash := layerInstruction.Delete()
-			err := layerService.Delete(hash)
+			err := app.layerApp.Delete(hash)
 			if err != nil {
 				// failure
 			}

@@ -1,10 +1,10 @@
 package authenticates
 
 import (
-	commands_application "steve.care/network/applications/authenticates/commands"
-	layers_application "steve.care/network/applications/authenticates/layers"
-	links_application "steve.care/network/applications/authenticates/links"
-	receipts_application "steve.care/network/applications/authenticates/receipts"
+	commands_application "steve.care/network/applications/applications/authenticates/commands"
+	layers_application "steve.care/network/applications/applications/authenticates/layers"
+	links_application "steve.care/network/applications/applications/authenticates/links"
+	receipts_application "steve.care/network/applications/applications/authenticates/receipts"
 	"steve.care/network/domain/credentials"
 )
 
