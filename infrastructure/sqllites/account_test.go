@@ -45,12 +45,10 @@ func TestAccount_InsertThenRetrieve_Success(t *testing.T) {
 
 	// defer close
 	defer dbApp.Close()
-
 	repository, err := accounts.NewRepositoryBuilder(
 		edwards25519.NewEncryptor(),
 		jsons.NewAccountAdapter(),
 	).Create().WithDatabase(dbApp).Now()
-
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
@@ -58,7 +56,6 @@ func TestAccount_InsertThenRetrieve_Success(t *testing.T) {
 
 	service, err := accounts.NewServiceBuilder(
 		edwards25519.NewEncryptor(),
-		repository,
 		jsons.NewAccountAdapter(),
 	).Create().WithDatabase(dbApp).WithBitrate(4096).Now()
 

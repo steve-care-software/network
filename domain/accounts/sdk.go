@@ -27,16 +27,20 @@ func NewRepositoryBuilder(
 // NewServiceBuilder creates a new service builder
 func NewServiceBuilder(
 	encryptor encryptors.Encryptor,
-	repository Repository,
 	adapter Adapter,
 ) ServiceBuilder {
 	builder := NewBuilder()
 	encryptorBuilder := account_encryptors.NewBuilder()
 	signerFactory := signers.NewFactory()
+	repositoryBuilder := NewRepositoryBuilder(
+		encryptor,
+		adapter,
+	)
+
 	return createServiceBuilder(
 		encryptor,
 		builder,
-		repository,
+		repositoryBuilder,
 		adapter,
 		encryptorBuilder,
 		signerFactory,

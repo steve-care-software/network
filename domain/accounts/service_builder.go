@@ -10,33 +10,33 @@ import (
 )
 
 type serviceBuilder struct {
-	encryptor        encryptors.Encryptor
-	builder          Builder
-	repository       Repository
-	adapter          Adapter
-	encryptorBuilder account_encryptors.Builder
-	signerFactory    signers.Factory
-	db               databases.Database
-	bitrate          int
+	encryptor         encryptors.Encryptor
+	builder           Builder
+	repositoryBuilder RepositoryBuilder
+	adapter           Adapter
+	encryptorBuilder  account_encryptors.Builder
+	signerFactory     signers.Factory
+	db                databases.Database
+	bitrate           int
 }
 
 func createServiceBuilder(
 	encryptor encryptors.Encryptor,
 	builder Builder,
-	repository Repository,
+	repositoryBuilder RepositoryBuilder,
 	adapter Adapter,
 	encryptorBuilder account_encryptors.Builder,
 	signerFactory signers.Factory,
 ) ServiceBuilder {
 	out := serviceBuilder{
-		encryptor:        encryptor,
-		builder:          builder,
-		repository:       repository,
-		adapter:          adapter,
-		encryptorBuilder: encryptorBuilder,
-		signerFactory:    signerFactory,
-		db:               nil,
-		bitrate:          0,
+		encryptor:         encryptor,
+		builder:           builder,
+		repositoryBuilder: repositoryBuilder,
+		adapter:           adapter,
+		encryptorBuilder:  encryptorBuilder,
+		signerFactory:     signerFactory,
+		db:                nil,
+		bitrate:           0,
 	}
 
 	return &out
@@ -47,7 +47,7 @@ func (app *serviceBuilder) Create() ServiceBuilder {
 	return createServiceBuilder(
 		app.encryptor,
 		app.builder,
-		app.repository,
+		app.repositoryBuilder,
 		app.adapter,
 		app.encryptorBuilder,
 		app.signerFactory,
@@ -76,10 +76,18 @@ func (app *serviceBuilder) Now() (Service, error) {
 		return nil, errors.New("the bitrate must be greater than zero (0) in order to build a Service instance")
 	}
 
+	repository, err := app.repositoryBuilder.Create().
+		WithDatabase(app.db).
+		Now()
+
+	if err != nil {
+		return nil, err
+	}
+
 	return createService(
 		app.encryptor,
 		app.builder,
-		app.repository,
+		repository,
 		app.adapter,
 		app.encryptorBuilder,
 		app.signerFactory,
