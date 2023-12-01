@@ -11,11 +11,12 @@ import (
 type Builder interface {
 	Create() Builder
 	WithCredentials(credentials credentials.Credentials) Builder
-	Now() Builder
+	Now() (Application, error)
 }
 
 // Application represents the receipt application
 type Application interface {
+	Amount() (uint, error)
 	List(index uint, amount uint) ([]hash.Hash, error)
 	ListBySigner(pubKey signers.PublicKey, index uint, amount uint) ([]hash.Hash, error)
 	Retrieve(hash hash.Hash) (receipts.Receipt, error)

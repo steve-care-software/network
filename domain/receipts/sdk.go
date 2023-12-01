@@ -1,8 +1,8 @@
 package receipts
 
 import (
-	"steve.care/network/domain/accounts"
 	"steve.care/network/domain/accounts/signers"
+	"steve.care/network/domain/credentials"
 	"steve.care/network/domain/hash"
 	"steve.care/network/domain/receipts/commands"
 )
@@ -33,12 +33,13 @@ type Receipt interface {
 // RepositoryBuilder represents the repository builder
 type RepositoryBuilder interface {
 	Create() RepositoryBuilder
-	WithAccount(account accounts.Account) RepositoryBuilder
+	WithCredentials(credentials credentials.Credentials) RepositoryBuilder
 	Now() (Repository, error)
 }
 
 // Repository represents a receipt repository
 type Repository interface {
+	Amount() (uint, error)
 	List(index uint, amount uint) ([]hash.Hash, error)
 	ListBySigner(pubKey signers.PublicKey, index uint, amount uint) ([]hash.Hash, error)
 	Retrieve(hash hash.Hash) (Receipt, error)
@@ -47,7 +48,7 @@ type Repository interface {
 // ServiceBuilder represents a service builder
 type ServiceBuilder interface {
 	Create() ServiceBuilder
-	WithAccount(account accounts.Account) ServiceBuilder
+	WithCredentials(credentials credentials.Credentials) ServiceBuilder
 	Now() (Service, error)
 }
 
