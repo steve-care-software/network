@@ -26,6 +26,7 @@ type Builder interface {
 
 // Application represents the layer application
 type Application interface {
+	Amount() (uint, error)
 	List(index uint, amount uint) ([]hash.Hash, error)
 	Exists(hash hash.Hash) (bool, error)
 	Retrieve(hash hash.Hash) (layers.Layer, error)

@@ -1,7 +1,7 @@
 package links
 
 import (
-	"steve.care/network/domain/accounts"
+	"steve.care/network/domain/credentials"
 	"steve.care/network/domain/hash"
 )
 
@@ -247,19 +247,23 @@ type Operator interface {
 // RepositoryBuilder represents the repository builder
 type RepositoryBuilder interface {
 	Create() RepositoryBuilder
-	WithAccount(account accounts.Account) RepositoryBuilder
+	WithCredentials(credentials credentials.Credentials) RepositoryBuilder
 	Now() (Repository, error)
 }
 
 // Repository represents the link repository
 type Repository interface {
-	Retrieve(executedLayers []hash.Hash) (Link, error)
+	Amount() (uint, error)
+	List(index uint, amount uint) ([]hash.Hash, error)
+	Exists(hash hash.Hash) (bool, error)
+	RetrieveByHash(hash hash.Hash) (Link, error)
+	RetrieveByOrigin(executedLayers []hash.Hash) (Link, error)
 }
 
 // ServiceBuilder represents the service builder
 type ServiceBuilder interface {
 	Create() ServiceBuilder
-	WithAccount(account accounts.Account) ServiceBuilder
+	WithCredentials(credentials credentials.Credentials) ServiceBuilder
 	Now() (Service, error)
 }
 
