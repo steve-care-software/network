@@ -9,7 +9,7 @@ import (
 	"steve.care/network/domain/accounts/signers"
 )
 
-func TestAccountAdapter(t *testing.T) {
+func TestAccountAdapter_Success(t *testing.T) {
 	bitrate := 4096
 	encryptor, err := encryptors.NewBuilder().Create().
 		WithBitRate(bitrate).
