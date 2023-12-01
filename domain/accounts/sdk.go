@@ -11,6 +11,12 @@ func NewBuilder() Builder {
 	return createBuilder()
 }
 
+// Adapter represents the account adapter
+type Adapter interface {
+	ToBytes(ins Account) ([]byte, error)
+	ToInstance(bytes []byte) (Account, error)
+}
+
 // Builder represents an account builder
 type Builder interface {
 	Create() Builder
