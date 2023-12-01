@@ -6,6 +6,17 @@ import (
 	"steve.care/network/domain/receipts/commands/layers"
 )
 
+// NewBuilder creates a new application builder
+func NewBuilder(
+	repositoryBuilder layers.RepositoryBuilder,
+	serviceBuilder layers.ServiceBuilder,
+) Builder {
+	return createBuilder(
+		repositoryBuilder,
+		serviceBuilder,
+	)
+}
+
 // Builder represents an application builder
 type Builder interface {
 	Create() Builder

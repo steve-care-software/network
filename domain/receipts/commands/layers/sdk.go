@@ -1,7 +1,7 @@
 package layers
 
 import (
-	"steve.care/network/domain/accounts"
+	"steve.care/network/domain/credentials"
 	"steve.care/network/domain/hash"
 	"steve.care/network/domain/receipts/commands/links"
 )
@@ -500,12 +500,13 @@ type BytesReference interface {
 // RepositoryBuilder represents the repository builder
 type RepositoryBuilder interface {
 	Create() RepositoryBuilder
-	WithAccount(account accounts.Account) RepositoryBuilder
+	WithCredentials(credentials credentials.Credentials) RepositoryBuilder
 	Now() (Repository, error)
 }
 
 // Repository represents a layer repository
 type Repository interface {
+	List() ([]hash.Hash, error)
 	Exists(hash hash.Hash) (bool, error)
 	Retrieve(hash hash.Hash) (Layer, error)
 }
@@ -513,7 +514,7 @@ type Repository interface {
 // ServiceBuilder represents the repository builder
 type ServiceBuilder interface {
 	Create() ServiceBuilder
-	WithAccount(account accounts.Account) ServiceBuilder
+	WithCredentials(credentials credentials.Credentials) ServiceBuilder
 	Now() (Service, error)
 }
 
