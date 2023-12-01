@@ -8,7 +8,7 @@ import (
 	"steve.care/network/domain/accounts/encryptors"
 	"steve.care/network/domain/accounts/signers"
 	"steve.care/network/domain/credentials"
-	"steve.care/network/infrastructure/encryptors/edwards25519"
+	"steve.care/network/infrastructure/edwards25519"
 	"steve.care/network/infrastructure/jsons"
 )
 
@@ -36,29 +36,36 @@ func TestAccount_InsertThenRetrieve_Success(t *testing.T) {
 		return
 	}
 
-	schema := GetSchema()
-	dbPtr, err := openThenPrepareSQLInMemoryForTests(schema)
+	schema := getSchema()
+	dbApp, err := openThenPrepareSQLInMemoryForTests(schema)
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
 	}
 
 	// defer close
-	defer dbPtr.Close()
+	defer dbApp.Close()
 
-	repository := NewAccountRepository(
-		edwards25519.NewApplication(),
+	repository, err := accounts.NewRepositoryBuilder(
+		edwards25519.NewEncryptor(),
 		jsons.NewAccountAdapter(),
-		dbPtr,
-	)
+	).Create().WithDatabase(dbApp).Now()
 
-	service := NewAccountService(
-		edwards25519.NewApplication(),
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	service, err := accounts.NewServiceBuilder(
+		edwards25519.NewEncryptor(),
 		repository,
 		jsons.NewAccountAdapter(),
-		4096,
-		dbPtr,
-	)
+	).Create().WithDatabase(dbApp).WithBitrate(4096).Now()
+
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
 
 	password := []byte("this is my passwprd")
 	err = service.Insert(accountIns, password)

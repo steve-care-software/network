@@ -1,14 +1,46 @@
 package accounts
 
 import (
-	"steve.care/network/domain/accounts/encryptors"
+	account_encryptors "steve.care/network/domain/accounts/encryptors"
 	"steve.care/network/domain/accounts/signers"
 	"steve.care/network/domain/credentials"
+	"steve.care/network/domain/databases"
+	"steve.care/network/domain/encryptors"
 )
 
 // NewBuilder creates a new builder instance
 func NewBuilder() Builder {
 	return createBuilder()
+}
+
+// NewRepositoryBuilder creates a new reposiotry builder
+func NewRepositoryBuilder(
+	encryptor encryptors.Encryptor,
+	adapter Adapter,
+) RepositoryBuilder {
+	return createRepositoryBuilder(
+		encryptor,
+		adapter,
+	)
+}
+
+// NewServiceBuilder creates a new service builder
+func NewServiceBuilder(
+	encryptor encryptors.Encryptor,
+	repository Repository,
+	adapter Adapter,
+) ServiceBuilder {
+	builder := NewBuilder()
+	encryptorBuilder := account_encryptors.NewBuilder()
+	signerFactory := signers.NewFactory()
+	return createServiceBuilder(
+		encryptor,
+		builder,
+		repository,
+		adapter,
+		encryptorBuilder,
+		signerFactory,
+	)
 }
 
 // Adapter represents the account adapter
@@ -21,7 +53,7 @@ type Adapter interface {
 type Builder interface {
 	Create() Builder
 	WithUsername(username string) Builder
-	WithEncryptor(encryptor encryptors.Encryptor) Builder
+	WithEncryptor(encryptor account_encryptors.Encryptor) Builder
 	WithSigner(signer signers.Signer) Builder
 	Now() (Account, error)
 }
@@ -29,7 +61,7 @@ type Builder interface {
 // Account represents the identity account
 type Account interface {
 	Username() string
-	Encryptor() encryptors.Encryptor
+	Encryptor() account_encryptors.Encryptor
 	Signer() signers.Signer
 }
 
@@ -53,11 +85,26 @@ type UpdateCriteria interface {
 	Password() []byte
 }
 
+// RepositoryBuilder represents a repository builder
+type RepositoryBuilder interface {
+	Create() RepositoryBuilder
+	WithDatabase(db databases.Database) RepositoryBuilder
+	Now() (Repository, error)
+}
+
 // Repository represents the account repository
 type Repository interface {
 	List() ([]string, error)
 	Exists(username string) (bool, error)
 	Retrieve(credentials credentials.Credentials) (Account, error)
+}
+
+// ServiceBuilder represents the service builder
+type ServiceBuilder interface {
+	Create() ServiceBuilder
+	WithDatabase(db databases.Database) ServiceBuilder
+	WithBitrate(bitrate int) ServiceBuilder
+	Now() (Service, error)
 }
 
 // Service represents the account service

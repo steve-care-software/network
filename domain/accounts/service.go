@@ -1,79 +1,71 @@
-package sqllites
+package accounts
 
 import (
-	"database/sql"
 	"errors"
 	"fmt"
 
 	_ "github.com/mattn/go-sqlite3"
-	encryptor_applications "steve.care/network/applications/applications/encryptors"
-	"steve.care/network/domain/accounts"
-	"steve.care/network/domain/accounts/encryptors"
+	account_encryptors "steve.care/network/domain/accounts/encryptors"
 	"steve.care/network/domain/accounts/signers"
 	"steve.care/network/domain/credentials"
+	"steve.care/network/domain/databases"
+	"steve.care/network/domain/encryptors"
 )
 
-type accountService struct {
-	encryptorApp     encryptor_applications.Application
-	builder          accounts.Builder
-	repository       accounts.Repository
-	adapter          accounts.Adapter
-	encryptorBuilder encryptors.Builder
+type service struct {
+	encryptor        encryptors.Encryptor
+	builder          Builder
+	repository       Repository
+	adapter          Adapter
+	encryptorBuilder account_encryptors.Builder
 	signerFactory    signers.Factory
+	db               databases.Database
 	bitrate          int
-	dbPtr            *sql.DB
 }
 
-func createAccountService(
-	encryptorApp encryptor_applications.Application,
-	builder accounts.Builder,
-	repository accounts.Repository,
-	adapter accounts.Adapter,
-	encryptorBuilder encryptors.Builder,
+func createService(
+	encryptor encryptors.Encryptor,
+	builder Builder,
+	repository Repository,
+	adapter Adapter,
+	encryptorBuilder account_encryptors.Builder,
 	signerFactory signers.Factory,
+	db databases.Database,
 	bitrate int,
-	dbPtr *sql.DB,
-) accounts.Service {
-	out := accountService{
-		encryptorApp:     encryptorApp,
+) Service {
+	out := service{
+		encryptor:        encryptor,
+		db:               db,
 		builder:          builder,
 		repository:       repository,
 		adapter:          adapter,
 		encryptorBuilder: encryptorBuilder,
 		signerFactory:    signerFactory,
 		bitrate:          bitrate,
-		dbPtr:            dbPtr,
 	}
 
 	return &out
 }
 
 // Insert inserts an account
-func (app *accountService) Insert(account accounts.Account, password []byte) error {
+func (app *service) Insert(account Account, password []byte) error {
 	bytes, err := app.adapter.ToBytes(account)
 	if err != nil {
 		return err
 	}
 
-	cipher, err := app.encryptorApp.Encrypt(bytes, password)
+	cipher, err := app.encryptor.Encrypt(bytes, password)
 	if err != nil {
 		return err
 	}
 
-	// insert
 	username := account.Username()
-	stmt, err := app.dbPtr.Prepare("INSERT INTO accounts (username, cipher) VALUES (?, ?)")
+	trxApp, err := app.db.Prepare()
 	if err != nil {
 		return err
 	}
 
-	defer stmt.Close()
-	res, err := stmt.Exec(username, cipher)
-	if err != nil {
-		return err
-	}
-
-	affected, err := res.RowsAffected()
+	affected, err := trxApp.Execute("INSERT INTO accounts (username, cipher) VALUES (?, ?)", username, cipher)
 	if err != nil {
 		return err
 	}
@@ -83,11 +75,11 @@ func (app *accountService) Insert(account accounts.Account, password []byte) err
 		return errors.New(str)
 	}
 
-	return nil
+	return trxApp.Commit()
 }
 
 // Update updates an account
-func (app *accountService) Update(credentials credentials.Credentials, criteria accounts.UpdateCriteria) error {
+func (app *service) Update(credentials credentials.Credentials, criteria UpdateCriteria) error {
 	originAccount, err := app.repository.Retrieve(credentials)
 	if err != nil {
 		return err
@@ -139,23 +131,17 @@ func (app *accountService) Update(credentials credentials.Credentials, criteria 
 		updatedPassword = criteria.Password()
 	}
 
-	cipher, err := app.encryptorApp.Encrypt(bytes, updatedPassword)
+	cipher, err := app.encryptor.Encrypt(bytes, updatedPassword)
 	if err != nil {
 		return err
 	}
 
-	stmt, err := app.dbPtr.Prepare("UPDATE accounts set username = ?, cipher = ? where username = ?")
+	trxApp, err := app.db.Prepare()
 	if err != nil {
 		return err
 	}
 
-	defer stmt.Close()
-	res, err := stmt.Exec(updatedAccount.Username(), cipher, originUsername)
-	if err != nil {
-		return err
-	}
-
-	affected, err := res.RowsAffected()
+	affected, err := trxApp.Execute("UPDATE accounts set username = ?, cipher = ? where username = ?", updatedAccount.Username(), cipher, originUsername)
 	if err != nil {
 		return err
 	}
@@ -169,21 +155,13 @@ func (app *accountService) Update(credentials credentials.Credentials, criteria 
 }
 
 // Delete deletes an account
-func (app *accountService) Delete(credentials credentials.Credentials) error {
-	stmt, err := app.dbPtr.Prepare("DELETE FROM accounts where username = ?")
+func (app *service) Delete(credentials credentials.Credentials) error {
+	trxApp, err := app.db.Prepare()
 	if err != nil {
 		return err
 	}
 
-	defer stmt.Close()
-
-	username := credentials.Username()
-	res, err := stmt.Exec(username)
-	if err != nil {
-		return err
-	}
-
-	affected, err := res.RowsAffected()
+	affected, err := trxApp.Execute("DELETE FROM accounts where username = ?", credentials.Username())
 	if err != nil {
 		return err
 	}

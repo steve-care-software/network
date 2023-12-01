@@ -8,14 +8,14 @@ import (
 func TestEncryptor_Success(t *testing.T) {
 	password := []byte("this is a password")
 	message := []byte("this is a message")
-	application := NewApplication()
-	cipher, err := application.Encrypt(message, password)
+	encryptor := NewEncryptor()
+	cipher, err := encryptor.Encrypt(message, password)
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned")
 		return
 	}
 
-	retMessage, err := application.Decrypt(cipher, password)
+	retMessage, err := encryptor.Decrypt(cipher, password)
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned")
 		return
@@ -30,15 +30,15 @@ func TestEncryptor_Success(t *testing.T) {
 func TestEncryptor__decryptsWithInvalidPassword_ReturnsError(t *testing.T) {
 	password := []byte("this is a password")
 	message := []byte("this is a message")
-	application := NewApplication()
-	cipher, err := application.Encrypt(message, password)
+	encryptor := NewEncryptor()
+	cipher, err := encryptor.Encrypt(message, password)
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned")
 		return
 	}
 
 	invalidPassword := []byte("invalid password")
-	retMessage, err := application.Decrypt(cipher, invalidPassword)
+	retMessage, err := encryptor.Decrypt(cipher, invalidPassword)
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned")
 		return

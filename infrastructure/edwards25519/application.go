@@ -7,19 +7,19 @@ import (
 	"errors"
 	"io"
 
-	"steve.care/network/applications/applications/encryptors"
+	"steve.care/network/domain/encryptors"
 )
 
-type application struct {
+type encryptor struct {
 }
 
-func createApplication() encryptors.Application {
-	out := application{}
+func createEncryptor() encryptors.Encryptor {
+	out := encryptor{}
 	return &out
 }
 
 // Encrypt encrypts a message
-func (app *application) Encrypt(message []byte, password []byte) ([]byte, error) {
+func (app *encryptor) Encrypt(message []byte, password []byte) ([]byte, error) {
 	key := app.hashPass(password)
 	block, blockErr := aes.NewCipher(key)
 	if blockErr != nil {
@@ -39,7 +39,7 @@ func (app *application) Encrypt(message []byte, password []byte) ([]byte, error)
 }
 
 // Decrypt decrypts a cipher
-func (app *application) Decrypt(cipherBytes []byte, password []byte) ([]byte, error) {
+func (app *encryptor) Decrypt(cipherBytes []byte, password []byte) ([]byte, error) {
 	key := app.hashPass(password)
 	block, blockErr := aes.NewCipher(key)
 	if blockErr != nil {
@@ -62,7 +62,7 @@ func (app *application) Decrypt(cipherBytes []byte, password []byte) ([]byte, er
 	return cipherBytes, nil
 }
 
-func (app *application) hashPass(password []byte) []byte {
+func (app *encryptor) hashPass(password []byte) []byte {
 	hasher := curve.Hash()
 	hasher.Write([]byte(password))
 	return hasher.Sum(nil)

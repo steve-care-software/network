@@ -6,11 +6,13 @@ import (
 	links_application "steve.care/network/applications/applications/authenticates/links"
 	receipts_application "steve.care/network/applications/applications/authenticates/receipts"
 	"steve.care/network/domain/credentials"
+	"steve.care/network/domain/databases"
 )
 
 // Builder represents an application builder
 type Builder interface {
 	Create() Builder
+	WithDatabase(database databases.Database) Builder
 	WithCredentials(credentials credentials.Credentials) Builder
 	Now() (Application, error)
 }
