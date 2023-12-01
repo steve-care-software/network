@@ -10,7 +10,7 @@ import (
 type repositoryBuilder struct {
 	encryptor encryptors.Encryptor
 	adapter   Adapter
-	db        databases.Database
+	query     databases.Query
 }
 
 func createRepositoryBuilder(
@@ -20,7 +20,7 @@ func createRepositoryBuilder(
 	out := repositoryBuilder{
 		encryptor: encryptor,
 		adapter:   adapter,
-		db:        nil,
+		query:     nil,
 	}
 
 	return &out
@@ -34,22 +34,22 @@ func (app *repositoryBuilder) Create() RepositoryBuilder {
 	)
 }
 
-// WithDatabase adds a database to the builder
-func (app *repositoryBuilder) WithDatabase(db databases.Database) RepositoryBuilder {
-	app.db = db
+// WithQuery adds a query to the builder
+func (app *repositoryBuilder) WithQuery(query databases.Query) RepositoryBuilder {
+	app.query = query
 	return app
 }
 
 // Now builds a new Repository instance
 func (app *repositoryBuilder) Now() (Repository, error) {
-	if app.db == nil {
-		return nil, errors.New("the database is mandatory in order to build a Repository instance")
+	if app.query == nil {
+		return nil, errors.New("the query is mandatory in order to build a Repository instance")
 	}
 
 	return createRepository(
 		app.encryptor,
 		app.adapter,
-		app.db,
+		app.query,
 	), nil
 
 }

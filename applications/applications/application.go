@@ -11,20 +11,23 @@ import (
 type application struct {
 	accAppBuilder  accounts.Builder
 	authAppBuilder authenticates.Builder
-	database       databases.Database
+	trx            databases.Transaction
+	query          databases.Query
 	bitrate        int
 }
 
 func createApplication(
 	accAppBuilder accounts.Builder,
 	authAppBuilder authenticates.Builder,
-	database databases.Database,
+	trx databases.Transaction,
+	query databases.Query,
 	bitrate int,
 ) Application {
 	out := application{
 		accAppBuilder:  accAppBuilder,
 		authAppBuilder: authAppBuilder,
-		database:       database,
+		trx:            trx,
+		query:          query,
 		bitrate:        bitrate,
 	}
 
@@ -35,7 +38,8 @@ func createApplication(
 func (app *application) Accounts() (accounts_application.Application, error) {
 	return app.accAppBuilder.Create().
 		WithBitrate(app.bitrate).
-		WithDatabase(app.database).
+		WithQuery(app.query).
+		WithTransaction(app.trx).
 		Now()
 }
 
@@ -43,6 +47,7 @@ func (app *application) Accounts() (accounts_application.Application, error) {
 func (app *application) Authenticate(credentials credentials.Credentials) (authenticates.Application, error) {
 	return app.authAppBuilder.Create().
 		WithCredentials(credentials).
-		WithDatabase(app.database).
+		WithTransaction(app.trx).
+		WithQuery(app.query).
 		Now()
 }

@@ -92,7 +92,7 @@ type UpdateCriteria interface {
 // RepositoryBuilder represents a repository builder
 type RepositoryBuilder interface {
 	Create() RepositoryBuilder
-	WithDatabase(db databases.Database) RepositoryBuilder
+	WithQuery(query databases.Query) RepositoryBuilder
 	Now() (Repository, error)
 }
 
@@ -106,7 +106,8 @@ type Repository interface {
 // ServiceBuilder represents the service builder
 type ServiceBuilder interface {
 	Create() ServiceBuilder
-	WithDatabase(db databases.Database) ServiceBuilder
+	WithQuery(query databases.Query) ServiceBuilder
+	WithTransaction(trx databases.Transaction) ServiceBuilder
 	WithBitrate(bitrate int) ServiceBuilder
 	Now() (Service, error)
 }

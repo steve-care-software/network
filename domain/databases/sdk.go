@@ -12,14 +12,19 @@ type Scannable interface {
 type Database interface {
 	Execute(script string) error
 	Prepare() (Transaction, error)
+	Query() Query
+	Close() error
+}
+
+// Query represents a query
+type Query interface {
 	QueryFirst(callback QueryFn, query string, args ...any) (interface{}, error)
 	Query(callback QueryFn, query string, args ...any) ([]interface{}, error)
-	Close() error
 }
 
 // Transaction represents a transaction
 type Transaction interface {
-	Execute(query string, args ...any) (int64, error)
+	Execute(query string, args ...any) error
 	Rollback() error
 	Commit() error
 	Cancel() error

@@ -16,7 +16,8 @@ type serviceBuilder struct {
 	adapter           Adapter
 	encryptorBuilder  account_encryptors.Builder
 	signerFactory     signers.Factory
-	db                databases.Database
+	query             databases.Query
+	trx               databases.Transaction
 	bitrate           int
 }
 
@@ -35,7 +36,8 @@ func createServiceBuilder(
 		adapter:           adapter,
 		encryptorBuilder:  encryptorBuilder,
 		signerFactory:     signerFactory,
-		db:                nil,
+		query:             nil,
+		trx:               nil,
 		bitrate:           0,
 	}
 
@@ -54,9 +56,15 @@ func (app *serviceBuilder) Create() ServiceBuilder {
 	)
 }
 
-// WithDatabase adds a database to the builder
-func (app *serviceBuilder) WithDatabase(db databases.Database) ServiceBuilder {
-	app.db = db
+// WithQuery adds a query to the builder
+func (app *serviceBuilder) WithQuery(query databases.Query) ServiceBuilder {
+	app.query = query
+	return app
+}
+
+// WithTransaction adds a trx to the builder
+func (app *serviceBuilder) WithTransaction(trx databases.Transaction) ServiceBuilder {
+	app.trx = trx
 	return app
 }
 
@@ -68,8 +76,12 @@ func (app *serviceBuilder) WithBitrate(bitrate int) ServiceBuilder {
 
 // Now builds a new Service instance
 func (app *serviceBuilder) Now() (Service, error) {
-	if app.db == nil {
-		return nil, errors.New("the database is mandatory in order to build a Service instance")
+	if app.query == nil {
+		return nil, errors.New("the query is mandatory in order to build a Service instance")
+	}
+
+	if app.trx == nil {
+		return nil, errors.New("the transaction is mandatory in order to build a Service instance")
 	}
 
 	if app.bitrate <= 0 {
@@ -77,7 +89,7 @@ func (app *serviceBuilder) Now() (Service, error) {
 	}
 
 	repository, err := app.repositoryBuilder.Create().
-		WithDatabase(app.db).
+		WithQuery(app.query).
 		Now()
 
 	if err != nil {
@@ -91,7 +103,7 @@ func (app *serviceBuilder) Now() (Service, error) {
 		app.adapter,
 		app.encryptorBuilder,
 		app.signerFactory,
-		app.db,
+		app.trx,
 		app.bitrate,
 	), nil
 

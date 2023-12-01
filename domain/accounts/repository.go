@@ -11,18 +11,18 @@ import (
 type repository struct {
 	encryptor encryptors.Encryptor
 	adapter   Adapter
-	db        databases.Database
+	query     databases.Query
 }
 
 func createRepository(
 	encryptor encryptors.Encryptor,
 	adapter Adapter,
-	db databases.Database,
+	query databases.Query,
 ) Repository {
 	out := repository{
 		encryptor: encryptor,
 		adapter:   adapter,
-		db:        db,
+		query:     query,
 	}
 
 	return &out
@@ -30,7 +30,7 @@ func createRepository(
 
 // List returns the list of usernames
 func (app *repository) List() ([]string, error) {
-	uncasted, err := app.db.Query(
+	uncasted, err := app.query.Query(
 		func(row databases.Scannable) (interface{}, error) {
 			var retUsername string
 			err := row.Scan(&retUsername)
@@ -81,7 +81,7 @@ func (app *repository) Exists(username string) (bool, error) {
 // Retrieve retrieves the accont from credentials
 func (app *repository) Retrieve(credentials credentials.Credentials) (Account, error) {
 	username := credentials.Username()
-	uncasted, err := app.db.QueryFirst(
+	uncasted, err := app.query.QueryFirst(
 		func(row databases.Scannable) (interface{}, error) {
 			var retCipher []byte
 			err := row.Scan(&retCipher)

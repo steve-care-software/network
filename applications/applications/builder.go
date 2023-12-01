@@ -11,7 +11,8 @@ import (
 type builder struct {
 	accAppBuilder  accounts.Builder
 	authAppBuilder authenticates.Builder
-	database       databases.Database
+	query          databases.Query
+	trx            databases.Transaction
 	bitrate        int
 }
 
@@ -22,7 +23,8 @@ func createBuilder(
 	out := builder{
 		accAppBuilder:  accAppBuilder,
 		authAppBuilder: authAppBuilder,
-		database:       nil,
+		query:          nil,
+		trx:            nil,
 		bitrate:        0,
 	}
 
@@ -37,9 +39,15 @@ func (app *builder) Create() Builder {
 	)
 }
 
-// WithDatabase adds a database to the builder
-func (app *builder) WithDatabase(database databases.Database) Builder {
-	app.database = database
+// WithQuery adds a query to the builder
+func (app *builder) WithQuery(query databases.Query) Builder {
+	app.query = query
+	return app
+}
+
+// WithTransaction adds a trx to the builder
+func (app *builder) WithTransaction(trx databases.Transaction) Builder {
+	app.trx = trx
 	return app
 }
 
@@ -51,8 +59,12 @@ func (app *builder) WithBitrate(bitrate int) Builder {
 
 // Now builds a new Application instance
 func (app *builder) Now() (Application, error) {
-	if app.database == nil {
-		return nil, errors.New("the database is mandatory in order to build an Application instance")
+	if app.query == nil {
+		return nil, errors.New("the query is mandatory in order to build an Application instance")
+	}
+
+	if app.trx == nil {
+		return nil, errors.New("the transaction is mandatory in order to build an Application instance")
 	}
 
 	if app.bitrate <= 0 {
@@ -62,7 +74,8 @@ func (app *builder) Now() (Application, error) {
 	return createApplication(
 		app.accAppBuilder,
 		app.authAppBuilder,
-		app.database,
+		app.trx,
+		app.query,
 		app.bitrate,
 	), nil
 }

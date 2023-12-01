@@ -12,8 +12,9 @@ import (
 // Builder represents an application builder
 type Builder interface {
 	Create() Builder
-	WithDatabase(database databases.Database) Builder
 	WithCredentials(credentials credentials.Credentials) Builder
+	WithQuery(query databases.Query) Builder
+	WithTransaction(trx databases.Transaction) Builder
 	Now() (Application, error)
 }
 

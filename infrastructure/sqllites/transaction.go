@@ -21,18 +21,13 @@ func createTransaction(
 }
 
 // Execute executes a transactional query
-func (app *transaction) Execute(query string, args ...any) (int64, error) {
-	res, err := app.txPtr.Exec(query, args...)
+func (app *transaction) Execute(query string, args ...any) error {
+	_, err := app.txPtr.Exec(query, args...)
 	if err != nil {
-		return 0, nil
+		return nil
 	}
 
-	affected, err := res.RowsAffected()
-	if err != nil {
-		return 0, err
-	}
-
-	return affected, nil
+	return nil
 }
 
 // Rollback the transaction

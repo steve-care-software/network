@@ -2,25 +2,28 @@ package sqllites
 
 import (
 	"database/sql"
-	"errors"
 
 	"steve.care/network/domain/databases"
 )
 
 type database struct {
+	query databases.Query
 	dbPtr *sql.DB
 }
 
 func createDatabase(
+	query databases.Query,
 	dbPtr *sql.DB,
 ) databases.Database {
 	out := database{
+		query: query,
 		dbPtr: dbPtr,
 	}
 
 	return &out
 }
 
+// Execute executes a script in database
 func (app *database) Execute(script string) error {
 	_, err := app.dbPtr.Exec(script)
 	if err != nil {
@@ -42,55 +45,9 @@ func (app *database) Prepare() (databases.Transaction, error) {
 	), nil
 }
 
-// QueryFirst returns the first instance of a query
-func (app *database) QueryFirst(callback databases.QueryFn, query string, args ...any) (interface{}, error) {
-	list, err := app.query(-1, callback, query, args...)
-	if err != nil {
-		return nil, err
-	}
-
-	if len(list) <= 0 {
-		return nil, errors.New("there was no element returned from the query")
-	}
-
-	return list[0], nil
-}
-
-// Query executes a query
-func (app *database) Query(callback databases.QueryFn, query string, args ...any) ([]interface{}, error) {
-	return app.query(-1, callback, query, args...)
-}
-
-func (app *database) query(max int, callback databases.QueryFn, query string, args ...any) ([]interface{}, error) {
-	rows, err := app.dbPtr.Query(query, args...)
-	if err != nil {
-		return nil, err
-	}
-
-	defer rows.Close()
-	output := []interface{}{}
-	for rows.Next() {
-		ins, err := callback(rows)
-		if err != nil {
-			return nil, err
-		}
-
-		output = append(output, ins)
-		if max < 0 {
-			continue
-		}
-
-		if len(output) <= max {
-			break
-		}
-	}
-
-	err = rows.Err()
-	if err != nil {
-		return nil, err
-	}
-
-	return output, nil
+// Query returns the query
+func (app *database) Query() databases.Query {
+	return app.query
 }
 
 // Close closes the database

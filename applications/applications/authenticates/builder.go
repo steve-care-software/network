@@ -16,8 +16,9 @@ type builder struct {
 	layerBuilder   layers.Builder
 	linkBuilder    links.Builder
 	receiptBuilder receipts.Builder
+	trx            databases.Transaction
+	query          databases.Query
 	credentials    credentials.Credentials
-	database       databases.Database
 }
 
 func createBuilder(
@@ -31,8 +32,9 @@ func createBuilder(
 		layerBuilder:   layerBuilder,
 		linkBuilder:    linkBuilder,
 		receiptBuilder: receiptBuilder,
+		trx:            nil,
+		query:          nil,
 		credentials:    nil,
-		database:       nil,
 	}
 
 	return &out
@@ -54,9 +56,15 @@ func (app *builder) WithCredentials(credentials credentials.Credentials) Builder
 	return app
 }
 
-// WithDatabase add a database to the builder
-func (app *builder) WithDatabase(database databases.Database) Builder {
-	app.database = database
+// WithQuery add a query to the builder
+func (app *builder) WithQuery(query databases.Query) Builder {
+	app.query = query
+	return app
+}
+
+// WithTransaction adds a transaction to the builder
+func (app *builder) WithTransaction(trx databases.Transaction) Builder {
+	app.trx = trx
 	return app
 }
 
@@ -66,8 +74,12 @@ func (app *builder) Now() (Application, error) {
 		return nil, errors.New("the credentials is mandatory in order to build an Application instance")
 	}
 
-	if app.database == nil {
-		return nil, errors.New("the database is mandatory in order to build an Application instance")
+	if app.trx == nil {
+		return nil, errors.New("the transaction is mandatory in order to build an Application instance")
+	}
+
+	if app.query == nil {
+		return nil, errors.New("the query is mandatory in order to build an Application instance")
 	}
 
 	commandsApp, err := app.commandBuilder.Create().

@@ -1,9 +1,6 @@
 package accounts
 
 import (
-	"errors"
-	"fmt"
-
 	_ "github.com/mattn/go-sqlite3"
 	account_encryptors "steve.care/network/domain/accounts/encryptors"
 	"steve.care/network/domain/accounts/signers"
@@ -19,7 +16,7 @@ type service struct {
 	adapter          Adapter
 	encryptorBuilder account_encryptors.Builder
 	signerFactory    signers.Factory
-	db               databases.Database
+	trx              databases.Transaction
 	bitrate          int
 }
 
@@ -30,12 +27,12 @@ func createService(
 	adapter Adapter,
 	encryptorBuilder account_encryptors.Builder,
 	signerFactory signers.Factory,
-	db databases.Database,
+	trx databases.Transaction,
 	bitrate int,
 ) Service {
 	out := service{
 		encryptor:        encryptor,
-		db:               db,
+		trx:              trx,
 		builder:          builder,
 		repository:       repository,
 		adapter:          adapter,
@@ -60,22 +57,11 @@ func (app *service) Insert(account Account, password []byte) error {
 	}
 
 	username := account.Username()
-	trxApp, err := app.db.Prepare()
 	if err != nil {
 		return err
 	}
 
-	affected, err := trxApp.Execute("INSERT INTO accounts (username, cipher) VALUES (?, ?)", username, cipher)
-	if err != nil {
-		return err
-	}
-
-	if affected != 1 {
-		str := fmt.Sprintf("the account could not be deleted properly, %d rows affected were expected, %d were in reality affected", 1, affected)
-		return errors.New(str)
-	}
-
-	return trxApp.Commit()
+	return app.trx.Execute("INSERT INTO accounts (username, cipher) VALUES (?, ?)", username, cipher)
 }
 
 // Update updates an account
@@ -136,40 +122,10 @@ func (app *service) Update(credentials credentials.Credentials, criteria UpdateC
 		return err
 	}
 
-	trxApp, err := app.db.Prepare()
-	if err != nil {
-		return err
-	}
-
-	affected, err := trxApp.Execute("UPDATE accounts set username = ?, cipher = ? where username = ?", updatedAccount.Username(), cipher, originUsername)
-	if err != nil {
-		return err
-	}
-
-	if affected != 1 {
-		str := fmt.Sprintf("the account could not be deleted properly, %d rows affected were expected, %d were in reality affected", 1, affected)
-		return errors.New(str)
-	}
-
-	return nil
+	return app.trx.Execute("UPDATE accounts set username = ?, cipher = ? where username = ?", updatedAccount.Username(), cipher, originUsername)
 }
 
 // Delete deletes an account
 func (app *service) Delete(credentials credentials.Credentials) error {
-	trxApp, err := app.db.Prepare()
-	if err != nil {
-		return err
-	}
-
-	affected, err := trxApp.Execute("DELETE FROM accounts where username = ?", credentials.Username())
-	if err != nil {
-		return err
-	}
-
-	if affected != 1 {
-		str := fmt.Sprintf("the account could not be deleted properly, %d rows affected were expected, %d were in reality affected", 1, affected)
-		return errors.New(str)
-	}
-
-	return nil
+	return app.trx.Execute("DELETE FROM accounts where username = ?", credentials.Username())
 }

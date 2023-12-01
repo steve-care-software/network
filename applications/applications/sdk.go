@@ -30,7 +30,8 @@ func NewBuilder(
 // Builder represents the application builder
 type Builder interface {
 	Create() Builder
-	WithDatabase(database databases.Database) Builder
+	WithQuery(query databases.Query) Builder
+	WithTransaction(trx databases.Transaction) Builder
 	WithBitrate(bitrate int) Builder
 	Now() (Application, error)
 }

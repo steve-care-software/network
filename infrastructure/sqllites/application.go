@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"path/filepath"
 
-	db_applications "steve.care/network/applications/applications/databases"
+	db_applications "steve.care/network/applications/databases"
 	"steve.care/network/domain/databases"
 )
 
@@ -31,6 +31,7 @@ func (app *application) OpenInMemory() (databases.Database, error) {
 	}
 
 	return createDatabase(
+		createQuery(dbPtr),
 		dbPtr,
 	), nil
 }
@@ -44,6 +45,7 @@ func (app *application) Open(name string) (databases.Database, error) {
 	}
 
 	return createDatabase(
+		createQuery(dbPtr),
 		dbPtr,
 	), nil
 }

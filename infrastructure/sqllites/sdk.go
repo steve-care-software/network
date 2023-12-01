@@ -1,6 +1,6 @@
 package sqllites
 
-import "steve.care/network/applications/applications/databases"
+import "steve.care/network/applications/databases"
 
 // NewApplication creates a new application
 func NewApplication(
