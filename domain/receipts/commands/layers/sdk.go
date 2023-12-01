@@ -506,7 +506,8 @@ type RepositoryBuilder interface {
 
 // Repository represents a layer repository
 type Repository interface {
-	List() ([]hash.Hash, error)
+	Amount() (uint, error)
+	List(index uint, amount uint) ([]hash.Hash, error)
 	Exists(hash hash.Hash) (bool, error)
 	Retrieve(hash hash.Hash) (Layer, error)
 }

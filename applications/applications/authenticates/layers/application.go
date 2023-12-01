@@ -22,9 +22,14 @@ func createApplication(
 	return &out
 }
 
+// Amount returns the amount of layers
+func (app *application) Amount() (uint, error) {
+	return app.repository.Amount()
+}
+
 // List returns the list of layer hashes
-func (app *application) List() ([]hash.Hash, error) {
-	return app.repository.List()
+func (app *application) List(index uint, amount uint) ([]hash.Hash, error) {
+	return app.repository.List(index, amount)
 }
 
 // Exists returns true if the layer exists, false otherwise
