@@ -36,6 +36,7 @@ type application struct {
 	resultBuilder             results.Builder
 	resultSuccessBuilder      results.SuccessBuilder
 	resultFailureBuilder      results.FailureBuilder
+	credentials               credentials.Credentials
 }
 
 func createApplication(
@@ -53,6 +54,7 @@ func createApplication(
 	resultBuilder results.Builder,
 	resultSuccessBuilder results.SuccessBuilder,
 	resultFailureBuilder results.FailureBuilder,
+	credentials credentials.Credentials,
 ) Application {
 	out := application{
 		accountApp:                accountApp,
@@ -69,6 +71,7 @@ func createApplication(
 		resultBuilder:             resultBuilder,
 		resultSuccessBuilder:      resultSuccessBuilder,
 		resultFailureBuilder:      resultFailureBuilder,
+		credentials:               credentials,
 	}
 
 	return &out
@@ -85,8 +88,8 @@ func (app *application) End(context uint) (receipts.Receipt, error) {
 }
 
 // Execute executes the application
-func (app *application) Execute(context uint, credentials credentials.Credentials, hash hash.Hash, input []byte) (results.Result, error) {
-	authenticated, err := app.accountApp.Retrieve(credentials)
+func (app *application) Execute(context uint, hash hash.Hash, input []byte) (results.Result, error) {
+	authenticated, err := app.accountApp.Retrieve(app.credentials)
 	if err != nil {
 		// failure
 	}

@@ -7,9 +7,16 @@ import (
 	"steve.care/network/domain/receipts/commands/results"
 )
 
+// Builder represents the application builder
+type Builder interface {
+	Create() Builder
+	WithCredentials(credentials credentials.Credentials) Builder
+	Now() (Application, error)
+}
+
 // Application represents the command authenticated application
 type Application interface {
 	Begin() (*uint, error)
-	Execute(context uint, credentials credentials.Credentials, hash hash.Hash, input []byte) (results.Result, error)
+	Execute(context uint, hash hash.Hash, input []byte) (results.Result, error)
 	End(context uint) (receipts.Receipt, error)
 }

@@ -12,7 +12,7 @@ import (
 type Builder interface {
 	Create() Builder
 	WithCredentials(credentials credentials.Credentials) Builder
-	Now() Builder
+	Now() (Application, error)
 }
 
 // Application represents an authenticated application
