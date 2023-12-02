@@ -18,12 +18,12 @@ func TestApplication_Account_InsertThenRetrieve_Success(t *testing.T) {
 		4096,
 	)
 
-	name := "firstExec"
-	defer appIns.Close(name)
+	// close:
+	defer appIns.Close()
 
 	// init wit our schema:
 	schema := getSchema()
-	firstAppIns, err := appIns.InitInMemory(name, schema)
+	firstAppIns, err := appIns.InitInMemory(schema)
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
@@ -50,7 +50,7 @@ func TestApplication_Account_InsertThenRetrieve_Success(t *testing.T) {
 	}
 
 	// commit:
-	err = appIns.Commit(name)
+	err = appIns.Commit()
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
