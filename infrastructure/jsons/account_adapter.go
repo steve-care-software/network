@@ -6,6 +6,7 @@ import (
 	"steve.care/network/domain/accounts"
 	"steve.care/network/domain/accounts/encryptors"
 	"steve.care/network/domain/accounts/signers"
+	json_accounts "steve.care/network/infrastructure/jsons/accounts"
 )
 
 type accountAdapter struct {
@@ -38,7 +39,7 @@ func (app *accountAdapter) ToBytes(ins accounts.Account) ([]byte, error) {
 
 	encryptor := ins.Encryptor()
 	encryptorBytes := app.encryptorAdapter.ToBytes(encryptor)
-	insAccount := Account{
+	insAccount := json_accounts.Account{
 		Username:  username,
 		Encryptor: encryptorBytes,
 		Signer:    signerBytes,
@@ -49,7 +50,7 @@ func (app *accountAdapter) ToBytes(ins accounts.Account) ([]byte, error) {
 
 // ToInstance converts bytes to account
 func (app *accountAdapter) ToInstance(bytes []byte) (accounts.Account, error) {
-	ptr := new(Account)
+	ptr := new(json_accounts.Account)
 	err := json.Unmarshal(bytes, ptr)
 	if err != nil {
 		return nil, err
