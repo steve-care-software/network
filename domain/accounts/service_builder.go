@@ -5,7 +5,8 @@ import (
 
 	account_encryptors "steve.care/network/domain/accounts/encryptors"
 	"steve.care/network/domain/accounts/signers"
-	"steve.care/network/domain/databases"
+	"steve.care/network/domain/databases/queries"
+	"steve.care/network/domain/databases/transactions"
 	"steve.care/network/domain/encryptors"
 )
 
@@ -16,8 +17,8 @@ type serviceBuilder struct {
 	adapter           Adapter
 	encryptorBuilder  account_encryptors.Builder
 	signerFactory     signers.Factory
-	query             databases.Query
-	trx               databases.Transaction
+	query             queries.Query
+	trx               transactions.Transaction
 	bitrate           int
 }
 
@@ -57,13 +58,13 @@ func (app *serviceBuilder) Create() ServiceBuilder {
 }
 
 // WithQuery adds a query to the builder
-func (app *serviceBuilder) WithQuery(query databases.Query) ServiceBuilder {
+func (app *serviceBuilder) WithQuery(query queries.Query) ServiceBuilder {
 	app.query = query
 	return app
 }
 
 // WithTransaction adds a trx to the builder
-func (app *serviceBuilder) WithTransaction(trx databases.Transaction) ServiceBuilder {
+func (app *serviceBuilder) WithTransaction(trx transactions.Transaction) ServiceBuilder {
 	app.trx = trx
 	return app
 }

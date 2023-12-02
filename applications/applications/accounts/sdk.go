@@ -5,7 +5,8 @@ import (
 	account_encryptors "steve.care/network/domain/accounts/encryptors"
 	"steve.care/network/domain/accounts/signers"
 	"steve.care/network/domain/credentials"
-	"steve.care/network/domain/databases"
+	"steve.care/network/domain/databases/queries"
+	"steve.care/network/domain/databases/transactions"
 	"steve.care/network/domain/encryptors"
 )
 
@@ -39,8 +40,8 @@ func NewBuilder(
 // Builder represents the application builder
 type Builder interface {
 	Create() Builder
-	WithQuery(database databases.Query) Builder
-	WithTransaction(trx databases.Transaction) Builder
+	WithQuery(database queries.Query) Builder
+	WithTransaction(trx transactions.Transaction) Builder
 	WithBitrate(bitrate int) Builder
 	Now() (Application, error)
 }

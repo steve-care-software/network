@@ -4,20 +4,20 @@ import (
 	"errors"
 
 	"steve.care/network/domain/credentials"
-	"steve.care/network/domain/databases"
+	"steve.care/network/domain/databases/queries"
 	"steve.care/network/domain/encryptors"
 )
 
 type repository struct {
 	encryptor encryptors.Encryptor
 	adapter   Adapter
-	query     databases.Query
+	query     queries.Query
 }
 
 func createRepository(
 	encryptor encryptors.Encryptor,
 	adapter Adapter,
-	query databases.Query,
+	query queries.Query,
 ) Repository {
 	out := repository{
 		encryptor: encryptor,
@@ -31,7 +31,7 @@ func createRepository(
 // List returns the list of usernames
 func (app *repository) List() ([]string, error) {
 	uncasted, err := app.query.Query(
-		func(row databases.Scannable) (interface{}, error) {
+		func(row queries.Scannable) (interface{}, error) {
 			var retUsername string
 			err := row.Scan(&retUsername)
 			if err != nil {
@@ -82,7 +82,7 @@ func (app *repository) Exists(username string) (bool, error) {
 func (app *repository) Retrieve(credentials credentials.Credentials) (Account, error) {
 	username := credentials.Username()
 	uncasted, err := app.query.QueryFirst(
-		func(row databases.Scannable) (interface{}, error) {
+		func(row queries.Scannable) (interface{}, error) {
 			var retCipher []byte
 			err := row.Scan(&retCipher)
 			if err != nil {

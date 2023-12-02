@@ -5,22 +5,23 @@ import (
 	accounts_application "steve.care/network/applications/applications/accounts"
 	"steve.care/network/applications/applications/authenticates"
 	"steve.care/network/domain/credentials"
-	"steve.care/network/domain/databases"
+	"steve.care/network/domain/databases/queries"
+	"steve.care/network/domain/databases/transactions"
 )
 
 type application struct {
 	accAppBuilder  accounts.Builder
 	authAppBuilder authenticates.Builder
-	trx            databases.Transaction
-	query          databases.Query
+	trx            transactions.Transaction
+	query          queries.Query
 	bitrate        int
 }
 
 func createApplication(
 	accAppBuilder accounts.Builder,
 	authAppBuilder authenticates.Builder,
-	trx databases.Transaction,
-	query databases.Query,
+	trx transactions.Transaction,
+	query queries.Query,
 	bitrate int,
 ) Application {
 	out := application{

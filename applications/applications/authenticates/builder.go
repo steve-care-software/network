@@ -8,7 +8,8 @@ import (
 	"steve.care/network/applications/applications/authenticates/links"
 	"steve.care/network/applications/applications/authenticates/receipts"
 	"steve.care/network/domain/credentials"
-	"steve.care/network/domain/databases"
+	"steve.care/network/domain/databases/queries"
+	"steve.care/network/domain/databases/transactions"
 )
 
 type builder struct {
@@ -16,8 +17,8 @@ type builder struct {
 	layerBuilder   layers.Builder
 	linkBuilder    links.Builder
 	receiptBuilder receipts.Builder
-	trx            databases.Transaction
-	query          databases.Query
+	trx            transactions.Transaction
+	query          queries.Query
 	credentials    credentials.Credentials
 }
 
@@ -57,13 +58,13 @@ func (app *builder) WithCredentials(credentials credentials.Credentials) Builder
 }
 
 // WithQuery add a query to the builder
-func (app *builder) WithQuery(query databases.Query) Builder {
+func (app *builder) WithQuery(query queries.Query) Builder {
 	app.query = query
 	return app
 }
 
 // WithTransaction adds a transaction to the builder
-func (app *builder) WithTransaction(trx databases.Transaction) Builder {
+func (app *builder) WithTransaction(trx transactions.Transaction) Builder {
 	app.trx = trx
 	return app
 }

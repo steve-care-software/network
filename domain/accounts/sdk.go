@@ -4,7 +4,8 @@ import (
 	account_encryptors "steve.care/network/domain/accounts/encryptors"
 	"steve.care/network/domain/accounts/signers"
 	"steve.care/network/domain/credentials"
-	"steve.care/network/domain/databases"
+	"steve.care/network/domain/databases/queries"
+	"steve.care/network/domain/databases/transactions"
 	"steve.care/network/domain/encryptors"
 )
 
@@ -92,7 +93,7 @@ type UpdateCriteria interface {
 // RepositoryBuilder represents a repository builder
 type RepositoryBuilder interface {
 	Create() RepositoryBuilder
-	WithQuery(query databases.Query) RepositoryBuilder
+	WithQuery(query queries.Query) RepositoryBuilder
 	Now() (Repository, error)
 }
 
@@ -106,8 +107,8 @@ type Repository interface {
 // ServiceBuilder represents the service builder
 type ServiceBuilder interface {
 	Create() ServiceBuilder
-	WithQuery(query databases.Query) ServiceBuilder
-	WithTransaction(trx databases.Transaction) ServiceBuilder
+	WithQuery(query queries.Query) ServiceBuilder
+	WithTransaction(trx transactions.Transaction) ServiceBuilder
 	WithBitrate(bitrate int) ServiceBuilder
 	Now() (Service, error)
 }

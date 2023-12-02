@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"errors"
 
-	"steve.care/network/domain/databases"
+	"steve.care/network/domain/databases/queries"
 )
 
 type query struct {
@@ -13,7 +13,7 @@ type query struct {
 
 func createQuery(
 	dbPtr *sql.DB,
-) databases.Query {
+) queries.Query {
 	out := query{
 		dbPtr: dbPtr,
 	}
@@ -22,7 +22,7 @@ func createQuery(
 }
 
 // QueryFirst returns the first instance of a query
-func (app *query) QueryFirst(callback databases.QueryFn, query string, args ...any) (interface{}, error) {
+func (app *query) QueryFirst(callback queries.QueryFn, query string, args ...any) (interface{}, error) {
 	list, err := app.query(-1, callback, query, args...)
 	if err != nil {
 		return nil, err
@@ -36,11 +36,11 @@ func (app *query) QueryFirst(callback databases.QueryFn, query string, args ...a
 }
 
 // Query executes a query
-func (app *query) Query(callback databases.QueryFn, query string, args ...any) ([]interface{}, error) {
+func (app *query) Query(callback queries.QueryFn, query string, args ...any) ([]interface{}, error) {
 	return app.query(-1, callback, query, args...)
 }
 
-func (app *query) query(max int, callback databases.QueryFn, query string, args ...any) ([]interface{}, error) {
+func (app *query) query(max int, callback queries.QueryFn, query string, args ...any) ([]interface{}, error) {
 	rows, err := app.dbPtr.Query(query, args...)
 	if err != nil {
 		return nil, err

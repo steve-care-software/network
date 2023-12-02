@@ -5,7 +5,7 @@ import (
 	account_encryptors "steve.care/network/domain/accounts/encryptors"
 	"steve.care/network/domain/accounts/signers"
 	"steve.care/network/domain/credentials"
-	"steve.care/network/domain/databases"
+	"steve.care/network/domain/databases/transactions"
 	"steve.care/network/domain/encryptors"
 )
 
@@ -16,7 +16,7 @@ type service struct {
 	adapter          Adapter
 	encryptorBuilder account_encryptors.Builder
 	signerFactory    signers.Factory
-	trx              databases.Transaction
+	trx              transactions.Transaction
 	bitrate          int
 }
 
@@ -27,7 +27,7 @@ func createService(
 	adapter Adapter,
 	encryptorBuilder account_encryptors.Builder,
 	signerFactory signers.Factory,
-	trx databases.Transaction,
+	trx transactions.Transaction,
 	bitrate int,
 ) Service {
 	out := service{

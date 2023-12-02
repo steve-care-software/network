@@ -4,15 +4,17 @@ import (
 	"database/sql"
 
 	"steve.care/network/domain/databases"
+	"steve.care/network/domain/databases/queries"
+	"steve.care/network/domain/databases/transactions"
 )
 
 type database struct {
-	query databases.Query
+	query queries.Query
 	dbPtr *sql.DB
 }
 
 func createDatabase(
-	query databases.Query,
+	query queries.Query,
 	dbPtr *sql.DB,
 ) databases.Database {
 	out := database{
@@ -34,7 +36,7 @@ func (app *database) Execute(script string) error {
 }
 
 // Prepare prepares a transaction
-func (app *database) Prepare() (databases.Transaction, error) {
+func (app *database) Prepare() (transactions.Transaction, error) {
 	txPtr, err := app.dbPtr.Begin()
 	if err != nil {
 		return nil, err
@@ -46,7 +48,7 @@ func (app *database) Prepare() (databases.Transaction, error) {
 }
 
 // Query returns the query
-func (app *database) Query() databases.Query {
+func (app *database) Query() queries.Query {
 	return app.query
 }
 

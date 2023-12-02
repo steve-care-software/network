@@ -6,15 +6,16 @@ import (
 	links_application "steve.care/network/applications/applications/authenticates/links"
 	receipts_application "steve.care/network/applications/applications/authenticates/receipts"
 	"steve.care/network/domain/credentials"
-	"steve.care/network/domain/databases"
+	"steve.care/network/domain/databases/queries"
+	"steve.care/network/domain/databases/transactions"
 )
 
 // Builder represents an application builder
 type Builder interface {
 	Create() Builder
 	WithCredentials(credentials credentials.Credentials) Builder
-	WithQuery(query databases.Query) Builder
-	WithTransaction(trx databases.Transaction) Builder
+	WithQuery(query queries.Query) Builder
+	WithTransaction(trx transactions.Transaction) Builder
 	Now() (Application, error)
 }
 

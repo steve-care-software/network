@@ -6,6 +6,8 @@ import (
 	"steve.care/network/applications/applications"
 	database_applications "steve.care/network/applications/databases"
 	"steve.care/network/domain/databases"
+	"steve.care/network/domain/databases/queries"
+	"steve.care/network/domain/databases/transactions"
 )
 
 type application struct {
@@ -13,8 +15,8 @@ type application struct {
 	dbApp           database_applications.Application
 	bitrate         int
 	currentDbApp    databases.Database
-	currentTrxApp   databases.Transaction
-	currentQueryApp databases.Query
+	currentTrxApp   transactions.Transaction
+	currentQueryApp queries.Query
 }
 
 func createApplication(

@@ -5,14 +5,15 @@ import (
 
 	"steve.care/network/applications/applications/accounts"
 	"steve.care/network/applications/applications/authenticates"
-	"steve.care/network/domain/databases"
+	"steve.care/network/domain/databases/queries"
+	"steve.care/network/domain/databases/transactions"
 )
 
 type builder struct {
 	accAppBuilder  accounts.Builder
 	authAppBuilder authenticates.Builder
-	query          databases.Query
-	trx            databases.Transaction
+	query          queries.Query
+	trx            transactions.Transaction
 	bitrate        int
 }
 
@@ -40,13 +41,13 @@ func (app *builder) Create() Builder {
 }
 
 // WithQuery adds a query to the builder
-func (app *builder) WithQuery(query databases.Query) Builder {
+func (app *builder) WithQuery(query queries.Query) Builder {
 	app.query = query
 	return app
 }
 
 // WithTransaction adds a trx to the builder
-func (app *builder) WithTransaction(trx databases.Transaction) Builder {
+func (app *builder) WithTransaction(trx transactions.Transaction) Builder {
 	app.trx = trx
 	return app
 }

@@ -3,7 +3,7 @@ package sqllites
 import (
 	"database/sql"
 
-	"steve.care/network/domain/databases"
+	"steve.care/network/domain/databases/transactions"
 )
 
 type transaction struct {
@@ -12,7 +12,7 @@ type transaction struct {
 
 func createTransaction(
 	txPtr *sql.Tx,
-) databases.Transaction {
+) transactions.Transaction {
 	out := transaction{
 		txPtr: txPtr,
 	}

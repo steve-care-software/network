@@ -3,14 +3,14 @@ package accounts
 import (
 	"errors"
 
-	"steve.care/network/domain/databases"
+	"steve.care/network/domain/databases/queries"
 	"steve.care/network/domain/encryptors"
 )
 
 type repositoryBuilder struct {
 	encryptor encryptors.Encryptor
 	adapter   Adapter
-	query     databases.Query
+	query     queries.Query
 }
 
 func createRepositoryBuilder(
@@ -35,7 +35,7 @@ func (app *repositoryBuilder) Create() RepositoryBuilder {
 }
 
 // WithQuery adds a query to the builder
-func (app *repositoryBuilder) WithQuery(query databases.Query) RepositoryBuilder {
+func (app *repositoryBuilder) WithQuery(query queries.Query) RepositoryBuilder {
 	app.query = query
 	return app
 }
