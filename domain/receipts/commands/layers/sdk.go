@@ -2,6 +2,7 @@ package layers
 
 import (
 	"steve.care/network/domain/credentials"
+	"steve.care/network/domain/databases"
 	"steve.care/network/domain/hash"
 	"steve.care/network/domain/receipts/commands/links"
 )
@@ -501,6 +502,8 @@ type BytesReference interface {
 type RepositoryBuilder interface {
 	Create() RepositoryBuilder
 	WithCredentials(credentials credentials.Credentials) RepositoryBuilder
+	WithTransaction(trx databases.Transaction) RepositoryBuilder
+	WithQuery(query databases.Query) RepositoryBuilder
 	Now() (Repository, error)
 }
 
@@ -516,6 +519,8 @@ type Repository interface {
 type ServiceBuilder interface {
 	Create() ServiceBuilder
 	WithCredentials(credentials credentials.Credentials) ServiceBuilder
+	WithTransaction(trx databases.Transaction) ServiceBuilder
+	WithQuery(query databases.Query) ServiceBuilder
 	Now() (Service, error)
 }
 
