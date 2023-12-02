@@ -39,7 +39,10 @@ type RepositoryBuilder interface {
 type Repository interface {
 	Amount() (uint, error)
 	List() ([]hash.Hash, error)
-	Retrieve(hash hash.Hash) (Suite, error)
+	RetrieveByHash(hash hash.Hash) (Suite, error)
+	RetrieveByOrigin(origin hash.Hash) (Suite, error)
+	RetrieveByInputLayer(layer hash.Hash) (Suite, error)
+	RetrieveByExpectation(expectation hash.Hash) (Suite, error)
 }
 
 // ServiceBuilder represents a service builder
