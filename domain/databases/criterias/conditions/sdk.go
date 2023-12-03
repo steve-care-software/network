@@ -2,6 +2,11 @@ package conditions
 
 import "steve.care/network/domain/databases/criterias/values"
 
+// NewRelationalOperatorBuilder creates a new relational operator builder
+func NewRelationalOperatorBuilder() RelationalOperatorBuilder {
+	return createRelationalOperatorBuilder()
+}
+
 // NewIntegerOperatorBuilder creates a new integer operator builder
 func NewIntegerOperatorBuilder() IntegerOperatorBuilder {
 	return createIntegerOperatorBuilder()
