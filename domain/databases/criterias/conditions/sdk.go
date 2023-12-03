@@ -2,6 +2,11 @@ package conditions
 
 import "steve.care/network/domain/databases/criterias/values"
 
+// NewElementBuilder creates a new element builder
+func NewElementBuilder() ElementBuilder {
+	return createElementBuilder()
+}
+
 // NewResourceBuilder creates a new resource builder
 func NewResourceBuilder() ResourceBuilder {
 	return createResourceBuilder()
