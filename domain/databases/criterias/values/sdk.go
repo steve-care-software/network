@@ -1,5 +1,10 @@
 package values
 
+// NewBuilder creates a new builder
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
 // Builder represents the value builder
 type Builder interface {
 	Create() Builder
@@ -14,9 +19,9 @@ type Builder interface {
 type Value interface {
 	IsNil() bool
 	IsInteger() bool
-	Integer() int
+	Integer() *int
 	IsReal() bool
-	Real() float64
+	Real() *float64
 	IsText() bool
 	Text() string
 	IsBytes() bool
