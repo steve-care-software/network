@@ -1,7 +1,5 @@
 package conditions
 
-import "steve.care/network/domain/databases/criterias/values"
-
 // NewBuilder creates a new builder instance
 func NewBuilder() Builder {
 	return createBuilder()
@@ -87,7 +85,7 @@ type Element interface {
 type ResourceBuilder interface {
 	Create() ResourceBuilder
 	WithField(field Pointer) ResourceBuilder
-	WithValue(value values.Value) ResourceBuilder
+	WithValue(value any) ResourceBuilder
 	Now() (Resource, error)
 }
 
@@ -96,7 +94,7 @@ type Resource interface {
 	IsField() bool
 	Field() Pointer
 	IsValue() bool
-	Value() values.Value
+	Value() any
 }
 
 // OperatorBuilder represents an operator builder

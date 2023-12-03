@@ -61,7 +61,10 @@ func (app *service) Insert(account Account, password []byte) error {
 		return err
 	}
 
-	return app.trx.Execute("INSERT INTO accounts (username, cipher) VALUES (?, ?)", username, cipher)
+	return app.trx.Insert("accounts", map[string]any{
+		"username": username,
+		"cipher":   cipher,
+	})
 }
 
 // Update updates an account

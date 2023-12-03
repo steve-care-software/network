@@ -1,10 +1,8 @@
 package conditions
 
-import "steve.care/network/domain/databases/criterias/values"
-
 type resource struct {
 	field Pointer
-	value values.Value
+	value interface{}
 }
 
 func createResourceWithField(
@@ -14,14 +12,14 @@ func createResourceWithField(
 }
 
 func createResourceWithValue(
-	value values.Value,
+	value interface{},
 ) Resource {
 	return createResourceInternally(nil, value)
 }
 
 func createResourceInternally(
 	field Pointer,
-	value values.Value,
+	value interface{},
 ) Resource {
 	out := resource{
 		field: field,
@@ -47,6 +45,6 @@ func (obj *resource) IsValue() bool {
 }
 
 // Value returns the value, if any
-func (obj *resource) Value() values.Value {
+func (obj *resource) Value() interface{} {
 	return obj.value
 }

@@ -2,13 +2,11 @@ package conditions
 
 import (
 	"errors"
-
-	"steve.care/network/domain/databases/criterias/values"
 )
 
 type resourceBuilder struct {
 	field Pointer
-	value values.Value
+	value interface{}
 }
 
 func createResourceBuilder() ResourceBuilder {
@@ -32,7 +30,7 @@ func (app *resourceBuilder) WithField(field Pointer) ResourceBuilder {
 }
 
 // WithValue adds a value to the builder
-func (app *resourceBuilder) WithValue(value values.Value) ResourceBuilder {
+func (app *resourceBuilder) WithValue(value interface{}) ResourceBuilder {
 	app.value = value
 	return app
 }
