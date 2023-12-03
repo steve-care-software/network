@@ -4,6 +4,8 @@ import (
 	account_encryptors "steve.care/network/domain/accounts/encryptors"
 	"steve.care/network/domain/accounts/signers"
 	"steve.care/network/domain/credentials"
+	"steve.care/network/domain/databases/criterias/conditions"
+	"steve.care/network/domain/databases/criterias/entities/resources"
 	"steve.care/network/domain/databases/queries"
 	"steve.care/network/domain/databases/transactions"
 	"steve.care/network/domain/encryptors"
@@ -30,6 +32,12 @@ func NewServiceBuilder(
 	encryptor encryptors.Encryptor,
 	adapter Adapter,
 ) ServiceBuilder {
+	resourceBuilder := resources.NewBuilder()
+	conditionBuilder := conditions.NewBuilder()
+	conditionPointerBuilder := conditions.NewPointerBuilder()
+	conditionOperatorBuilder := conditions.NewOperatorBuilder()
+	conditionElementBuilder := conditions.NewElementBuilder()
+	conditionResourceBuilder := conditions.NewResourceBuilder()
 	builder := NewBuilder()
 	encryptorBuilder := account_encryptors.NewBuilder()
 	signerFactory := signers.NewFactory()
@@ -39,6 +47,12 @@ func NewServiceBuilder(
 	)
 
 	return createServiceBuilder(
+		resourceBuilder,
+		conditionBuilder,
+		conditionPointerBuilder,
+		conditionOperatorBuilder,
+		conditionElementBuilder,
+		conditionResourceBuilder,
 		encryptor,
 		builder,
 		repositoryBuilder,

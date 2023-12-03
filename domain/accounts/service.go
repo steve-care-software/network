@@ -5,22 +5,36 @@ import (
 	account_encryptors "steve.care/network/domain/accounts/encryptors"
 	"steve.care/network/domain/accounts/signers"
 	"steve.care/network/domain/credentials"
+	"steve.care/network/domain/databases/criterias/conditions"
+	"steve.care/network/domain/databases/criterias/entities/resources"
 	"steve.care/network/domain/databases/transactions"
 	"steve.care/network/domain/encryptors"
 )
 
 type service struct {
-	encryptor        encryptors.Encryptor
-	builder          Builder
-	repository       Repository
-	adapter          Adapter
-	encryptorBuilder account_encryptors.Builder
-	signerFactory    signers.Factory
-	trx              transactions.Transaction
-	bitrate          int
+	resourceBuilder          resources.Builder
+	conditionBuilder         conditions.Builder
+	conditionPointerBuilder  conditions.PointerBuilder
+	conditionOperatorBuilder conditions.OperatorBuilder
+	conditionElementBuilder  conditions.ElementBuilder
+	conditionResourceBuilder conditions.ResourceBuilder
+	encryptor                encryptors.Encryptor
+	builder                  Builder
+	repository               Repository
+	adapter                  Adapter
+	encryptorBuilder         account_encryptors.Builder
+	signerFactory            signers.Factory
+	trx                      transactions.Transaction
+	bitrate                  int
 }
 
 func createService(
+	resourceBuilder resources.Builder,
+	conditionBuilder conditions.Builder,
+	conditionPointerBuilder conditions.PointerBuilder,
+	conditionOperatorBuilder conditions.OperatorBuilder,
+	conditionElementBuilder conditions.ElementBuilder,
+	conditionResourceBuilder conditions.ResourceBuilder,
 	encryptor encryptors.Encryptor,
 	builder Builder,
 	repository Repository,
@@ -31,14 +45,20 @@ func createService(
 	bitrate int,
 ) Service {
 	out := service{
-		encryptor:        encryptor,
-		trx:              trx,
-		builder:          builder,
-		repository:       repository,
-		adapter:          adapter,
-		encryptorBuilder: encryptorBuilder,
-		signerFactory:    signerFactory,
-		bitrate:          bitrate,
+		resourceBuilder:          resourceBuilder,
+		conditionBuilder:         conditionBuilder,
+		conditionPointerBuilder:  conditionPointerBuilder,
+		conditionOperatorBuilder: conditionOperatorBuilder,
+		conditionElementBuilder:  conditionElementBuilder,
+		conditionResourceBuilder: conditionResourceBuilder,
+		encryptor:                encryptor,
+		trx:                      trx,
+		builder:                  builder,
+		repository:               repository,
+		adapter:                  adapter,
+		encryptorBuilder:         encryptorBuilder,
+		signerFactory:            signerFactory,
+		bitrate:                  bitrate,
 	}
 
 	return &out
@@ -130,5 +150,61 @@ func (app *service) Update(credentials credentials.Credentials, criteria UpdateC
 
 // Delete deletes an account
 func (app *service) Delete(credentials credentials.Credentials) error {
-	return app.trx.Execute("DELETE FROM accounts where username = ?", credentials.Username())
+	username := credentials.Username()
+	condition, err := app.conditionUsernameEqualsUsername(username)
+	if err != nil {
+		return err
+	}
+
+	resource, err := app.resourceBuilder.Create().
+		WithContainer("accounts").
+		WithCondition(condition).
+		Now()
+
+	if err != nil {
+		return err
+	}
+
+	return app.trx.Delete(resource)
+}
+
+func (app *service) conditionUsernameEqualsUsername(username string) (conditions.Condition, error) {
+	usernameField, err := app.conditionPointerBuilder.Create().
+		WithContainer("accounts").
+		WithField("username").
+		Now()
+
+	if err != nil {
+		return nil, err
+	}
+
+	equalOperator, err := app.conditionOperatorBuilder.Create().
+		IsEqual().
+		Now()
+
+	if err != nil {
+		return nil, err
+	}
+
+	usernameResource, err := app.conditionResourceBuilder.Create().
+		WithValue(username).
+		Now()
+
+	if err != nil {
+		return nil, err
+	}
+
+	usernameElement, err := app.conditionElementBuilder.Create().
+		WithResource(usernameResource).
+		Now()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return app.conditionBuilder.Create().
+		WithPointer(usernameField).
+		WithOperator(equalOperator).
+		WithElement(usernameElement).
+		Now()
 }

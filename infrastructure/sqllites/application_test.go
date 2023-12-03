@@ -29,7 +29,7 @@ func TestApplication_Account_InsertThenRetrieve_Success(t *testing.T) {
 		return
 	}
 
-	accountAppIns, err := firstAppIns.Accounts()
+	firstAccAppIns, err := firstAppIns.Accounts()
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
@@ -43,7 +43,8 @@ func TestApplication_Account_InsertThenRetrieve_Success(t *testing.T) {
 		return
 	}
 
-	err = accountAppIns.Insert(credentials)
+	// insert:
+	err = firstAccAppIns.Insert(credentials)
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
@@ -56,7 +57,7 @@ func TestApplication_Account_InsertThenRetrieve_Success(t *testing.T) {
 		return
 	}
 
-	retAccount, err := accountAppIns.Retrieve(credentials)
+	retAccount, err := firstAccAppIns.Retrieve(credentials)
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
@@ -67,4 +68,40 @@ func TestApplication_Account_InsertThenRetrieve_Success(t *testing.T) {
 		return
 	}
 
+	// delete:
+	secAppIns, err := appIns.BeginInMemory()
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	secAccountAppIns, err := secAppIns.Accounts()
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	err = secAccountAppIns.Delete(credentials)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	// commit:
+	err = appIns.Commit()
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	exists, err := secAccountAppIns.Exists(username)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	if exists {
+		t.Errorf("the account (username: %s) was NOT expected to exists", username)
+		return
+	}
 }

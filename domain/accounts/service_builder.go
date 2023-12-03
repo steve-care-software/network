@@ -5,24 +5,38 @@ import (
 
 	account_encryptors "steve.care/network/domain/accounts/encryptors"
 	"steve.care/network/domain/accounts/signers"
+	"steve.care/network/domain/databases/criterias/conditions"
+	"steve.care/network/domain/databases/criterias/entities/resources"
 	"steve.care/network/domain/databases/queries"
 	"steve.care/network/domain/databases/transactions"
 	"steve.care/network/domain/encryptors"
 )
 
 type serviceBuilder struct {
-	encryptor         encryptors.Encryptor
-	builder           Builder
-	repositoryBuilder RepositoryBuilder
-	adapter           Adapter
-	encryptorBuilder  account_encryptors.Builder
-	signerFactory     signers.Factory
-	query             queries.Query
-	trx               transactions.Transaction
-	bitrate           int
+	resourceBuilder          resources.Builder
+	conditionBuilder         conditions.Builder
+	conditionPointerBuilder  conditions.PointerBuilder
+	conditionOperatorBuilder conditions.OperatorBuilder
+	conditionElementBuilder  conditions.ElementBuilder
+	conditionResourceBuilder conditions.ResourceBuilder
+	encryptor                encryptors.Encryptor
+	builder                  Builder
+	repositoryBuilder        RepositoryBuilder
+	adapter                  Adapter
+	encryptorBuilder         account_encryptors.Builder
+	signerFactory            signers.Factory
+	query                    queries.Query
+	trx                      transactions.Transaction
+	bitrate                  int
 }
 
 func createServiceBuilder(
+	resourceBuilder resources.Builder,
+	conditionBuilder conditions.Builder,
+	conditionPointerBuilder conditions.PointerBuilder,
+	conditionOperatorBuilder conditions.OperatorBuilder,
+	conditionElementBuilder conditions.ElementBuilder,
+	conditionResourceBuilder conditions.ResourceBuilder,
 	encryptor encryptors.Encryptor,
 	builder Builder,
 	repositoryBuilder RepositoryBuilder,
@@ -31,15 +45,21 @@ func createServiceBuilder(
 	signerFactory signers.Factory,
 ) ServiceBuilder {
 	out := serviceBuilder{
-		encryptor:         encryptor,
-		builder:           builder,
-		repositoryBuilder: repositoryBuilder,
-		adapter:           adapter,
-		encryptorBuilder:  encryptorBuilder,
-		signerFactory:     signerFactory,
-		query:             nil,
-		trx:               nil,
-		bitrate:           0,
+		resourceBuilder:          resourceBuilder,
+		conditionBuilder:         conditionBuilder,
+		conditionPointerBuilder:  conditionPointerBuilder,
+		conditionOperatorBuilder: conditionOperatorBuilder,
+		conditionElementBuilder:  conditionElementBuilder,
+		conditionResourceBuilder: conditionResourceBuilder,
+		encryptor:                encryptor,
+		builder:                  builder,
+		repositoryBuilder:        repositoryBuilder,
+		adapter:                  adapter,
+		encryptorBuilder:         encryptorBuilder,
+		signerFactory:            signerFactory,
+		query:                    nil,
+		trx:                      nil,
+		bitrate:                  0,
 	}
 
 	return &out
@@ -48,6 +68,12 @@ func createServiceBuilder(
 // Create initializes the builder
 func (app *serviceBuilder) Create() ServiceBuilder {
 	return createServiceBuilder(
+		app.resourceBuilder,
+		app.conditionBuilder,
+		app.conditionPointerBuilder,
+		app.conditionOperatorBuilder,
+		app.conditionElementBuilder,
+		app.conditionResourceBuilder,
 		app.encryptor,
 		app.builder,
 		app.repositoryBuilder,
@@ -98,6 +124,12 @@ func (app *serviceBuilder) Now() (Service, error) {
 	}
 
 	return createService(
+		app.resourceBuilder,
+		app.conditionBuilder,
+		app.conditionPointerBuilder,
+		app.conditionOperatorBuilder,
+		app.conditionElementBuilder,
+		app.conditionResourceBuilder,
 		app.encryptor,
 		app.builder,
 		repository,

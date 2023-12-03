@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	"steve.care/network/domain/databases/criterias/conditions"
 	"steve.care/network/domain/databases/criterias/entities/resources"
 	"steve.care/network/domain/databases/transactions"
 )
@@ -52,7 +53,104 @@ func (app *transaction) Update(original resources.Resource, updatedValues map[st
 
 // Delete deletes a resource
 func (app *transaction) Delete(resource resources.Resource) error {
+	container := resource.Container()
+	condition := resource.Condition()
+	whereClause, arguments := app.processCondition(condition, []interface{}{})
+	query := fmt.Sprintf("DELETE FROM %s WHERE %s", container, whereClause)
+	_, err := app.txPtr.Exec(query, arguments...)
+	if err != nil {
+		return err
+	}
+
 	return nil
+}
+
+func (app *transaction) processCondition(condition conditions.Condition, arguments []interface{}) (string, []interface{}) {
+	pointer := condition.Pointer()
+	queryPointer := app.pointerToString(pointer)
+
+	operator := condition.Operator()
+	queryOperator := app.operatorToField(operator)
+
+	element := condition.Element()
+	queryElement, retArguments := app.processElement(element, arguments)
+
+	query := fmt.Sprintf("%s %s %s", queryPointer, queryOperator, queryElement)
+	return query, retArguments
+}
+
+func (app *transaction) processElement(element conditions.Element, arguments []interface{}) (string, []interface{}) {
+	if element.IsCondition() {
+		condition := element.Condition()
+		queryCondition, retArguments := app.processCondition(condition, arguments)
+		query := fmt.Sprintf("(%s)", queryCondition)
+		return query, retArguments
+	}
+
+	resource := element.Resource()
+	return app.processResource(resource, arguments)
+}
+
+func (app *transaction) processResource(resource conditions.Resource, arguments []interface{}) (string, []interface{}) {
+	if resource.IsField() {
+		field := resource.Field()
+		return app.pointerToString(field), arguments
+	}
+
+	retArguments := append(arguments, resource.Value())
+	return "?", retArguments
+}
+
+func (app *transaction) pointerToString(pointer conditions.Pointer) string {
+	container := pointer.Container()
+	field := pointer.Field()
+	return fmt.Sprintf("%s.%s", container, field)
+}
+
+func (app *transaction) operatorToField(operator conditions.Operator) string {
+	if operator.IsRelational() {
+		relational := operator.Relational()
+		return app.relationalOperatorToField(relational)
+	}
+
+	if operator.IsInteger() {
+		integer := operator.Integer()
+		return app.integerOperatorToField(integer)
+	}
+
+	return "="
+}
+
+func (app *transaction) relationalOperatorToField(operator conditions.RelationalOperator) string {
+	if operator.IsAnd() {
+		return "&&"
+	}
+
+	return "||"
+}
+
+func (app *transaction) integerOperatorToField(operator conditions.IntegerOperator) string {
+	if operator.IsSmallerThan() && operator.IsEqual() {
+		return "<="
+	}
+
+	if operator.IsSmallerThan() {
+		return "<"
+	}
+
+	if operator.IsBiggerThan() && operator.IsEqual() {
+		return ">="
+	}
+
+	if operator.IsBiggerThan() {
+		return ">"
+	}
+
+	if operator.IsEqual() {
+		return "="
+	}
+
+	return "!="
 }
 
 // Execute executes a transactional query

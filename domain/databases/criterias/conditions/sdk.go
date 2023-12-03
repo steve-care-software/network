@@ -85,7 +85,7 @@ type Element interface {
 type ResourceBuilder interface {
 	Create() ResourceBuilder
 	WithField(field Pointer) ResourceBuilder
-	WithValue(value any) ResourceBuilder
+	WithValue(value interface{}) ResourceBuilder
 	Now() (Resource, error)
 }
 
@@ -94,7 +94,7 @@ type Resource interface {
 	IsField() bool
 	Field() Pointer
 	IsValue() bool
-	Value() any
+	Value() interface{}
 }
 
 // OperatorBuilder represents an operator builder
