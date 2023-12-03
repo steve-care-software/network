@@ -2,6 +2,11 @@ package conditions
 
 import "steve.care/network/domain/databases/criterias/values"
 
+// NewResourceBuilder creates a new resource builder
+func NewResourceBuilder() ResourceBuilder {
+	return createResourceBuilder()
+}
+
 // NewOperatorBuilder creates a new operator builder
 func NewOperatorBuilder() OperatorBuilder {
 	return createOperatorBuilder()
