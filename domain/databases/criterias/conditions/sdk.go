@@ -2,6 +2,11 @@ package conditions
 
 import "steve.care/network/domain/databases/criterias/values"
 
+// NewIntegerOperatorBuilder creates a new integer operator builder
+func NewIntegerOperatorBuilder() IntegerOperatorBuilder {
+	return createIntegerOperatorBuilder()
+}
+
 // Builder represents a condition builder
 type Builder interface {
 	Create() Builder
@@ -101,7 +106,7 @@ type IntegerOperatorBuilder interface {
 	Create() IntegerOperatorBuilder
 	IsSmallerThan() IntegerOperatorBuilder
 	IsBiggerThan() IntegerOperatorBuilder
-	HasEqual() IntegerOperatorBuilder
+	IsEqual() IntegerOperatorBuilder
 	Now() (IntegerOperator, error)
 }
 
@@ -109,5 +114,5 @@ type IntegerOperatorBuilder interface {
 type IntegerOperator interface {
 	IsSmallerThan() bool
 	IsBiggerThan() bool
-	HasEqual() bool
+	IsEqual() bool
 }

@@ -5,7 +5,6 @@ import (
 
 	"steve.care/network/domain/databases"
 	"steve.care/network/domain/databases/queries"
-	"steve.care/network/domain/databases/schemas"
 	"steve.care/network/domain/databases/transactions"
 )
 
@@ -26,14 +25,9 @@ func createDatabase(
 	return &out
 }
 
-// Init initializes a schema on the database
-func (app *database) Init(schema schemas.Schema) error {
-	return nil
-}
-
-// Execute executes a script in database
-func (app *database) Execute(script string) error {
-	_, err := app.dbPtr.Exec(script)
+// Execute executes a schema on the database
+func (app *database) Execute(schema string) error {
+	_, err := app.dbPtr.Exec(schema)
 	if err != nil {
 		return err
 	}
