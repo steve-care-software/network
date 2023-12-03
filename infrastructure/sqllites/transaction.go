@@ -3,6 +3,8 @@ package sqllites
 import (
 	"database/sql"
 
+	"steve.care/network/domain/databases/criterias/resources"
+	"steve.care/network/domain/databases/criterias/values"
 	"steve.care/network/domain/databases/transactions"
 )
 
@@ -18,6 +20,21 @@ func createTransaction(
 	}
 
 	return &out
+}
+
+// Insert inserts a resource
+func (app *transaction) Insert(container string, values map[string]values.Value) error {
+	return nil
+}
+
+// Update updates a resource
+func (app *transaction) Update(original resources.Resource, updatedValues map[string]values.Value) error {
+	return nil
+}
+
+// Delete deletes a resource
+func (app *transaction) Delete(resource resources.Resource) error {
+	return nil
 }
 
 // Execute executes a transactional query

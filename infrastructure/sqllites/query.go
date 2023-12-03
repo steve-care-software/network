@@ -4,7 +4,9 @@ import (
 	"database/sql"
 	"errors"
 
+	"steve.care/network/domain/databases/criterias/entities"
 	"steve.care/network/domain/databases/queries"
+	"steve.care/network/domain/hash"
 )
 
 type query struct {
@@ -19,6 +21,31 @@ func createQuery(
 	}
 
 	return &out
+}
+
+// Amount returns the amount of entities a container contains
+func (app *query) Amount(container string) (uint, error) {
+	return 0, nil
+}
+
+// List lists entity hashes
+func (app *query) List(container string, index uint, amount uint) ([]hash.Hash, error) {
+	return nil, nil
+}
+
+// Retrieve retrieves an entity by query
+func (app *query) Retrieve(query entities.Entity) (interface{}, error) {
+	return nil, nil
+}
+
+// RetrieveByHash retrieves an entity by hash
+func (app *query) RetrieveByHash(hash hash.Hash) (interface{}, error) {
+	return nil, nil
+}
+
+// RetrieveList retrieves a list of entity by hashes
+func (app *query) RetrieveList(container string, hashes []hash.Hash) ([]interface{}, error) {
+	return nil, nil
 }
 
 // QueryFirst returns the first instance of a query

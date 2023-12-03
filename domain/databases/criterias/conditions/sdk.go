@@ -1,6 +1,6 @@
 package conditions
 
-import "steve.care/network/domain/databases/values"
+import "steve.care/network/domain/databases/criterias/values"
 
 // Builder represents a condition builder
 type Builder interface {
