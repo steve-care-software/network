@@ -2,6 +2,11 @@ package conditions
 
 import "steve.care/network/domain/databases/criterias/values"
 
+// NewBuilder creates a new builder instance
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
 // NewPointerBuilder creates a new pointer builder
 func NewPointerBuilder() PointerBuilder {
 	return createPointerBuilder()
