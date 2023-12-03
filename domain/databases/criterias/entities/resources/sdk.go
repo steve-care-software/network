@@ -4,6 +4,11 @@ import (
 	"steve.care/network/domain/databases/criterias/conditions"
 )
 
+// NewBuilder creates a new builder
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
 // Builder represent sa resource builder
 type Builder interface {
 	Create() Builder

@@ -1,19 +1,19 @@
 package entities
 
-import "steve.care/network/domain/databases/criterias/conditions"
+import (
+	"steve.care/network/domain/databases/criterias/entities/resources"
+)
 
 // Builder represents a builder
 type Builder interface {
 	Create() Builder
-	WithContainer(container string) Builder
+	WithResource(resource resources.Resource)
 	WithFields(fields []string) Builder
-	WithCondition(condition conditions.Condition) Builder
 	Now() (Entity, error)
 }
 
 // Entity represents a request entity
 type Entity interface {
-	Container() string
+	Resource() resources.Resource
 	Fields() []string
-	Condition() conditions.Condition
 }

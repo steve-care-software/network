@@ -3,7 +3,7 @@ package sqllites
 import (
 	"database/sql"
 
-	"steve.care/network/domain/databases/criterias/resources"
+	"steve.care/network/domain/databases/criterias/entities/resources"
 	"steve.care/network/domain/databases/criterias/values"
 	"steve.care/network/domain/databases/transactions"
 )
