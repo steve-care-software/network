@@ -1,5 +1,10 @@
 package kinds
 
+// NewBuilder creates a new builder
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
 // Builder represents the kind builder
 type Builder interface {
 	Create() Builder
