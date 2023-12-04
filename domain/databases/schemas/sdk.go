@@ -1,8 +1,8 @@
 package schemas
 
 import (
-	"steve.care/network/domain/schemas/connections"
-	"steve.care/network/domain/schemas/entities"
+	"steve.care/network/domain/databases/schemas/connections"
+	"steve.care/network/domain/databases/schemas/entities"
 )
 
 // Builder represents the schema builder

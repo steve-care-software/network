@@ -4,8 +4,8 @@ import (
 	"steve.care/network/applications/applications/accounts"
 	accounts_application "steve.care/network/applications/applications/accounts"
 	"steve.care/network/domain/databases/queries"
+	"steve.care/network/domain/databases/schemas"
 	"steve.care/network/domain/databases/transactions"
-	"steve.care/network/domain/schemas"
 )
 
 type application struct {

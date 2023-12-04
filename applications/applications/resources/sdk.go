@@ -4,9 +4,9 @@ import (
 	"steve.care/network/domain/credentials"
 	"steve.care/network/domain/databases/criterias/conditions"
 	"steve.care/network/domain/databases/queries"
+	"steve.care/network/domain/databases/resources"
 	"steve.care/network/domain/databases/transactions"
 	"steve.care/network/domain/hash"
-	"steve.care/network/domain/resources"
 )
 
 // Builder represents the resources application builder

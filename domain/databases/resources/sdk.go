@@ -4,12 +4,12 @@ import (
 	"time"
 
 	"steve.care/network/domain/databases/criterias/conditions"
+	"steve.care/network/domain/databases/resources/layers"
+	"steve.care/network/domain/databases/resources/links"
+	"steve.care/network/domain/databases/resources/queries"
+	"steve.care/network/domain/databases/resources/suites"
 	"steve.care/network/domain/hash"
 	"steve.care/network/domain/receipts"
-	"steve.care/network/domain/resources/layers"
-	"steve.care/network/domain/resources/links"
-	"steve.care/network/domain/resources/queries"
-	"steve.care/network/domain/resources/suites"
 )
 
 // Resource represents a resource

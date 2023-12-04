@@ -53,10 +53,10 @@ func (app *transaction) Update(original resources.Resource, updatedValues map[st
 
 // Delete deletes a resource
 func (app *transaction) Delete(resource resources.Resource) error {
-	container := resource.Container()
+	entity := resource.Entity()
 	condition := resource.Condition()
 	whereClause, arguments := app.processCondition(condition, []interface{}{})
-	query := fmt.Sprintf("DELETE FROM %s WHERE %s", container, whereClause)
+	query := fmt.Sprintf("DELETE FROM %s WHERE %s", entity, whereClause)
 	_, err := app.txPtr.Exec(query, arguments...)
 	if err != nil {
 		return err
@@ -102,9 +102,9 @@ func (app *transaction) processResource(resource conditions.Resource, arguments 
 }
 
 func (app *transaction) pointerToString(pointer conditions.Pointer) string {
-	container := pointer.Container()
+	entity := pointer.Entity()
 	field := pointer.Field()
-	return fmt.Sprintf("%s.%s", container, field)
+	return fmt.Sprintf("%s.%s", entity, field)
 }
 
 func (app *transaction) operatorToField(operator conditions.Operator) string {

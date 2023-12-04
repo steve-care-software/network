@@ -1,6 +1,6 @@
 package connections
 
-import "steve.care/network/domain/schemas/connections/pointers"
+import "steve.care/network/domain/databases/schemas/connections/pointers"
 
 // Builder represents the connections builder
 type Builder interface {

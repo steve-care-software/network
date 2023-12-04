@@ -1,6 +1,6 @@
 package entities
 
-import "steve.care/network/domain/schemas/entities/fields"
+import "steve.care/network/domain/databases/schemas/entities/fields"
 
 // Builder represents the entities builder
 type Builder interface {

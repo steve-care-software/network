@@ -1,6 +1,6 @@
 package fields
 
-import "steve.care/network/domain/schemas/entities/fields/kinds"
+import "steve.care/network/domain/databases/schemas/entities/fields/kinds"
 
 // Builder represents the fields builder
 type Builder interface {
