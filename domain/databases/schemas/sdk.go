@@ -5,6 +5,11 @@ import (
 	"steve.care/network/domain/databases/schemas/entities"
 )
 
+// NewBuilder creates a new builder instance
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
 // Builder represents the schema builder
 type Builder interface {
 	Create() Builder
