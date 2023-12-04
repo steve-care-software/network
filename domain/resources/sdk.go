@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"steve.care/network/domain/databases/criterias/conditions"
-	"steve.care/network/domain/databases/criterias/entities/resources"
 	"steve.care/network/domain/hash"
 	"steve.care/network/domain/receipts"
 	"steve.care/network/domain/resources/layers"
@@ -34,24 +33,30 @@ type Content interface {
 
 // Repository represents a resource repository
 type Repository interface {
-	// AmountOfResourcesInEntity returns the amount of resources in entity
-	AmountOfResourcesInEntity(entity string) (uint, error)
+	// Amount returns the amount of resources
+	Amount() (uint, error)
 
-	// ListResourceHashesInEntity lists resource hashes in entity
-	ListResourceHashesInEntity(entity string, index uint, amount uint) ([]hash.Hash, error)
+	// AmountInEntity returns the amount of resources in entity
+	AmountInEntity(entity string) (uint, error)
 
-	// ListResourceHashesInEntityByCondition lists resource hashes in entity by condition
-	ListResourceHashesInEntityByCondition(entity string, condition conditions.Condition) ([]hash.Hash, error)
+	// List lists resources
+	List(index uint, amount uint) []hash.Hash
 
-	// RetrieveResourceByCondition retrieves a resource by condition
-	RetrieveResourceByCondition(entity string, condition conditions.Condition) (resources.Resource, error)
+	// ListInEntity lists resource hashes in entity
+	ListInEntity(entity string, index uint, amount uint) ([]hash.Hash, error)
+
+	// ListInEntityByCondition lists resource hashes in entity by condition
+	ListInEntityByCondition(entity string, condition conditions.Condition) ([]hash.Hash, error)
+
+	// RetrieveByCondition retrieves a resource by condition
+	RetrieveByCondition(entity string, condition conditions.Condition) (Resource, error)
 }
 
 // Service represents a resource service
 type Service interface {
-	// InsertResource inserts a resource
-	InsertResource(ins resources.Resource) error
+	// Insert inserts a resource
+	Insert(ins Resource) error
 
-	// DeleteResourceByEntityAndHash deletes a resource by entity and hash
-	DeleteResourceByEntityAndHash(entity string, hash hash.Hash) error
+	// Delete deletes a resource
+	Delete(hash hash.Hash) error
 }

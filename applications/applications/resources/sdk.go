@@ -20,21 +20,27 @@ type Builder interface {
 
 // Application represents the resources application
 type Application interface {
-	// AmountOfResourcesInEntity returns the amount of resources in entity
-	AmountOfResourcesInEntity(entity string) (uint, error)
+	// Amount returns the amount of resources
+	Amount() (uint, error)
 
-	// ListResourceHashesInEntity lists resource hashes in entity
-	ListResourceHashesInEntity(entity string, index uint, amount uint) ([]hash.Hash, error)
+	// AmountInEntity returns the amount of resources in entity
+	AmountInEntity(entity string) (uint, error)
 
-	// ListResourceHashesInEntityByCondition lists resource hashes in entity by condition
-	ListResourceHashesInEntityByCondition(entity string, condition conditions.Condition) ([]hash.Hash, error)
+	// List lists resources
+	List(index uint, amount uint) []hash.Hash
 
-	// RetrieveResourceByCondition retrieves a resource by condition
-	RetrieveResourceByCondition(entity string, condition conditions.Condition) (resources.Resource, error)
+	// ListInEntity lists resource hashes in entity
+	ListInEntity(entity string, index uint, amount uint) ([]hash.Hash, error)
 
-	// InsertResource inserts a resource
-	InsertResource(ins resources.Resource) error
+	// ListInEntityByCondition lists resource hashes in entity by condition
+	ListInEntityByCondition(entity string, condition conditions.Condition) ([]hash.Hash, error)
 
-	// DeleteResourceByEntityAndHash deletes a resource by entity and hash
-	DeleteResourceByEntityAndHash(entity string, hash hash.Hash) error
+	// RetrieveByCondition retrieves a resource by condition
+	RetrieveByCondition(entity string, condition conditions.Condition) (resources.Resource, error)
+
+	// Insert inserts a resource
+	Insert(ins resources.Resource) error
+
+	// Delete deletes a resource
+	Delete(hash hash.Hash) error
 }
