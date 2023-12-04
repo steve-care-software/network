@@ -3,6 +3,7 @@ package resources
 import (
 	"time"
 
+	"steve.care/network/domain/accounts/signers"
 	"steve.care/network/domain/databases/resources/layers"
 	"steve.care/network/domain/databases/resources/links"
 	"steve.care/network/domain/databases/resources/queries"
@@ -14,7 +15,13 @@ import (
 // Resource represents a resource
 type Resource interface {
 	Hash() hash.Hash
-	Creation() Creation
+	Token() Token
+	Signature() signers.Signature
+}
+
+// Token represents the token
+type Token interface {
+	Hash() hash.Hash
 	Content() Content
 	CreatedOn() time.Time
 }
@@ -32,13 +39,6 @@ type Content interface {
 	Receipt() receipts.Receipt
 	IsQuery() bool
 	Query() queries.Query
-}
-
-// Creation represents the resource creation
-type Creation interface {
-	Hash() hash.Hash
-	Username() string
-	Receipt() receipts.Receipt
 }
 
 // Repository represents a resource repository
