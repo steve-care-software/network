@@ -1,5 +1,10 @@
 package pointers
 
+// NewBuilder creates a new builder instance
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
 // Builder represents the pointer builder
 type Builder interface {
 	Create() Builder
