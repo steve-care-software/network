@@ -2,6 +2,16 @@ package connections
 
 import "steve.care/network/domain/databases/schemas/connections/pointers"
 
+// NewBuilder creates a new builder instance
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
+// NewConnectionBuilder creates a new connection builder
+func NewConnectionBuilder() ConnectionBuilder {
+	return createConnectionBuilder()
+}
+
 // Builder represents the connections builder
 type Builder interface {
 	Create() Builder
