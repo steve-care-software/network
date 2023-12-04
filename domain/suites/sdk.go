@@ -1,9 +1,6 @@
 package suites
 
 import (
-	"steve.care/network/domain/credentials"
-	"steve.care/network/domain/databases/queries"
-	"steve.care/network/domain/databases/transactions"
 	"steve.care/network/domain/hash"
 	"steve.care/network/domain/receipts/commands/layers"
 	"steve.care/network/domain/receipts/commands/links"
@@ -25,38 +22,4 @@ type Suite interface {
 	Origin() links.Origin
 	Input() layers.Layer
 	Expectation() expectations.Expectation
-}
-
-// RepositoryBuilder represents a repository builder
-type RepositoryBuilder interface {
-	Create() RepositoryBuilder
-	WithTransaction(trx transactions.Transaction) RepositoryBuilder
-	WithQuery(query queries.Query) RepositoryBuilder
-	WithCredentials(credentials credentials.Credentials) RepositoryBuilder
-	Now() (Repository, error)
-}
-
-// Repository represents a suite repository
-type Repository interface {
-	Amount() (uint, error)
-	List() ([]hash.Hash, error)
-	RetrieveByHash(hash hash.Hash) (Suite, error)
-	RetrieveByOrigin(origin hash.Hash) (Suite, error)
-	RetrieveByInputLayer(layer hash.Hash) (Suite, error)
-	RetrieveByExpectation(expectation hash.Hash) (Suite, error)
-}
-
-// ServiceBuilder represents a service builder
-type ServiceBuilder interface {
-	Create() ServiceBuilder
-	WithTransaction(trx transactions.Transaction) ServiceBuilder
-	WithQuery(query queries.Query) ServiceBuilder
-	WithCredentials(credentials credentials.Credentials) ServiceBuilder
-	Now() (Service, error)
-}
-
-// Service represents a suite service
-type Service interface {
-	Insert(ins Suite) error
-	Delete(hash hash.Hash) error
 }

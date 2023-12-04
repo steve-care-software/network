@@ -1,9 +1,6 @@
 package layers
 
 import (
-	"steve.care/network/domain/credentials"
-	"steve.care/network/domain/databases/queries"
-	"steve.care/network/domain/databases/transactions"
 	"steve.care/network/domain/hash"
 	"steve.care/network/domain/receipts/commands/links"
 )
@@ -497,36 +494,4 @@ type BytesReference interface {
 	Variable() string
 	IsBytes() bool
 	Bytes() []byte
-}
-
-// RepositoryBuilder represents the repository builder
-type RepositoryBuilder interface {
-	Create() RepositoryBuilder
-	WithCredentials(credentials credentials.Credentials) RepositoryBuilder
-	WithTransaction(trx transactions.Transaction) RepositoryBuilder
-	WithQuery(query queries.Query) RepositoryBuilder
-	Now() (Repository, error)
-}
-
-// Repository represents a layer repository
-type Repository interface {
-	Amount() (uint, error)
-	List(index uint, amount uint) ([]hash.Hash, error)
-	Exists(hash hash.Hash) (bool, error)
-	Retrieve(hash hash.Hash) (Layer, error)
-}
-
-// ServiceBuilder represents the repository builder
-type ServiceBuilder interface {
-	Create() ServiceBuilder
-	WithCredentials(credentials credentials.Credentials) ServiceBuilder
-	WithTransaction(trx transactions.Transaction) ServiceBuilder
-	WithQuery(query queries.Query) ServiceBuilder
-	Now() (Service, error)
-}
-
-// Service represents a layer service
-type Service interface {
-	Insert(layer Layer) error
-	Delete(hash hash.Hash) error
 }

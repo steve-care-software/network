@@ -3,33 +3,28 @@ package applications
 import (
 	"steve.care/network/applications/applications/accounts"
 	accounts_application "steve.care/network/applications/applications/accounts"
-	"steve.care/network/applications/applications/authenticates"
-	"steve.care/network/domain/credentials"
 	"steve.care/network/domain/databases/queries"
 	"steve.care/network/domain/databases/transactions"
 )
 
 type application struct {
-	accAppBuilder  accounts.Builder
-	authAppBuilder authenticates.Builder
-	trx            transactions.Transaction
-	query          queries.Query
-	bitrate        int
+	accAppBuilder accounts.Builder
+	trx           transactions.Transaction
+	query         queries.Query
+	bitrate       int
 }
 
 func createApplication(
 	accAppBuilder accounts.Builder,
-	authAppBuilder authenticates.Builder,
 	trx transactions.Transaction,
 	query queries.Query,
 	bitrate int,
 ) Application {
 	out := application{
-		accAppBuilder:  accAppBuilder,
-		authAppBuilder: authAppBuilder,
-		trx:            trx,
-		query:          query,
-		bitrate:        bitrate,
+		accAppBuilder: accAppBuilder,
+		trx:           trx,
+		query:         query,
+		bitrate:       bitrate,
 	}
 
 	return &out
@@ -41,14 +36,5 @@ func (app *application) Accounts() (accounts_application.Application, error) {
 		WithBitrate(app.bitrate).
 		WithQuery(app.query).
 		WithTransaction(app.trx).
-		Now()
-}
-
-// Authenticate returns the authenticate application
-func (app *application) Authenticate(credentials credentials.Credentials) (authenticates.Application, error) {
-	return app.authAppBuilder.Create().
-		WithCredentials(credentials).
-		WithTransaction(app.trx).
-		WithQuery(app.query).
 		Now()
 }

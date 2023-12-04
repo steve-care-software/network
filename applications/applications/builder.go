@@ -4,29 +4,25 @@ import (
 	"errors"
 
 	"steve.care/network/applications/applications/accounts"
-	"steve.care/network/applications/applications/authenticates"
 	"steve.care/network/domain/databases/queries"
 	"steve.care/network/domain/databases/transactions"
 )
 
 type builder struct {
-	accAppBuilder  accounts.Builder
-	authAppBuilder authenticates.Builder
-	query          queries.Query
-	trx            transactions.Transaction
-	bitrate        int
+	accAppBuilder accounts.Builder
+	query         queries.Query
+	trx           transactions.Transaction
+	bitrate       int
 }
 
 func createBuilder(
 	accAppBuilder accounts.Builder,
-	authAppBuilder authenticates.Builder,
 ) Builder {
 	out := builder{
-		accAppBuilder:  accAppBuilder,
-		authAppBuilder: authAppBuilder,
-		query:          nil,
-		trx:            nil,
-		bitrate:        0,
+		accAppBuilder: accAppBuilder,
+		query:         nil,
+		trx:           nil,
+		bitrate:       0,
 	}
 
 	return &out
@@ -36,7 +32,6 @@ func createBuilder(
 func (app *builder) Create() Builder {
 	return createBuilder(
 		app.accAppBuilder,
-		app.authAppBuilder,
 	)
 }
 
@@ -74,7 +69,6 @@ func (app *builder) Now() (Application, error) {
 
 	return createApplication(
 		app.accAppBuilder,
-		app.authAppBuilder,
 		app.trx,
 		app.query,
 		app.bitrate,

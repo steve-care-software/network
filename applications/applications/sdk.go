@@ -2,9 +2,7 @@ package applications
 
 import (
 	accounts_application "steve.care/network/applications/applications/accounts"
-	"steve.care/network/applications/applications/authenticates"
 	"steve.care/network/domain/accounts"
-	"steve.care/network/domain/credentials"
 	"steve.care/network/domain/databases/queries"
 	"steve.care/network/domain/databases/transactions"
 	"steve.care/network/domain/encryptors"
@@ -20,10 +18,8 @@ func NewBuilder(
 		adapter,
 	)
 
-	var authAppBuilder authenticates.Builder
 	return createBuilder(
 		accAppBuilder,
-		authAppBuilder,
 	)
 
 }
@@ -40,5 +36,4 @@ type Builder interface {
 // Application represents a stencil application
 type Application interface {
 	Accounts() (accounts_application.Application, error)
-	Authenticate(credentials credentials.Credentials) (authenticates.Application, error)
 }

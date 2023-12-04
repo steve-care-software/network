@@ -6,7 +6,6 @@ import (
 	"fmt"
 
 	"steve.care/network/applications/applications/accounts"
-	layers_application "steve.care/network/applications/applications/authenticates/layers"
 	"steve.care/network/domain/credentials"
 	"steve.care/network/domain/hash"
 	"steve.care/network/domain/receipts"
@@ -22,7 +21,6 @@ import (
 
 type application struct {
 	accountApp                accounts.Application
-	layerApp                  layers_application.Application
 	hashAdapter               hash.Adapter
 	stackBuilder              stacks.Builder
 	stackFramesBuilder        stacks.FramesBuilder
@@ -41,7 +39,6 @@ type application struct {
 
 func createApplication(
 	accountApp accounts.Application,
-	layerApp layers_application.Application,
 	stackBuilder stacks.Builder,
 	stackFramesBuilder stacks.FramesBuilder,
 	stackFrameBuilder stacks.FrameBuilder,
@@ -58,7 +55,6 @@ func createApplication(
 ) Application {
 	out := application{
 		accountApp:                accountApp,
-		layerApp:                  layerApp,
 		stackBuilder:              stackBuilder,
 		stackFramesBuilder:        stackFramesBuilder,
 		stackFrameBuilder:         stackFrameBuilder,
@@ -94,7 +90,7 @@ func (app *application) Execute(context uint, hash hash.Hash, input []byte) (res
 		// failure
 	}
 
-	root, err := app.layerApp.Retrieve(hash)
+	root, err := app.retrieveLayerByHash(hash)
 	if err != nil {
 		return nil, err
 	}
@@ -156,6 +152,14 @@ func (app *application) Execute(context uint, hash hash.Hash, input []byte) (res
 		root,
 		stack,
 	)
+}
+
+func (app *application) retrieveLayerByHash(hash hash.Hash) (layers.Layer, error) {
+	return nil, nil
+}
+
+func (app *application) deleteLayerByHash(hash hash.Hash) error {
+	return nil
 }
 
 func (app *application) executeLayer(
@@ -375,7 +379,7 @@ func (app *application) executeInstruction(
 
 		if layerInstruction.IsDelete() {
 			hash := layerInstruction.Delete()
-			err := app.layerApp.Delete(hash)
+			err := app.deleteLayerByHash(hash)
 			if err != nil {
 				// failure
 			}

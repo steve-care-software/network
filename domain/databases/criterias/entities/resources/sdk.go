@@ -9,7 +9,7 @@ func NewBuilder() Builder {
 	return createBuilder()
 }
 
-// Builder represent sa resource builder
+// Builder represents a resource builder
 type Builder interface {
 	Create() Builder
 	WithContainer(container string) Builder
