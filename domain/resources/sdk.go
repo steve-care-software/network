@@ -8,6 +8,7 @@ import (
 	"steve.care/network/domain/receipts"
 	"steve.care/network/domain/resources/layers"
 	"steve.care/network/domain/resources/links"
+	"steve.care/network/domain/resources/queries"
 	"steve.care/network/domain/resources/suites"
 )
 
@@ -21,6 +22,7 @@ type Resource interface {
 
 // Content represents a resource content
 type Content interface {
+	Hash() hash.Hash
 	IsLayer() bool
 	Layer() layers.Layer
 	IsLink() bool
@@ -29,6 +31,8 @@ type Content interface {
 	Suite() suites.Suite
 	IsReceipt() bool
 	Receipt() receipts.Receipt
+	IsQuery() bool
+	Query() queries.Query
 }
 
 // Repository represents a resource repository
