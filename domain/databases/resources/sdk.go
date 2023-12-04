@@ -3,7 +3,6 @@ package resources
 import (
 	"time"
 
-	"steve.care/network/domain/databases/criterias/conditions"
 	"steve.care/network/domain/databases/resources/layers"
 	"steve.care/network/domain/databases/resources/links"
 	"steve.care/network/domain/databases/resources/queries"
@@ -15,7 +14,7 @@ import (
 // Resource represents a resource
 type Resource interface {
 	Hash() hash.Hash
-	CreatedBy() receipts.Receipt
+	Creation() Creation
 	Content() Content
 	CreatedOn() time.Time
 }
@@ -35,22 +34,26 @@ type Content interface {
 	Query() queries.Query
 }
 
+// Creation represents the resource creation
+type Creation interface {
+	Hash() hash.Hash
+	Username() string
+	Receipt() receipts.Receipt
+}
+
 // Repository represents a resource repository
 type Repository interface {
 	// Amount returns the amount of resources
 	Amount() (uint, error)
 
-	// AmountInEntity returns the amount of resources in entity
-	AmountInEntity(entity string) (uint, error)
+	// AmountByCriteria returns the amount of resources by criteria
+	AmountByCriteria(criteria hash.Hash) (uint, error)
 
 	// ListByCriteria lists resource hashes by criteria
-	ListByCriteria(entity string, criteria hash.Hash) ([]hash.Hash, error)
+	ListByCriteria(criteria hash.Hash) ([]hash.Hash, error)
 
 	// RetrieveByCriteria retrieves a resource by criteria
 	RetrieveByCriteria(criteria hash.Hash) (Resource, error)
-
-	// RetrieveByCondition retrieves a resource by condition
-	RetrieveByCondition(entity string, condition conditions.Condition) (Resource, error)
 }
 
 // Service represents a resource service

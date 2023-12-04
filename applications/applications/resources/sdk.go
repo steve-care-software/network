@@ -22,14 +22,11 @@ type Application interface {
 	// Amount returns the amount of resources
 	Amount() (uint, error)
 
-	// AmountInEntity returns the amount of resources in entity
-	AmountInEntity(entity string) (uint, error)
-
-	// List lists resources
-	List(index uint, amount uint) []hash.Hash
+	// AmountByCriteria returns the amount of resources by criteria
+	AmountByCriteria(criteria hash.Hash) (uint, error)
 
 	// ListByCriteria lists resource hashes by criteria
-	ListByCriteria(entity string, criteria hash.Hash) ([]hash.Hash, error)
+	ListByCriteria(criteria hash.Hash) ([]hash.Hash, error)
 
 	// RetrieveByCriteria retrieves a resource by criteria
 	RetrieveByCriteria(criteria hash.Hash) (resources.Resource, error)
