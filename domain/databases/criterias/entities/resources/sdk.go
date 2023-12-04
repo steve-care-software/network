@@ -12,13 +12,13 @@ func NewBuilder() Builder {
 // Builder represents a resource builder
 type Builder interface {
 	Create() Builder
-	WithContainer(container string) Builder
+	WithEntity(entity string) Builder
 	WithCondition(condition conditions.Condition) Builder
 	Now() (Resource, error)
 }
 
 // Resource represents a resource
 type Resource interface {
-	Container() string
+	Entity() string
 	Condition() conditions.Condition
 }

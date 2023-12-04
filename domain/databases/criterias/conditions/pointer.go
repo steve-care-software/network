@@ -1,25 +1,25 @@
 package conditions
 
 type pointer struct {
-	container string
-	field     string
+	entity string
+	field  string
 }
 
 func createPointer(
-	container string,
+	entity string,
 	field string,
 ) Pointer {
 	out := pointer{
-		container: container,
-		field:     field,
+		entity: entity,
+		field:  field,
 	}
 
 	return &out
 }
 
-// Container returns the container
-func (obj *pointer) Container() string {
-	return obj.container
+// Entity returns the entity
+func (obj *pointer) Entity() string {
+	return obj.entity
 }
 
 // Field returns the field

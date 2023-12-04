@@ -157,7 +157,7 @@ func (app *service) Delete(credentials credentials.Credentials) error {
 	}
 
 	resource, err := app.resourceBuilder.Create().
-		WithContainer("accounts").
+		WithEntity("accounts").
 		WithCondition(condition).
 		Now()
 
@@ -170,7 +170,7 @@ func (app *service) Delete(credentials credentials.Credentials) error {
 
 func (app *service) conditionUsernameEqualsUsername(username string) (conditions.Condition, error) {
 	usernameField, err := app.conditionPointerBuilder.Create().
-		WithContainer("accounts").
+		WithEntity("accounts").
 		WithField("username").
 		Now()
 

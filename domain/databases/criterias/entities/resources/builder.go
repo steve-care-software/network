@@ -7,13 +7,13 @@ import (
 )
 
 type builder struct {
-	container string
+	entity    string
 	condition conditions.Condition
 }
 
 func createBuilder() Builder {
 	out := builder{
-		container: "",
+		entity:    "",
 		condition: nil,
 	}
 
@@ -25,9 +25,9 @@ func (app *builder) Create() Builder {
 	return createBuilder()
 }
 
-// WithContainer adds a container to the builder
-func (app *builder) WithContainer(container string) Builder {
-	app.container = container
+// WithEntity adds a entity to the builder
+func (app *builder) WithEntity(entity string) Builder {
+	app.entity = entity
 	return app
 }
 
@@ -39,8 +39,8 @@ func (app *builder) WithCondition(condition conditions.Condition) Builder {
 
 // Now builds a new Resource instance
 func (app *builder) Now() (Resource, error) {
-	if app.container == "" {
-		return nil, errors.New("the container is mandatory in order to build a Resource instance")
+	if app.entity == "" {
+		return nil, errors.New("the entity is mandatory in order to build a Resource instance")
 	}
 
 	if app.condition == nil {
@@ -48,7 +48,7 @@ func (app *builder) Now() (Resource, error) {
 	}
 
 	return createResource(
-		app.container,
+		app.entity,
 		app.condition,
 	), nil
 }

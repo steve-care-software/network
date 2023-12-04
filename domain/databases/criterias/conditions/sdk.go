@@ -54,14 +54,14 @@ type Condition interface {
 // PointerBuilder represents a pointer builder
 type PointerBuilder interface {
 	Create() PointerBuilder
-	WithContainer(container string) PointerBuilder
+	WithEntity(entity string) PointerBuilder
 	WithField(field string) PointerBuilder
 	Now() (Pointer, error)
 }
 
 // Pointer represents a field pointer
 type Pointer interface {
-	Container() string
+	Entity() string
 	Field() string
 }
 

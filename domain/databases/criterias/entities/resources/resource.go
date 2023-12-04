@@ -3,25 +3,25 @@ package resources
 import "steve.care/network/domain/databases/criterias/conditions"
 
 type resource struct {
-	container string
+	entity    string
 	condition conditions.Condition
 }
 
 func createResource(
-	container string,
+	entity string,
 	condition conditions.Condition,
 ) Resource {
 	out := resource{
-		container: container,
+		entity:    entity,
 		condition: condition,
 	}
 
 	return &out
 }
 
-// Container returns the container
-func (obj *resource) Container() string {
-	return obj.container
+// Entity returns the entity
+func (obj *resource) Entity() string {
+	return obj.entity
 }
 
 // Condition returns the condition

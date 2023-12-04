@@ -3,14 +3,14 @@ package conditions
 import "errors"
 
 type pointerBuilder struct {
-	container string
-	field     string
+	entity string
+	field  string
 }
 
 func createPointerBuilder() PointerBuilder {
 	out := pointerBuilder{
-		container: "",
-		field:     "",
+		entity: "",
+		field:  "",
 	}
 
 	return &out
@@ -21,9 +21,9 @@ func (app *pointerBuilder) Create() PointerBuilder {
 	return createPointerBuilder()
 }
 
-// WithContainer adds a container to the builder
-func (app *pointerBuilder) WithContainer(container string) PointerBuilder {
-	app.container = container
+// WithEntity adds a entity to the builder
+func (app *pointerBuilder) WithEntity(entity string) PointerBuilder {
+	app.entity = entity
 	return app
 }
 
@@ -35,13 +35,13 @@ func (app *pointerBuilder) WithField(field string) PointerBuilder {
 
 // Now builds a new Pointer instance
 func (app *pointerBuilder) Now() (Pointer, error) {
-	if app.container == "" {
-		return nil, errors.New("the container is mandatory in order to build a Pointer instance")
+	if app.entity == "" {
+		return nil, errors.New("the entity is mandatory in order to build a Pointer instance")
 	}
 
 	if app.field == "" {
 		return nil, errors.New("the field is mandatory in order to build a Pointer instance")
 	}
 
-	return createPointer(app.container, app.field), nil
+	return createPointer(app.entity, app.field), nil
 }
