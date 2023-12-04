@@ -1,7 +1,7 @@
 package queries
 
 import (
-	"steve.care/network/domain/databases/criterias/entities"
+	"steve.care/network/domain/databases/criterias/entries"
 	"steve.care/network/domain/hash"
 )
 
@@ -17,7 +17,7 @@ type Scannable interface {
 type Query interface {
 	Amount(container string) (uint, error)
 	List(container string, index uint, amount uint) ([]hash.Hash, error)
-	Retrieve(query entities.Entity) (interface{}, error)
+	Retrieve(query entries.Entry) (interface{}, error)
 	RetrieveByHash(hash hash.Hash) (interface{}, error)
 	RetrieveList(container string, hashes []hash.Hash) ([]interface{}, error)
 	QueryFirst(callback QueryFn, query string, args ...any) (interface{}, error)

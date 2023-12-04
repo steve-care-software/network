@@ -1,7 +1,7 @@
 package transactions
 
 import (
-	"steve.care/network/domain/databases/criterias/entities/resources"
+	"steve.care/network/domain/databases/criterias/entries/resources"
 )
 
 // Transaction represents a transaction

@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"errors"
 
-	"steve.care/network/domain/databases/criterias/entities"
+	"steve.care/network/domain/databases/criterias/entries"
 	"steve.care/network/domain/databases/queries"
 	"steve.care/network/domain/hash"
 )
@@ -34,7 +34,7 @@ func (app *query) List(container string, index uint, amount uint) ([]hash.Hash, 
 }
 
 // Retrieve retrieves an entity by query
-func (app *query) Retrieve(query entities.Entity) (interface{}, error) {
+func (app *query) Retrieve(query entries.Entry) (interface{}, error) {
 	return nil, nil
 }
 

@@ -1,7 +1,7 @@
-package entities
+package entries
 
 import (
-	"steve.care/network/domain/databases/criterias/entities/resources"
+	"steve.care/network/domain/databases/criterias/entries/resources"
 )
 
 // NewBuilder creates a new builder
@@ -14,11 +14,11 @@ type Builder interface {
 	Create() Builder
 	WithResource(resource resources.Resource) Builder
 	WithFields(fields []string) Builder
-	Now() (Entity, error)
+	Now() (Entry, error)
 }
 
-// Entity represents a request entity
-type Entity interface {
+// Entry represents a request entry
+type Entry interface {
 	Resource() resources.Resource
 	Fields() []string
 }

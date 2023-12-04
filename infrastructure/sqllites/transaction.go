@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"steve.care/network/domain/databases/criterias/conditions"
-	"steve.care/network/domain/databases/criterias/entities/resources"
+	"steve.care/network/domain/databases/criterias/entries/resources"
 	"steve.care/network/domain/databases/transactions"
 )
 

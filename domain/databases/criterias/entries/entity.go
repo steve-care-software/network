@@ -1,17 +1,17 @@
-package entities
+package entries
 
-import "steve.care/network/domain/databases/criterias/entities/resources"
+import "steve.care/network/domain/databases/criterias/entries/resources"
 
-type entity struct {
+type entry struct {
 	resource resources.Resource
 	fields   []string
 }
 
-func createEntity(
+func createEntry(
 	resource resources.Resource,
 	fields []string,
-) Entity {
-	out := entity{
+) Entry {
+	out := entry{
 		resource: resource,
 		fields:   fields,
 	}
@@ -20,11 +20,11 @@ func createEntity(
 }
 
 // Resource returns the resource
-func (obj *entity) Resource() resources.Resource {
+func (obj *entry) Resource() resources.Resource {
 	return obj.resource
 }
 
 // Fields returns the fields
-func (obj *entity) Fields() []string {
+func (obj *entry) Fields() []string {
 	return obj.fields
 }

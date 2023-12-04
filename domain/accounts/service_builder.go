@@ -6,7 +6,7 @@ import (
 	account_encryptors "steve.care/network/domain/accounts/encryptors"
 	"steve.care/network/domain/accounts/signers"
 	"steve.care/network/domain/databases/criterias/conditions"
-	"steve.care/network/domain/databases/criterias/entities/resources"
+	"steve.care/network/domain/databases/criterias/entries/resources"
 	"steve.care/network/domain/databases/queries"
 	"steve.care/network/domain/databases/transactions"
 	"steve.care/network/domain/encryptors"

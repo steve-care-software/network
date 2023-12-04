@@ -43,14 +43,11 @@ type Repository interface {
 	// AmountInEntity returns the amount of resources in entity
 	AmountInEntity(entity string) (uint, error)
 
-	// List lists resources
-	List(index uint, amount uint) []hash.Hash
+	// ListByCriteria lists resource hashes by criteria
+	ListByCriteria(entity string, criteria hash.Hash) ([]hash.Hash, error)
 
-	// ListInEntity lists resource hashes in entity
-	ListInEntity(entity string, index uint, amount uint) ([]hash.Hash, error)
-
-	// ListInEntityByCondition lists resource hashes in entity by condition
-	ListInEntityByCondition(entity string, condition conditions.Condition) ([]hash.Hash, error)
+	// RetrieveByCriteria retrieves a resource by criteria
+	RetrieveByCriteria(criteria hash.Hash) (Resource, error)
 
 	// RetrieveByCondition retrieves a resource by condition
 	RetrieveByCondition(entity string, condition conditions.Condition) (Resource, error)

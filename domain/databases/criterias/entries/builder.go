@@ -1,9 +1,9 @@
-package entities
+package entries
 
 import (
 	"errors"
 
-	"steve.care/network/domain/databases/criterias/entities/resources"
+	"steve.care/network/domain/databases/criterias/entries/resources"
 )
 
 type builder struct {
@@ -37,10 +37,10 @@ func (app *builder) WithFields(fields []string) Builder {
 	return app
 }
 
-// Now builds a new Entity instance
-func (app *builder) Now() (Entity, error) {
+// Now builds a new Entry instance
+func (app *builder) Now() (Entry, error) {
 	if app.resource == nil {
-		return nil, errors.New("the resource is mandatory in order to build an Entity instance")
+		return nil, errors.New("the resource is mandatory in order to build an Entry instance")
 	}
 
 	if app.fields != nil && len(app.fields) <= 0 {
@@ -48,10 +48,10 @@ func (app *builder) Now() (Entity, error) {
 	}
 
 	if app.fields == nil {
-		return nil, errors.New("the fields is mandatory in order to build an Entity instance")
+		return nil, errors.New("the fields is mandatory in order to build an Entry instance")
 	}
 
-	return createEntity(
+	return createEntry(
 		app.resource,
 		app.fields,
 	), nil

@@ -2,7 +2,6 @@ package resources
 
 import (
 	"steve.care/network/domain/credentials"
-	"steve.care/network/domain/databases/criterias/conditions"
 	"steve.care/network/domain/databases/queries"
 	"steve.care/network/domain/databases/resources"
 	"steve.care/network/domain/databases/transactions"
@@ -29,14 +28,11 @@ type Application interface {
 	// List lists resources
 	List(index uint, amount uint) []hash.Hash
 
-	// ListInEntity lists resource hashes in entity
-	ListInEntity(entity string, index uint, amount uint) ([]hash.Hash, error)
+	// ListByCriteria lists resource hashes by criteria
+	ListByCriteria(entity string, criteria hash.Hash) ([]hash.Hash, error)
 
-	// ListInEntityByCondition lists resource hashes in entity by condition
-	ListInEntityByCondition(entity string, condition conditions.Condition) ([]hash.Hash, error)
-
-	// RetrieveByCondition retrieves a resource by condition
-	RetrieveByCondition(entity string, condition conditions.Condition) (resources.Resource, error)
+	// RetrieveByCriteria retrieves a resource by criteria
+	RetrieveByCriteria(criteria hash.Hash) (resources.Resource, error)
 
 	// Insert inserts a resource
 	Insert(ins resources.Resource) error

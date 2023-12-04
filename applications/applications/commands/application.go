@@ -10,13 +10,13 @@ import (
 	"steve.care/network/domain/hash"
 	"steve.care/network/domain/receipts"
 	"steve.care/network/domain/receipts/commands/layers"
+	"steve.care/network/domain/stacks"
 
 	identity_accounts "steve.care/network/domain/accounts"
 	"steve.care/network/domain/accounts/encryptors"
 	"steve.care/network/domain/accounts/signers"
 	identity_accounts_signers "steve.care/network/domain/accounts/signers"
 	"steve.care/network/domain/receipts/commands/results"
-	"steve.care/network/domain/stacks"
 )
 
 type application struct {
