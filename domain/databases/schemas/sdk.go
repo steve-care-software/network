@@ -10,6 +10,12 @@ func NewBuilder() Builder {
 	return createBuilder()
 }
 
+// Adapter represents the schema adapter
+type Adapter interface {
+	ToBytes(ins schema) ([]byte, error)
+	ToInstance(bytes []byte) (Schema, error)
+}
+
 // Builder represents the schema builder
 type Builder interface {
 	Create() Builder
