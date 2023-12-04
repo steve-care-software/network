@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"strings"
 
+	"steve.care/network/domain/databases/criterias"
 	"steve.care/network/domain/databases/criterias/conditions"
-	"steve.care/network/domain/databases/criterias/entries/resources"
 	"steve.care/network/domain/databases/transactions"
 )
 
@@ -24,7 +24,7 @@ func createTransaction(
 	return &out
 }
 
-// Insert inserts a resource
+// Insert inserts a criteria
 func (app *transaction) Insert(container string, values map[string]interface{}) error {
 	fieldValuesList := []any{}
 	fieldValuePlaceholders := []string{}
@@ -46,15 +46,15 @@ func (app *transaction) Insert(container string, values map[string]interface{}) 
 	return nil
 }
 
-// Update updates a resource
-func (app *transaction) Update(original resources.Resource, updatedValues map[string]interface{}) error {
+// Update updates a criteria
+func (app *transaction) Update(original criterias.Criteria, updatedValues map[string]interface{}) error {
 	return nil
 }
 
-// Delete deletes a resource
-func (app *transaction) Delete(resource resources.Resource) error {
-	entity := resource.Entity()
-	condition := resource.Condition()
+// Delete deletes a criteria
+func (app *transaction) Delete(criteria criterias.Criteria) error {
+	entity := criteria.Entity()
+	condition := criteria.Condition()
 	whereClause, arguments := app.processCondition(condition, []interface{}{})
 	query := fmt.Sprintf("DELETE FROM %s WHERE %s", entity, whereClause)
 	_, err := app.txPtr.Exec(query, arguments...)
@@ -87,17 +87,17 @@ func (app *transaction) processElement(element conditions.Element, arguments []i
 		return query, retArguments
 	}
 
-	resource := element.Resource()
-	return app.processResource(resource, arguments)
+	criteria := element.Resource()
+	return app.processResource(criteria, arguments)
 }
 
-func (app *transaction) processResource(resource conditions.Resource, arguments []interface{}) (string, []interface{}) {
-	if resource.IsField() {
-		field := resource.Field()
+func (app *transaction) processResource(criteria conditions.Resource, arguments []interface{}) (string, []interface{}) {
+	if criteria.IsField() {
+		field := criteria.Field()
 		return app.pointerToString(field), arguments
 	}
 
-	retArguments := append(arguments, resource.Value())
+	retArguments := append(arguments, criteria.Value())
 	return "?", retArguments
 }
 

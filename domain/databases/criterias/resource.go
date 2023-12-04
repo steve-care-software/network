@@ -1,17 +1,17 @@
-package resources
+package criterias
 
 import "steve.care/network/domain/databases/criterias/conditions"
 
-type resource struct {
+type criteria struct {
 	entity    string
 	condition conditions.Condition
 }
 
-func createResource(
+func createCriteria(
 	entity string,
 	condition conditions.Condition,
-) Resource {
-	out := resource{
+) Criteria {
+	out := criteria{
 		entity:    entity,
 		condition: condition,
 	}
@@ -20,11 +20,11 @@ func createResource(
 }
 
 // Entity returns the entity
-func (obj *resource) Entity() string {
+func (obj *criteria) Entity() string {
 	return obj.entity
 }
 
 // Condition returns the condition
-func (obj *resource) Condition() conditions.Condition {
+func (obj *criteria) Condition() conditions.Condition {
 	return obj.condition
 }

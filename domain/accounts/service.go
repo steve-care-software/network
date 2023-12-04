@@ -5,14 +5,14 @@ import (
 	account_encryptors "steve.care/network/domain/accounts/encryptors"
 	"steve.care/network/domain/accounts/signers"
 	"steve.care/network/domain/credentials"
+	"steve.care/network/domain/databases/criterias"
 	"steve.care/network/domain/databases/criterias/conditions"
-	"steve.care/network/domain/databases/criterias/entries/resources"
 	"steve.care/network/domain/databases/transactions"
 	"steve.care/network/domain/encryptors"
 )
 
 type service struct {
-	resourceBuilder          resources.Builder
+	criteriaBuilder          criterias.Builder
 	conditionBuilder         conditions.Builder
 	conditionPointerBuilder  conditions.PointerBuilder
 	conditionOperatorBuilder conditions.OperatorBuilder
@@ -29,7 +29,7 @@ type service struct {
 }
 
 func createService(
-	resourceBuilder resources.Builder,
+	criteriaBuilder criterias.Builder,
 	conditionBuilder conditions.Builder,
 	conditionPointerBuilder conditions.PointerBuilder,
 	conditionOperatorBuilder conditions.OperatorBuilder,
@@ -45,7 +45,7 @@ func createService(
 	bitrate int,
 ) Service {
 	out := service{
-		resourceBuilder:          resourceBuilder,
+		criteriaBuilder:          criteriaBuilder,
 		conditionBuilder:         conditionBuilder,
 		conditionPointerBuilder:  conditionPointerBuilder,
 		conditionOperatorBuilder: conditionOperatorBuilder,
@@ -156,7 +156,7 @@ func (app *service) Delete(credentials credentials.Credentials) error {
 		return err
 	}
 
-	resource, err := app.resourceBuilder.Create().
+	criteria, err := app.criteriaBuilder.Create().
 		WithEntity("accounts").
 		WithCondition(condition).
 		Now()
@@ -165,7 +165,7 @@ func (app *service) Delete(credentials credentials.Credentials) error {
 		return err
 	}
 
-	return app.trx.Delete(resource)
+	return app.trx.Delete(criteria)
 }
 
 func (app *service) conditionUsernameEqualsUsername(username string) (conditions.Condition, error) {

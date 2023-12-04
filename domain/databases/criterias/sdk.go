@@ -1,4 +1,4 @@
-package resources
+package criterias
 
 import (
 	"steve.care/network/domain/databases/criterias/conditions"
@@ -9,16 +9,16 @@ func NewBuilder() Builder {
 	return createBuilder()
 }
 
-// Builder represents a resource builder
+// Builder represents a criteria builder
 type Builder interface {
 	Create() Builder
 	WithEntity(entity string) Builder
 	WithCondition(condition conditions.Condition) Builder
-	Now() (Resource, error)
+	Now() (Criteria, error)
 }
 
-// Resource represents a resource
-type Resource interface {
+// Criteria represents a criteria
+type Criteria interface {
 	Entity() string
 	Condition() conditions.Condition
 }

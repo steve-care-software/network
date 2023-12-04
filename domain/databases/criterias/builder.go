@@ -1,4 +1,4 @@
-package resources
+package criterias
 
 import (
 	"errors"
@@ -37,17 +37,17 @@ func (app *builder) WithCondition(condition conditions.Condition) Builder {
 	return app
 }
 
-// Now builds a new Resource instance
-func (app *builder) Now() (Resource, error) {
+// Now builds a new Criteria instance
+func (app *builder) Now() (Criteria, error) {
 	if app.entity == "" {
-		return nil, errors.New("the entity is mandatory in order to build a Resource instance")
+		return nil, errors.New("the entity is mandatory in order to build a Criteria instance")
 	}
 
 	if app.condition == nil {
-		return nil, errors.New("the condition is mandatory in order to build a Resource instance")
+		return nil, errors.New("the condition is mandatory in order to build a Criteria instance")
 	}
 
-	return createResource(
+	return createCriteria(
 		app.entity,
 		app.condition,
 	), nil

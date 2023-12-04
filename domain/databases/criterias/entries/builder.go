@@ -3,17 +3,17 @@ package entries
 import (
 	"errors"
 
-	"steve.care/network/domain/databases/criterias/entries/resources"
+	"steve.care/network/domain/databases/criterias"
 )
 
 type builder struct {
-	resource resources.Resource
+	criteria criterias.Criteria
 	fields   []string
 }
 
 func createBuilder() Builder {
 	out := builder{
-		resource: nil,
+		criteria: nil,
 		fields:   nil,
 	}
 
@@ -25,9 +25,9 @@ func (app *builder) Create() Builder {
 	return createBuilder()
 }
 
-// WithResource adds a resource to the builder
-func (app *builder) WithResource(resource resources.Resource) Builder {
-	app.resource = resource
+// WithCriteria adds a criteria to the builder
+func (app *builder) WithCriteria(criteria criterias.Criteria) Builder {
+	app.criteria = criteria
 	return app
 }
 
@@ -39,8 +39,8 @@ func (app *builder) WithFields(fields []string) Builder {
 
 // Now builds a new Entry instance
 func (app *builder) Now() (Entry, error) {
-	if app.resource == nil {
-		return nil, errors.New("the resource is mandatory in order to build an Entry instance")
+	if app.criteria == nil {
+		return nil, errors.New("the criteria is mandatory in order to build an Entry instance")
 	}
 
 	if app.fields != nil && len(app.fields) <= 0 {
@@ -52,7 +52,7 @@ func (app *builder) Now() (Entry, error) {
 	}
 
 	return createEntry(
-		app.resource,
+		app.criteria,
 		app.fields,
 	), nil
 }

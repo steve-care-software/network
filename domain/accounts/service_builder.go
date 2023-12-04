@@ -5,15 +5,15 @@ import (
 
 	account_encryptors "steve.care/network/domain/accounts/encryptors"
 	"steve.care/network/domain/accounts/signers"
+	"steve.care/network/domain/databases/criterias"
 	"steve.care/network/domain/databases/criterias/conditions"
-	"steve.care/network/domain/databases/criterias/entries/resources"
 	"steve.care/network/domain/databases/queries"
 	"steve.care/network/domain/databases/transactions"
 	"steve.care/network/domain/encryptors"
 )
 
 type serviceBuilder struct {
-	resourceBuilder          resources.Builder
+	criteriaBuilder          criterias.Builder
 	conditionBuilder         conditions.Builder
 	conditionPointerBuilder  conditions.PointerBuilder
 	conditionOperatorBuilder conditions.OperatorBuilder
@@ -31,7 +31,7 @@ type serviceBuilder struct {
 }
 
 func createServiceBuilder(
-	resourceBuilder resources.Builder,
+	criteriaBuilder criterias.Builder,
 	conditionBuilder conditions.Builder,
 	conditionPointerBuilder conditions.PointerBuilder,
 	conditionOperatorBuilder conditions.OperatorBuilder,
@@ -45,7 +45,7 @@ func createServiceBuilder(
 	signerFactory signers.Factory,
 ) ServiceBuilder {
 	out := serviceBuilder{
-		resourceBuilder:          resourceBuilder,
+		criteriaBuilder:          criteriaBuilder,
 		conditionBuilder:         conditionBuilder,
 		conditionPointerBuilder:  conditionPointerBuilder,
 		conditionOperatorBuilder: conditionOperatorBuilder,
@@ -68,7 +68,7 @@ func createServiceBuilder(
 // Create initializes the builder
 func (app *serviceBuilder) Create() ServiceBuilder {
 	return createServiceBuilder(
-		app.resourceBuilder,
+		app.criteriaBuilder,
 		app.conditionBuilder,
 		app.conditionPointerBuilder,
 		app.conditionOperatorBuilder,
@@ -124,7 +124,7 @@ func (app *serviceBuilder) Now() (Service, error) {
 	}
 
 	return createService(
-		app.resourceBuilder,
+		app.criteriaBuilder,
 		app.conditionBuilder,
 		app.conditionPointerBuilder,
 		app.conditionOperatorBuilder,

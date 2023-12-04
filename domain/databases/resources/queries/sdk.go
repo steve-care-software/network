@@ -1,7 +1,7 @@
 package queries
 
 import (
-	"steve.care/network/domain/databases/criterias/entries/resources"
+	"steve.care/network/domain/databases/criterias"
 	"steve.care/network/domain/hash"
 )
 
@@ -9,5 +9,5 @@ import (
 type Query interface {
 	Hash() hash.Hash
 	IsCriteria() bool
-	Criteria() resources.Resource
+	Criteria() criterias.Criteria
 }
