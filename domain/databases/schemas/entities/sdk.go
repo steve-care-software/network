@@ -2,6 +2,16 @@ package entities
 
 import "steve.care/network/domain/databases/schemas/entities/fields"
 
+// NewBuilder creates a new builder instance
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
+// NewEntityBuilder creates a new entity builder
+func NewEntityBuilder() EntityBuilder {
+	return createEntityBuilder()
+}
+
 // Builder represents the entities builder
 type Builder interface {
 	Create() Builder
@@ -20,7 +30,6 @@ type EntityBuilder interface {
 	WithName(name string) EntityBuilder
 	WithHead(head string) EntityBuilder
 	WithFields(fields fields.Fields) EntityBuilder
-	WithNote(note string) EntityBuilder
 	Now() (Entity, error)
 }
 
@@ -29,6 +38,4 @@ type Entity interface {
 	Name() string
 	Head() string
 	Fields() fields.Fields
-	HasNote() bool
-	Note() string
 }
