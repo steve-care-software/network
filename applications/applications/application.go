@@ -5,6 +5,7 @@ import (
 	accounts_application "steve.care/network/applications/applications/accounts"
 	"steve.care/network/domain/databases/queries"
 	"steve.care/network/domain/databases/transactions"
+	"steve.care/network/domain/schemas"
 )
 
 type application struct {
@@ -28,6 +29,11 @@ func createApplication(
 	}
 
 	return &out
+}
+
+// Schema returns the database schema
+func (app *application) Schema() (schemas.Schema, error) {
+	return nil, nil
 }
 
 // Accounts returns the account application

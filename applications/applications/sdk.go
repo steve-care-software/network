@@ -6,6 +6,7 @@ import (
 	"steve.care/network/domain/databases/queries"
 	"steve.care/network/domain/databases/transactions"
 	"steve.care/network/domain/encryptors"
+	"steve.care/network/domain/schemas"
 )
 
 // NewBuilder creates a new appication builder
@@ -35,5 +36,6 @@ type Builder interface {
 
 // Application represents a stencil application
 type Application interface {
+	Schema() (schemas.Schema, error)
 	Accounts() (accounts_application.Application, error)
 }
