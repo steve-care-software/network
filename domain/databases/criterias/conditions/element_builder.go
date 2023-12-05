@@ -1,16 +1,24 @@
 package conditions
 
-import "errors"
+import (
+	"errors"
+
+	"steve.care/network/domain/hash"
+)
 
 type elementBuilder struct {
-	condition Condition
-	resource  Resource
+	hashAdapter hash.Adapter
+	condition   Condition
+	resource    Resource
 }
 
-func createElementBuilder() ElementBuilder {
+func createElementBuilder(
+	hashAdapter hash.Adapter,
+) ElementBuilder {
 	out := elementBuilder{
-		condition: nil,
-		resource:  nil,
+		hashAdapter: hashAdapter,
+		condition:   nil,
+		resource:    nil,
 	}
 
 	return &out
@@ -18,7 +26,9 @@ func createElementBuilder() ElementBuilder {
 
 // Create initializes the builder
 func (app *elementBuilder) Create() ElementBuilder {
-	return createElementBuilder()
+	return createElementBuilder(
+		app.hashAdapter,
+	)
 }
 
 // WithCondition adds a condition to the builder
@@ -35,13 +45,27 @@ func (app *elementBuilder) WithResource(resource Resource) ElementBuilder {
 
 // Now builds a new Element instance
 func (app *elementBuilder) Now() (Element, error) {
+	data := [][]byte{}
 	if app.condition != nil {
-		return createElementWithCondition(app.condition), nil
+		data = append(data, app.condition.Hash().Bytes())
 	}
 
 	if app.resource != nil {
-		return createElementWithResource(app.resource), nil
+		data = append(data, app.resource.Hash().Bytes())
 	}
 
-	return nil, errors.New("the Element is invalid")
+	if len(data) != 1 {
+		return nil, errors.New("the Element is invalid")
+	}
+
+	pHash, err := app.hashAdapter.FromMultiBytes(data)
+	if err != nil {
+		return nil, err
+	}
+
+	if app.condition != nil {
+		return createElementWithCondition(*pHash, app.condition), nil
+	}
+
+	return createElementWithResource(*pHash, app.resource), nil
 }

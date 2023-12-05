@@ -1,13 +1,19 @@
 package conditions
 
+import "steve.care/network/domain/hash"
+
 type integerOperatorBuilder struct {
+	hashAdapter   hash.Adapter
 	isSmallerThan bool
 	isBiggerThan  bool
 	isEqual       bool
 }
 
-func createIntegerOperatorBuilder() IntegerOperatorBuilder {
+func createIntegerOperatorBuilder(
+	hashAdapter hash.Adapter,
+) IntegerOperatorBuilder {
 	out := integerOperatorBuilder{
+		hashAdapter:   hashAdapter,
 		isSmallerThan: false,
 		isBiggerThan:  false,
 		isEqual:       false,
@@ -18,7 +24,9 @@ func createIntegerOperatorBuilder() IntegerOperatorBuilder {
 
 // Create initializes the builder
 func (app *integerOperatorBuilder) Create() IntegerOperatorBuilder {
-	return createIntegerOperatorBuilder()
+	return createIntegerOperatorBuilder(
+		app.hashAdapter,
+	)
 }
 
 // IsSmallerThan adds a smaller than to the builder
@@ -41,25 +49,50 @@ func (app *integerOperatorBuilder) IsEqual() IntegerOperatorBuilder {
 
 // Now builds a new IntegerOperator instance
 func (app *integerOperatorBuilder) Now() (IntegerOperator, error) {
-	if app.isSmallerThan && app.isEqual {
-		return createIntegerOperatorWithSmallerThanAndEqual(), nil
-	}
-
+	isSmallerThan := "false"
+	isBiggerThan := "false"
+	isEqual := "false"
 	if app.isSmallerThan {
-		return createIntegerOperatorWithSmallerThan(), nil
-	}
-
-	if app.isBiggerThan && app.isEqual {
-		return createIntegerOperatorWithBiggerThanAndEqual(), nil
+		isSmallerThan = "true"
 	}
 
 	if app.isBiggerThan {
-		return createIntegerOperatorWithBiggerThan(), nil
+		isBiggerThan = "true"
 	}
 
 	if app.isEqual {
-		return createIntegerOperatorWithEqual(), nil
+		isEqual = "true"
 	}
 
-	return createIntegerOperator(), nil
+	pHash, err := app.hashAdapter.FromMultiBytes([][]byte{
+		[]byte(isSmallerThan),
+		[]byte(isBiggerThan),
+		[]byte(isEqual),
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	if app.isSmallerThan && app.isEqual {
+		return createIntegerOperatorWithSmallerThanAndEqual(*pHash), nil
+	}
+
+	if app.isSmallerThan {
+		return createIntegerOperatorWithSmallerThan(*pHash), nil
+	}
+
+	if app.isBiggerThan && app.isEqual {
+		return createIntegerOperatorWithBiggerThanAndEqual(*pHash), nil
+	}
+
+	if app.isBiggerThan {
+		return createIntegerOperatorWithBiggerThan(*pHash), nil
+	}
+
+	if app.isEqual {
+		return createIntegerOperatorWithEqual(*pHash), nil
+	}
+
+	return createIntegerOperator(*pHash), nil
 }

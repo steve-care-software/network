@@ -1,16 +1,24 @@
 package conditions
 
-import "errors"
+import (
+	"errors"
+
+	"steve.care/network/domain/hash"
+)
 
 type pointerBuilder struct {
-	entity string
-	field  string
+	hashAdapter hash.Adapter
+	entity      string
+	field       string
 }
 
-func createPointerBuilder() PointerBuilder {
+func createPointerBuilder(
+	hashAdapter hash.Adapter,
+) PointerBuilder {
 	out := pointerBuilder{
-		entity: "",
-		field:  "",
+		hashAdapter: hashAdapter,
+		entity:      "",
+		field:       "",
 	}
 
 	return &out
@@ -18,7 +26,9 @@ func createPointerBuilder() PointerBuilder {
 
 // Create initializes the builder
 func (app *pointerBuilder) Create() PointerBuilder {
-	return createPointerBuilder()
+	return createPointerBuilder(
+		app.hashAdapter,
+	)
 }
 
 // WithEntity adds a entity to the builder
@@ -43,5 +53,14 @@ func (app *pointerBuilder) Now() (Pointer, error) {
 		return nil, errors.New("the field is mandatory in order to build a Pointer instance")
 	}
 
-	return createPointer(app.entity, app.field), nil
+	pHash, err := app.hashAdapter.FromMultiBytes([][]byte{
+		[]byte(app.entity),
+		[]byte(app.field),
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return createPointer(*pHash, app.entity, app.field), nil
 }

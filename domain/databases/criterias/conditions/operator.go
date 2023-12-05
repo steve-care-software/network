@@ -1,39 +1,53 @@
 package conditions
 
+import "steve.care/network/domain/hash"
+
 type operator struct {
+	hash       hash.Hash
 	isEqual    bool
 	relational RelationalOperator
 	integer    IntegerOperator
 }
 
-func createOperatorWithEqual() Operator {
-	return createOperatorInternally(true, nil, nil)
+func createOperatorWithEqual(
+	hash hash.Hash,
+) Operator {
+	return createOperatorInternally(hash, true, nil, nil)
 }
 
 func createOperatorWithRelational(
+	hash hash.Hash,
 	relational RelationalOperator,
 ) Operator {
-	return createOperatorInternally(false, relational, nil)
+	return createOperatorInternally(hash, false, relational, nil)
 }
 
 func createOperatorWithInteger(
+	hash hash.Hash,
 	integer IntegerOperator,
 ) Operator {
-	return createOperatorInternally(false, nil, integer)
+	return createOperatorInternally(hash, false, nil, integer)
 }
 
 func createOperatorInternally(
+	hash hash.Hash,
 	isEqual bool,
 	relational RelationalOperator,
 	integer IntegerOperator,
 ) Operator {
 	out := operator{
+		hash:       hash,
 		isEqual:    isEqual,
 		relational: relational,
 		integer:    integer,
 	}
 
 	return &out
+}
+
+// Hash returns the hash
+func (obj *operator) Hash() hash.Hash {
+	return obj.hash
 }
 
 // IsEqual returns true if equal, false otherwise

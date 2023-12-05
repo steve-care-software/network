@@ -1,20 +1,30 @@
 package conditions
 
+import "steve.care/network/domain/hash"
+
 type pointer struct {
+	hash   hash.Hash
 	entity string
 	field  string
 }
 
 func createPointer(
+	hash hash.Hash,
 	entity string,
 	field string,
 ) Pointer {
 	out := pointer{
+		hash:   hash,
 		entity: entity,
 		field:  field,
 	}
 
 	return &out
+}
+
+// Hash returns the hash
+func (obj *pointer) Hash() hash.Hash {
+	return obj.hash
 }
 
 // Entity returns the entity

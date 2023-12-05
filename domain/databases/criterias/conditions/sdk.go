@@ -1,38 +1,61 @@
 package conditions
 
+import "steve.care/network/domain/hash"
+
 // NewBuilder creates a new builder instance
 func NewBuilder() Builder {
-	return createBuilder()
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(
+		hashAdapter,
+	)
 }
 
 // NewPointerBuilder creates a new pointer builder
 func NewPointerBuilder() PointerBuilder {
-	return createPointerBuilder()
+	hashAdapter := hash.NewAdapter()
+	return createPointerBuilder(
+		hashAdapter,
+	)
 }
 
 // NewElementBuilder creates a new element builder
 func NewElementBuilder() ElementBuilder {
-	return createElementBuilder()
+	hashAdapter := hash.NewAdapter()
+	return createElementBuilder(
+		hashAdapter,
+	)
 }
 
 // NewResourceBuilder creates a new resource builder
 func NewResourceBuilder() ResourceBuilder {
-	return createResourceBuilder()
+	hashAdapter := hash.NewAdapter()
+	return createResourceBuilder(
+		hashAdapter,
+	)
 }
 
 // NewOperatorBuilder creates a new operator builder
 func NewOperatorBuilder() OperatorBuilder {
-	return createOperatorBuilder()
+	hashAdapter := hash.NewAdapter()
+	return createOperatorBuilder(
+		hashAdapter,
+	)
 }
 
 // NewRelationalOperatorBuilder creates a new relational operator builder
 func NewRelationalOperatorBuilder() RelationalOperatorBuilder {
-	return createRelationalOperatorBuilder()
+	hashAdapter := hash.NewAdapter()
+	return createRelationalOperatorBuilder(
+		hashAdapter,
+	)
 }
 
 // NewIntegerOperatorBuilder creates a new integer operator builder
 func NewIntegerOperatorBuilder() IntegerOperatorBuilder {
-	return createIntegerOperatorBuilder()
+	hashAdapter := hash.NewAdapter()
+	return createIntegerOperatorBuilder(
+		hashAdapter,
+	)
 }
 
 // Builder represents a condition builder
@@ -46,6 +69,7 @@ type Builder interface {
 
 // Condition represents a condition
 type Condition interface {
+	Hash() hash.Hash
 	Pointer() Pointer
 	Operator() Operator
 	Element() Element
@@ -61,6 +85,7 @@ type PointerBuilder interface {
 
 // Pointer represents a field pointer
 type Pointer interface {
+	Hash() hash.Hash
 	Entity() string
 	Field() string
 }
@@ -75,6 +100,7 @@ type ElementBuilder interface {
 
 // Element represents a conditional element
 type Element interface {
+	Hash() hash.Hash
 	IsCondition() bool
 	Condition() Condition
 	IsResource() bool
@@ -91,6 +117,7 @@ type ResourceBuilder interface {
 
 // Resource represents a resource
 type Resource interface {
+	Hash() hash.Hash
 	IsField() bool
 	Field() Pointer
 	IsValue() bool
@@ -108,6 +135,7 @@ type OperatorBuilder interface {
 
 // Operator represents an operator
 type Operator interface {
+	Hash() hash.Hash
 	IsEqual() bool
 	IsRelational() bool
 	Relational() RelationalOperator
@@ -125,6 +153,7 @@ type RelationalOperatorBuilder interface {
 
 // RelationalOperator represents a relational operator
 type RelationalOperator interface {
+	Hash() hash.Hash
 	IsAnd() bool
 	IsOr() bool
 }
@@ -140,6 +169,7 @@ type IntegerOperatorBuilder interface {
 
 // IntegerOperator represents an integer operator
 type IntegerOperator interface {
+	Hash() hash.Hash
 	IsSmallerThan() bool
 	IsBiggerThan() bool
 	IsEqual() bool

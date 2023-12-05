@@ -1,28 +1,42 @@
 package conditions
 
+import "steve.care/network/domain/hash"
+
 type relationalOperator struct {
+	hash  hash.Hash
 	isAnd bool
 	isOr  bool
 }
 
-func createRelationalOperatorWithAnd() RelationalOperator {
-	return createRelationalOperatorInternally(true, false)
+func createRelationalOperatorWithAnd(
+	hash hash.Hash,
+) RelationalOperator {
+	return createRelationalOperatorInternally(hash, true, false)
 }
 
-func createRelationalOperatorWithOr() RelationalOperator {
-	return createRelationalOperatorInternally(false, true)
+func createRelationalOperatorWithOr(
+	hash hash.Hash,
+) RelationalOperator {
+	return createRelationalOperatorInternally(hash, false, true)
 }
 
 func createRelationalOperatorInternally(
+	hash hash.Hash,
 	isAnd bool,
 	isOr bool,
 ) RelationalOperator {
 	out := relationalOperator{
+		hash:  hash,
 		isAnd: isAnd,
 		isOr:  isOr,
 	}
 
 	return &out
+}
+
+// Hash returns the hash
+func (obj *relationalOperator) Hash() hash.Hash {
+	return nil
 }
 
 // IsAnd returns true if and, false otherwise

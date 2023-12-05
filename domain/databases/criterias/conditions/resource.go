@@ -1,32 +1,44 @@
 package conditions
 
+import "steve.care/network/domain/hash"
+
 type resource struct {
+	hash  hash.Hash
 	field Pointer
 	value interface{}
 }
 
 func createResourceWithField(
+	hash hash.Hash,
 	field Pointer,
 ) Resource {
-	return createResourceInternally(field, nil)
+	return createResourceInternally(hash, field, nil)
 }
 
 func createResourceWithValue(
+	hash hash.Hash,
 	value interface{},
 ) Resource {
-	return createResourceInternally(nil, value)
+	return createResourceInternally(hash, nil, value)
 }
 
 func createResourceInternally(
+	hash hash.Hash,
 	field Pointer,
 	value interface{},
 ) Resource {
 	out := resource{
+		hash:  hash,
 		field: field,
 		value: value,
 	}
 
 	return &out
+}
+
+// Hash returns the hash
+func (obj *resource) Hash() hash.Hash {
+	return obj.hash
 }
 
 // IsField returns true if there is a field, false otherwise

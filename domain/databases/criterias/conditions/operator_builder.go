@@ -1,18 +1,26 @@
 package conditions
 
-import "errors"
+import (
+	"errors"
+
+	"steve.care/network/domain/hash"
+)
 
 type operatorBuilder struct {
-	isEqual    bool
-	relational RelationalOperator
-	integer    IntegerOperator
+	hashAdapter hash.Adapter
+	isEqual     bool
+	relational  RelationalOperator
+	integer     IntegerOperator
 }
 
-func createOperatorBuilder() OperatorBuilder {
+func createOperatorBuilder(
+	hashAdapter hash.Adapter,
+) OperatorBuilder {
 	out := operatorBuilder{
-		isEqual:    false,
-		relational: nil,
-		integer:    nil,
+		hashAdapter: hashAdapter,
+		isEqual:     false,
+		relational:  nil,
+		integer:     nil,
 	}
 
 	return &out
@@ -20,7 +28,9 @@ func createOperatorBuilder() OperatorBuilder {
 
 // Create initializes the builder
 func (app *operatorBuilder) Create() OperatorBuilder {
-	return createOperatorBuilder()
+	return createOperatorBuilder(
+		app.hashAdapter,
+	)
 }
 
 // WithRelational adds a relational to the builder
@@ -43,17 +53,35 @@ func (app *operatorBuilder) IsEqual() OperatorBuilder {
 
 // Now builds a new Operator instance
 func (app *operatorBuilder) Now() (Operator, error) {
+	data := [][]byte{}
 	if app.isEqual {
-		return createOperatorWithEqual(), nil
+		data = append(data, []byte("isEqual"))
 	}
 
 	if app.relational != nil {
-		return createOperatorWithRelational(app.relational), nil
+		data = append(data, app.relational.Hash().Bytes())
 	}
 
 	if app.integer != nil {
-		return createOperatorWithInteger(app.integer), nil
+		data = append(data, app.integer.Hash().Bytes())
 	}
 
-	return nil, errors.New("the Operator is invalid")
+	if len(data) != 1 {
+		return nil, errors.New("the Operator is invalid")
+	}
+
+	pHash, err := app.hashAdapter.FromMultiBytes(data)
+	if err != nil {
+		return nil, err
+	}
+
+	if app.isEqual {
+		return createOperatorWithEqual(*pHash), nil
+	}
+
+	if app.relational != nil {
+		return createOperatorWithRelational(*pHash, app.relational), nil
+	}
+
+	return createOperatorWithInteger(*pHash, app.integer), nil
 }

@@ -1,16 +1,24 @@
 package conditions
 
-import "errors"
+import (
+	"errors"
+
+	"steve.care/network/domain/hash"
+)
 
 type relationalOperatorBuilder struct {
-	isAnd bool
-	isOr  bool
+	hashAdapter hash.Adapter
+	isAnd       bool
+	isOr        bool
 }
 
-func createRelationalOperatorBuilder() RelationalOperatorBuilder {
+func createRelationalOperatorBuilder(
+	hashAdapter hash.Adapter,
+) RelationalOperatorBuilder {
 	out := relationalOperatorBuilder{
-		isAnd: true,
-		isOr:  true,
+		hashAdapter: hashAdapter,
+		isAnd:       true,
+		isOr:        true,
 	}
 
 	return &out
@@ -18,7 +26,9 @@ func createRelationalOperatorBuilder() RelationalOperatorBuilder {
 
 // Create initializes the builder
 func (app *relationalOperatorBuilder) Create() RelationalOperatorBuilder {
-	return createRelationalOperatorBuilder()
+	return createRelationalOperatorBuilder(
+		app.hashAdapter,
+	)
 }
 
 // IsAnd adds an and to the builder
@@ -35,12 +45,31 @@ func (app *relationalOperatorBuilder) IsOr() RelationalOperatorBuilder {
 
 // Now builds a new RelationalOperator instance
 func (app *relationalOperatorBuilder) Now() (RelationalOperator, error) {
+	isAnd := "false"
+	isOr := "false"
 	if app.isAnd {
-		return createRelationalOperatorWithAnd(), nil
+		isAnd = "true"
 	}
 
 	if app.isOr {
-		return createRelationalOperatorWithOr(), nil
+		isOr = "true"
+	}
+
+	pHash, err := app.hashAdapter.FromMultiBytes([][]byte{
+		[]byte(isAnd),
+		[]byte(isOr),
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	if app.isAnd {
+		return createRelationalOperatorWithAnd(*pHash), nil
+	}
+
+	if app.isOr {
+		return createRelationalOperatorWithOr(*pHash), nil
 	}
 
 	return nil, errors.New("the RelationalOperator is invalid")

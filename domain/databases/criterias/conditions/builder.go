@@ -1,18 +1,26 @@
 package conditions
 
-import "errors"
+import (
+	"errors"
+
+	"steve.care/network/domain/hash"
+)
 
 type builder struct {
-	pointer  Pointer
-	operator Operator
-	element  Element
+	hashAdapter hash.Adapter
+	pointer     Pointer
+	operator    Operator
+	element     Element
 }
 
-func createBuilder() Builder {
+func createBuilder(
+	hashAdapter hash.Adapter,
+) Builder {
 	out := builder{
-		pointer:  nil,
-		operator: nil,
-		element:  nil,
+		hashAdapter: hashAdapter,
+		pointer:     nil,
+		operator:    nil,
+		element:     nil,
 	}
 
 	return &out
@@ -20,7 +28,9 @@ func createBuilder() Builder {
 
 // Create initializes the builder
 func (app *builder) Create() Builder {
-	return createBuilder()
+	return createBuilder(
+		app.hashAdapter,
+	)
 }
 
 // WithPointer adds a pointer to the builder
@@ -55,7 +65,18 @@ func (app *builder) Now() (Condition, error) {
 		return nil, errors.New("the element is mandatory in order to build a Condition instance")
 	}
 
+	pHash, err := app.hashAdapter.FromMultiBytes([][]byte{
+		app.pointer.Hash().Bytes(),
+		app.operator.Hash().Bytes(),
+		app.element.Hash().Bytes(),
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
 	return createCondition(
+		*pHash,
 		app.pointer,
 		app.operator,
 		app.element,

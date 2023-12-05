@@ -1,67 +1,99 @@
 package conditions
 
+import "steve.care/network/domain/hash"
+
 type integerOperator struct {
+	hash          hash.Hash
 	isSmallerThan bool
 	isBiggerThan  bool
 	isEqual       bool
 }
 
-func createIntegerOperator() IntegerOperator {
+func createIntegerOperator(
+	hash hash.Hash,
+) IntegerOperator {
 	return createIntegerOperatorInternally(
+		hash,
 		false,
 		false,
 		false,
 	)
 }
 
-func createIntegerOperatorWithSmallerThan() IntegerOperator {
+func createIntegerOperatorWithSmallerThan(
+	hash hash.Hash,
+) IntegerOperator {
 	return createIntegerOperatorInternally(
+		hash,
 		true,
 		false,
 		false,
 	)
 }
 
-func createIntegerOperatorWithSmallerThanAndEqual() IntegerOperator {
+func createIntegerOperatorWithSmallerThanAndEqual(
+	hash hash.Hash,
+) IntegerOperator {
 	return createIntegerOperatorInternally(
+		hash,
 		true,
 		false,
 		true,
 	)
 }
 
-func createIntegerOperatorWithBiggerThan() IntegerOperator {
+func createIntegerOperatorWithBiggerThan(
+	hash hash.Hash,
+) IntegerOperator {
 	return createIntegerOperatorInternally(
+		hash,
 		false,
 		true,
 		false,
 	)
 }
 
-func createIntegerOperatorWithBiggerThanAndEqual() IntegerOperator {
+func createIntegerOperatorWithBiggerThanAndEqual(
+	hash hash.Hash,
+) IntegerOperator {
 	return createIntegerOperatorInternally(
+		hash,
 		false,
 		true,
 		true,
 	)
 }
 
-func createIntegerOperatorWithEqual() IntegerOperator {
+func createIntegerOperatorWithEqual(
+	hash hash.Hash,
+) IntegerOperator {
 	return createIntegerOperatorInternally(
+		hash,
 		false,
 		false,
 		true,
 	)
 }
 
-func createIntegerOperatorInternally(isSmallerThan bool, isBiggerThan bool, isEqual bool) IntegerOperator {
+func createIntegerOperatorInternally(
+	hash hash.Hash,
+	isSmallerThan bool,
+	isBiggerThan bool,
+	isEqual bool,
+) IntegerOperator {
 	out := integerOperator{
+		hash:          hash,
 		isSmallerThan: isSmallerThan,
 		isBiggerThan:  isBiggerThan,
 		isEqual:       isEqual,
 	}
 
 	return &out
+}
+
+// Hash returns the hash
+func (obj *integerOperator) Hash() hash.Hash {
+	return obj.hash
 }
 
 // IsSmallerThan returns true if smaller than, false otherwise

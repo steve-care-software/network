@@ -1,23 +1,33 @@
 package conditions
 
+import "steve.care/network/domain/hash"
+
 type condition struct {
+	hash     hash.Hash
 	pointer  Pointer
 	operator Operator
 	element  Element
 }
 
 func createCondition(
+	hash hash.Hash,
 	pointer Pointer,
 	operator Operator,
 	element Element,
 ) Condition {
 	out := condition{
+		hash:     hash,
 		pointer:  pointer,
 		operator: operator,
 		element:  element,
 	}
 
 	return &out
+}
+
+// Hash returns the hash
+func (obj *condition) Hash() hash.Hash {
+	return obj.hash
 }
 
 // Pointer returns the pointer
