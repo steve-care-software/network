@@ -5,6 +5,21 @@ import (
 	"steve.care/network/domain/receipts/commands/links"
 )
 
+// Builder represents the link builder
+type Builder interface {
+	Create() Builder
+	WithLink(link links.Link) Builder
+	WithElement(elemnt links.Element) Builder
+	WithCondition(condition links.Condition) Builder
+	WithConditionValue(conditionValue links.ConditionValue) Builder
+	WithConditionResource(conditionResource links.ConditionResource) Builder
+	WithOrigin(origin links.Origin) Builder
+	WithOriginValue(originValue links.OriginValue) Builder
+	WithOriginResource(originResource links.OriginResource) Builder
+	WithOperator(operator links.Operator) Builder
+	Now() (Link, error)
+}
+
 // Link represents a link resource
 type Link interface {
 	Hash() hash.Hash
