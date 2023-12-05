@@ -5,6 +5,11 @@ import (
 	"steve.care/network/domain/receipts/commands/layers"
 )
 
+// NewBuilder creates a new builder
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
 // Builder represents a layer builder
 type Builder interface {
 	Create() Builder
