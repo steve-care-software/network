@@ -5,6 +5,11 @@ import (
 	"steve.care/network/domain/receipts/commands/links"
 )
 
+// NewBuilder creates a new builder
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
 // Builder represents the link builder
 type Builder interface {
 	Create() Builder
@@ -37,7 +42,8 @@ type Link interface {
 	Origin() links.Origin
 	IsOriginValue() bool
 	OriginValue() links.OriginValue
-	IsOriginResource() links.OriginResource
+	IsOriginResource() bool
+	OriginResource() links.OriginResource
 	IsOperator() bool
 	Operator() links.Operator
 }

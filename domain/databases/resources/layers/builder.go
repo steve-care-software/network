@@ -1,6 +1,10 @@
 package layers
 
-import "steve.care/network/domain/receipts/commands/layers"
+import (
+	"errors"
+
+	"steve.care/network/domain/receipts/commands/layers"
+)
 
 type builder struct {
 	layer            layers.Layer
@@ -213,5 +217,9 @@ func (app *builder) Now() (Layer, error) {
 		return createLayerWithVote(app.vote), nil
 	}
 
-	return createLayerWithBytesReference(app.bytesReference), nil
+	if app.bytesReference != nil {
+		return createLayerWithBytesReference(app.bytesReference), nil
+	}
+
+	return nil, errors.New("the Layer resource is invalid")
 }
