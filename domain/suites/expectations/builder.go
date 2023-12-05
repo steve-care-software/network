@@ -56,7 +56,7 @@ func (app *builder) Now() (Expectation, error) {
 		data = append(data, app.output.Output().Hash().Bytes())
 	}
 
-	if len(data) <= 0 {
+	if len(data) != 1 {
 		return nil, errors.New("the Expectation is invalid")
 	}
 

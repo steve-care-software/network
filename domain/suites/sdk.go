@@ -7,6 +7,12 @@ import (
 	"steve.care/network/domain/suites/expectations"
 )
 
+// NewBuilder creates a new builder
+func NewBuilder() Builder {
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(hashAdapter)
+}
+
 // Builder represents a suite builder
 type Builder interface {
 	Create() Builder
