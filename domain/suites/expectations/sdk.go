@@ -6,6 +6,14 @@ import (
 	"steve.care/network/domain/receipts/commands/links"
 )
 
+// NewBuilder creates a new builder instance
+func NewBuilder() Builder {
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(
+		hashAdapter,
+	)
+}
+
 // Builder represents an expectation builder
 type Builder interface {
 	Create() Builder
