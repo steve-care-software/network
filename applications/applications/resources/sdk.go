@@ -5,6 +5,17 @@ import (
 	"steve.care/network/domain/resources"
 )
 
+// NewApplication creates a new application
+func NewApplication(
+	repository resources.Repository,
+	service resources.Service,
+) Application {
+	return createApplication(
+		repository,
+		service,
+	)
+}
+
 // Application represents the resources application
 type Application interface {
 	// Amount returns the amount of resources
