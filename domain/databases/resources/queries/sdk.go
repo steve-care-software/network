@@ -6,6 +6,20 @@ import (
 	"steve.care/network/domain/hash"
 )
 
+// Builder represents a query builder
+type Builder interface {
+	Create() Builder
+	WithCriteria(criteria criterias.Criteria) Builder
+	WithCondition(condition conditions.Condition) Builder
+	WithPointer(pointer conditions.Pointer) Builder
+	WithElement(element conditions.Element) Builder
+	WithResource(resource conditions.Resource) Builder
+	WithOperator(operator conditions.Operator) Builder
+	WithRelationalOperator(relOperator conditions.RelationalOperator) Builder
+	WithIntegerOperator(intOperator conditions.IntegerOperator) Builder
+	Now() (Query, error)
+}
+
 // Query represents the query resource
 type Query interface {
 	Hash() hash.Hash
