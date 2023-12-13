@@ -4,17 +4,22 @@ import (
 	"errors"
 
 	"steve.care/network/domain/databases/criterias/conditions"
+	"steve.care/network/domain/hash"
 )
 
 type builder struct {
-	entity    string
-	condition conditions.Condition
+	hashAdapter hash.Adapter
+	entity      string
+	condition   conditions.Condition
 }
 
-func createBuilder() Builder {
+func createBuilder(
+	hashAdapter hash.Adapter,
+) Builder {
 	out := builder{
-		entity:    "",
-		condition: nil,
+		hashAdapter: hashAdapter,
+		entity:      "",
+		condition:   nil,
 	}
 
 	return &out
@@ -22,7 +27,9 @@ func createBuilder() Builder {
 
 // Create initializes the builder
 func (app *builder) Create() Builder {
-	return createBuilder()
+	return createBuilder(
+		app.hashAdapter,
+	)
 }
 
 // WithEntity adds a entity to the builder
@@ -47,7 +54,17 @@ func (app *builder) Now() (Criteria, error) {
 		return nil, errors.New("the condition is mandatory in order to build a Criteria instance")
 	}
 
+	pHash, err := app.hashAdapter.FromMultiBytes([][]byte{
+		[]byte(app.entity),
+		app.condition.Hash().Bytes(),
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
 	return createCriteria(
+		*pHash,
 		app.entity,
 		app.condition,
 	), nil

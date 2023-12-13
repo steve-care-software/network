@@ -2,11 +2,15 @@ package criterias
 
 import (
 	"steve.care/network/domain/databases/criterias/conditions"
+	"steve.care/network/domain/hash"
 )
 
 // NewBuilder creates a new builder
 func NewBuilder() Builder {
-	return createBuilder()
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(
+		hashAdapter,
+	)
 }
 
 // Builder represents a criteria builder
@@ -19,6 +23,7 @@ type Builder interface {
 
 // Criteria represents a criteria
 type Criteria interface {
+	Hash() hash.Hash
 	Entity() string
 	Condition() conditions.Condition
 }

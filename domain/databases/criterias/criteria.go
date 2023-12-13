@@ -1,22 +1,33 @@
 package criterias
 
-import "steve.care/network/domain/databases/criterias/conditions"
+import (
+	"steve.care/network/domain/databases/criterias/conditions"
+	"steve.care/network/domain/hash"
+)
 
 type criteria struct {
+	hash      hash.Hash
 	entity    string
 	condition conditions.Condition
 }
 
 func createCriteria(
+	hash hash.Hash,
 	entity string,
 	condition conditions.Condition,
 ) Criteria {
 	out := criteria{
+		hash:      hash,
 		entity:    entity,
 		condition: condition,
 	}
 
 	return &out
+}
+
+// Hash returns the hash
+func (obj *criteria) Hash() hash.Hash {
+	return obj.hash
 }
 
 // Entity returns the entity
