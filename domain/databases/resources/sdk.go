@@ -6,6 +6,22 @@ import (
 	"steve.care/network/domain/hash"
 )
 
+// NewBuilder creates a new builder instance
+func NewBuilder() Builder {
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(
+		hashAdapter,
+	)
+}
+
+// Builder represents the resource builder
+type Builder interface {
+	Create() Builder
+	WithToken(token tokens.Token) Builder
+	WithSignature(signature signers.Signature) Builder
+	Now() (Resource, error)
+}
+
 // Resource represents a resource
 type Resource interface {
 	Hash() hash.Hash
