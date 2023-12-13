@@ -11,6 +11,18 @@ import (
 	"steve.care/network/domain/hash"
 )
 
+// Builder represents the token builder
+type Builder interface {
+	Create() Builder
+	WithLayer(layer layers.Layer) Builder
+	WithLink(link links.Link) Builder
+	WithSuite(suite suites.Suite) Builder
+	WithReceipt(receipt receipts.Receipt) Builder
+	WithQuery(query queries.Query) Builder
+	CreatedOn(createdOn time.Time) Builder
+	Now() (Token, error)
+}
+
 // Token represents the token
 type Token interface {
 	Hash() hash.Hash
