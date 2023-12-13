@@ -11,7 +11,6 @@ type Application interface {
 	Begin(name string) (applications.Application, error)
 	BeginInMemory() (applications.Application, error)
 	Commit() error
-	Cancel() error
 	Rollback() error
 	Close() error
 }

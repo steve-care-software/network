@@ -1,21 +1,9 @@
 package resources
 
 import (
-	"steve.care/network/domain/credentials"
-	"steve.care/network/domain/databases/queries"
-	"steve.care/network/domain/databases/resources"
-	"steve.care/network/domain/databases/transactions"
 	"steve.care/network/domain/hash"
+	"steve.care/network/domain/resources"
 )
-
-// Builder represents the resources application builder
-type Builder interface {
-	Create() Builder
-	WithQuery(query queries.Query) Builder
-	WithTransaction(trx transactions.Transaction) Builder
-	WithCredentials(credentials credentials.Credentials) Builder
-	Now() (Application, error)
-}
 
 // Application represents the resources application
 type Application interface {

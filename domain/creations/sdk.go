@@ -1,9 +1,9 @@
 package creations
 
 import (
-	"steve.care/network/domain/databases/resources"
 	"steve.care/network/domain/hash"
 	"steve.care/network/domain/receipts"
+	"steve.care/network/domain/resources"
 )
 
 // Builder represents the creation builder

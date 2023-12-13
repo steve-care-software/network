@@ -1,9 +1,12 @@
 package sqllites
 
 import (
+	"database/sql"
+
 	"steve.care/network/applications"
-	applications_applications "steve.care/network/applications/applications"
 	"steve.care/network/domain/accounts"
+	account_encryptors "steve.care/network/domain/accounts/encryptors"
+	"steve.care/network/domain/accounts/signers"
 	"steve.care/network/domain/encryptors"
 )
 
@@ -17,14 +20,46 @@ func NewApplication(
 	bitrate int,
 	basePath string,
 ) applications.Application {
-	appBuilder := applications_applications.NewBuilder(
+	return createApplication(
 		encryptor,
 		adapter,
-	)
-
-	return createApplication(
-		appBuilder,
 		bitrate,
 		basePath,
+	)
+}
+
+// NewAccountRepository creates a new account repository
+func NewAccountRepository(
+	encryptor encryptors.Encryptor,
+	adapter accounts.Adapter,
+	dbPtr *sql.DB,
+) accounts.Repository {
+	return createAccountRepository(
+		encryptor,
+		adapter,
+		dbPtr,
+	)
+}
+
+// NewAccountService creates a new account service
+func NewAccountService(
+	repository accounts.Repository,
+	encryptor encryptors.Encryptor,
+	adapter accounts.Adapter,
+	bitrate int,
+	txPtr *sql.Tx,
+) accounts.Service {
+	builder := accounts.NewBuilder()
+	encryptorBuilder := account_encryptors.NewBuilder()
+	signerFactory := signers.NewFactory()
+	return createAccountService(
+		encryptor,
+		builder,
+		repository,
+		adapter,
+		encryptorBuilder,
+		signerFactory,
+		bitrate,
+		txPtr,
 	)
 }

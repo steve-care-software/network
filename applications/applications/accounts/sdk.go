@@ -5,45 +5,26 @@ import (
 	account_encryptors "steve.care/network/domain/accounts/encryptors"
 	"steve.care/network/domain/accounts/signers"
 	"steve.care/network/domain/credentials"
-	"steve.care/network/domain/databases/queries"
-	"steve.care/network/domain/databases/transactions"
-	"steve.care/network/domain/encryptors"
 )
 
-// NewBuilder creates a new bulder
-func NewBuilder(
-	encryptor encryptors.Encryptor,
-	adapter accounts.Adapter,
-) Builder {
+// NewApplication creates a new application
+func NewApplication(
+	repository accounts.Repository,
+	service accounts.Service,
+	bitrate int,
+) Application {
 	accountBuilder := accounts.NewBuilder()
 	signerFactory := signers.NewFactory()
 	encryptorBuilder := account_encryptors.NewBuilder()
-	repositoryBuilder := accounts.NewRepositoryBuilder(
-		encryptor,
-		adapter,
-	)
 
-	serviceBuilder := accounts.NewServiceBuilder(
-		encryptor,
-		adapter,
-	)
-
-	return createBuilder(
+	return createApplication(
 		accountBuilder,
 		signerFactory,
 		encryptorBuilder,
-		repositoryBuilder,
-		serviceBuilder,
+		repository,
+		service,
+		bitrate,
 	)
-}
-
-// Builder represents the application builder
-type Builder interface {
-	Create() Builder
-	WithQuery(database queries.Query) Builder
-	WithTransaction(trx transactions.Transaction) Builder
-	WithBitrate(bitrate int) Builder
-	Now() (Application, error)
 }
 
 // Application represents the authenticated account application

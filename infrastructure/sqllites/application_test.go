@@ -28,12 +28,7 @@ func TestApplication_Account_InsertThenRetrieve_Success(t *testing.T) {
 		return
 	}
 
-	firstAccAppIns, err := firstAppIns.Accounts()
-	if err != nil {
-		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
-		return
-	}
-
+	firstAccAppIns := firstAppIns.Accounts()
 	username := "rogerCyr"
 	password := []byte("this is my password")
 	credentials, err := credentials.NewBuilder().Create().WithUsername(username).WithPassword(password).Now()
@@ -74,12 +69,7 @@ func TestApplication_Account_InsertThenRetrieve_Success(t *testing.T) {
 		return
 	}
 
-	secAccountAppIns, err := secAppIns.Accounts()
-	if err != nil {
-		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
-		return
-	}
-
+	secAccountAppIns := secAppIns.Accounts()
 	err = secAccountAppIns.Delete(credentials)
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
