@@ -6,6 +6,11 @@ import (
 	"steve.care/network/domain/hash"
 )
 
+// NewBuilder creates a new builder instance
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
 // Builder represents a query builder
 type Builder interface {
 	Create() Builder
