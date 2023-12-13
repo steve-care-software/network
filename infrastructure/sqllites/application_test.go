@@ -4,18 +4,17 @@ import (
 	"reflect"
 	"testing"
 
-	"steve.care/network/applications"
 	"steve.care/network/domain/credentials"
 	"steve.care/network/infrastructure/edwards25519"
 	"steve.care/network/infrastructure/jsons"
 )
 
 func TestApplication_Account_InsertThenRetrieve_Success(t *testing.T) {
-	appIns := applications.NewApplication(
-		NewApplication("./"),
+	appIns := NewApplication(
 		edwards25519.NewEncryptor(),
 		jsons.NewAccountAdapter(),
 		4096,
+		"./",
 	)
 
 	// close:
