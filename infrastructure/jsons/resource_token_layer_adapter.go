@@ -7,6 +7,7 @@ import (
 )
 
 type resourceTokenLayerAdapter struct {
+	assignmentBuilder      layers.AssignmentBuilder
 	assignableBuilder      layers.AssignableBuilder
 	bytesBuilder           layers.BytesBuilder
 	identityBuilder        layers.IdentityBuilder
@@ -27,6 +28,30 @@ func (app *resourceTokenLayerAdapter) ToStruct(ins resources_layers.Layer) struc
 // ToInstance converts bytes to resource layer instance
 func (app *resourceTokenLayerAdapter) ToInstance(ins structs_layers.Layer) (resources_layers.Layer, error) {
 	return nil, nil
+}
+
+func (app *resourceTokenLayerAdapter) structToAssignment(
+	ins structs_layers.Assignment,
+) (layers.Assignment, error) {
+	assignable, err := app.structToAssignable(ins.Assignable)
+	if err != nil {
+		return nil, err
+	}
+
+	return app.assignmentBuilder.Create().
+		WithName(ins.Name).
+		WithAssignable(assignable).
+		Now()
+}
+
+func (app *resourceTokenLayerAdapter) assignmentToStruct(
+	ins layers.Assignment,
+) structs_layers.Assignment {
+	assignable := app.assignableToStruct(ins.Assignable())
+	return structs_layers.Assignment{
+		Name:       ins.Name(),
+		Assignable: assignable,
+	}
 }
 
 func (app *resourceTokenLayerAdapter) structToAssignable(
