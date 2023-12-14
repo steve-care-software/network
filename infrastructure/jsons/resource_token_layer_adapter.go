@@ -7,6 +7,7 @@ import (
 )
 
 type resourceTokenLayerAdapter struct {
+	signerBuilder          layers.SignerBuilder
 	signatureVerifyBuilder layers.SignatureVerifyBuilder
 	voteVerifyBuilder      layers.VoteVerifyBuilder
 	voteBuilder            layers.VoteBuilder
@@ -21,6 +22,108 @@ func (app *resourceTokenLayerAdapter) ToStruct(ins resources_layers.Layer) struc
 // ToInstance converts bytes to resource layer instance
 func (app *resourceTokenLayerAdapter) ToInstance(ins structs_layers.Layer) (resources_layers.Layer, error) {
 	return nil, nil
+}
+
+func (app *resourceTokenLayerAdapter) signerToStruct(
+	ins layers.Signer,
+) structs_layers.Signer {
+	output := structs_layers.Signer{}
+	if ins.IsSign() {
+		sign := app.bytesReferenceToStruct(ins.Sign())
+		output.Sign = &sign
+	}
+
+	if ins.IsVote() {
+		vote := app.voteToStruct(ins.Vote())
+		output.Vote = &vote
+	}
+
+	if ins.IsGenerateSignerPublicKeys() {
+		output.GenSignerPubKeys = ins.GenerateSignerPublicKeys()
+	}
+
+	if ins.IsHashPublicKeys() {
+		output.HashPublicKeys = ins.HashPublicKeys()
+	}
+
+	if ins.IsVoteVerify() {
+		voteVerify := app.voteVerifyToStruct(ins.VoteVerify())
+		output.VoteVerify = &voteVerify
+	}
+
+	if ins.IsSignatureVerify() {
+		sigVerify := app.signatureVerifyToStruct(ins.SignatureVerify())
+		output.SignatureVerify = &sigVerify
+	}
+
+	if ins.IsBytes() {
+		output.Bytes = ins.Bytes()
+	}
+
+	if ins.IsPublicKey() {
+		output.IsPublicKey = ins.IsPublicKey()
+	}
+
+	return output
+}
+
+func (app *resourceTokenLayerAdapter) structToSigner(
+	ins structs_layers.Signer,
+) (layers.Signer, error) {
+	builder := app.signerBuilder.Create()
+	if ins.Sign != nil {
+		sign, err := app.structToBytesReference(*ins.Sign)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithSign(sign)
+	}
+
+	if ins.Vote != nil {
+		vote, err := app.structToVote(*ins.Vote)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithVote(vote)
+	}
+
+	if ins.GenSignerPubKeys > 0 {
+		builder.WithGenerateSignerPublicKey(ins.GenSignerPubKeys)
+	}
+
+	if ins.HashPublicKeys != "" {
+		builder.WithHashPublicKeys(ins.HashPublicKeys)
+	}
+
+	if ins.VoteVerify != nil {
+		voteVerify, err := app.structToVoteVerify(*ins.VoteVerify)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithVoteVerify(voteVerify)
+	}
+
+	if ins.SignatureVerify != nil {
+		signatureVerify, err := app.structToSignatureVerify(*ins.SignatureVerify)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithSignatureVerify(signatureVerify)
+	}
+
+	if ins.Bytes != "" {
+		builder.WithBytes(ins.Bytes)
+	}
+
+	if ins.IsPublicKey {
+		builder.IsPublicKey()
+	}
+
+	return builder.Now()
 }
 
 func (app *resourceTokenLayerAdapter) signatureVerifyToStruct(

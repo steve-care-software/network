@@ -85,13 +85,13 @@ type Encryptor struct {
 // Signer represents a signer
 type Signer struct {
 	Sign             *BytesReference  `json:"sign"`
-	Vite             *Vote            `json:"vote"`
+	Vote             *Vote            `json:"vote"`
 	GenSignerPubKeys uint             `json:"generate_signer_public_keys"`
 	HashPublicKeys   string           `json:"hash_public_keys"`
 	VoteVerify       *VoteVerify      `json:"vote_verify"`
 	SignatureVerify  *SignatureVerify `json:"signature_verify"`
 	Bytes            string           `json:"bytes"`
-	IsPublicKey      *bool            `json:"is_public_key"`
+	IsPublicKey      bool             `json:"is_public_key"`
 }
 
 // SignatureVerify represents a signature verify
