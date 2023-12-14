@@ -10,6 +10,7 @@ import (
 type resourceTokenLayerAdapter struct {
 	hashAdapter             hash.Adapter
 	linkAdapter             *resourceTokenLinkAdapter
+	instructionsBuilder     layers.InstructionsBuilder
 	instructionBuilder      layers.InstructionBuilder
 	linkInstructionBuilder  layers.LinkInstructionBuilder
 	layerInstructionBuilder layers.LayerInstructionBuilder
@@ -52,13 +53,32 @@ func (app *resourceTokenLayerAdapter) structToLayer(
 func (app *resourceTokenLayerAdapter) structsToInstructions(
 	list []structs_layers.Instruction,
 ) (layers.Instructions, error) {
-	return nil, nil
+	output := []layers.Instruction{}
+	for _, oneStruct := range list {
+		ins, err := app.structToInstruction(oneStruct)
+		if err != nil {
+			return nil, err
+		}
+
+		output = append(output, ins)
+	}
+
+	return app.instructionsBuilder.Create().
+		WithList(output).
+		Now()
 }
 
 func (app *resourceTokenLayerAdapter) instructionsToStructs(
 	ins layers.Instructions,
 ) []structs_layers.Instruction {
-	return []structs_layers.Instruction{}
+	list := ins.List()
+	output := []structs_layers.Instruction{}
+	for _, oneIns := range list {
+		instruction := app.instructionToStruct(oneIns)
+		output = append(output, instruction)
+	}
+
+	return output
 }
 
 func (app *resourceTokenLayerAdapter) structToInstruction(
