@@ -79,9 +79,15 @@ func (app *builder) WithInstruction(ins layers.Instruction) Builder {
 	return app
 }
 
-// WithLayerInstructions adds a layer instruction to the builder
-func (app *builder) WithLayerInstructions(layerIns layers.LayerInstruction) Builder {
+// WithLayerInstruction adds a layer instruction to the builder
+func (app *builder) WithLayerInstruction(layerIns layers.LayerInstruction) Builder {
 	app.layerInstruction = layerIns
+	return app
+}
+
+// WithLinkInstruction adds a link instruction to the builder
+func (app *builder) WithLinkInstruction(linkIns layers.LinkInstruction) Builder {
+	app.linkInstruction = linkIns
 	return app
 }
 

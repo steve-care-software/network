@@ -705,7 +705,7 @@ func (obj *layer) IsBytesReference() bool {
 	return obj.bytesReference != nil
 }
 
-// BytesRefernece returns the bytesReference, if any
-func (obj *layer) BytesRefernece() layers.BytesReference {
+// BytesReference returns the bytesReference, if any
+func (obj *layer) BytesReference() layers.BytesReference {
 	return obj.bytesReference
 }

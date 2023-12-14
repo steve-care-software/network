@@ -4,11 +4,13 @@ import (
 	"steve.care/network/domain/hash"
 	"steve.care/network/domain/receipts/commands/layers"
 	resources_layers "steve.care/network/domain/resources/tokens/layers"
+	structs_tokens "steve.care/network/infrastructure/jsons/resources/tokens"
 	structs_layers "steve.care/network/infrastructure/jsons/resources/tokens/layers"
 )
 
 type resourceTokenLayerAdapter struct {
 	hashAdapter             hash.Adapter
+	builder                 resources_layers.Builder
 	linkAdapter             *resourceTokenLinkAdapter
 	layerBuilder            layers.Builder
 	outputBuilder           layers.OutputBuilder
@@ -32,13 +34,253 @@ type resourceTokenLayerAdapter struct {
 }
 
 // ToStruct converts a resource layer to struct
-func (app *resourceTokenLayerAdapter) ToStruct(ins resources_layers.Layer) structs_layers.Layer {
-	return structs_layers.Layer{}
+func (app *resourceTokenLayerAdapter) ToStruct(ins resources_layers.Layer) structs_tokens.Layer {
+	output := structs_tokens.Layer{}
+	if ins.IsLayer() {
+		layer := app.layerToStruct(ins.Layer())
+		output.Layer = &layer
+	}
+
+	if ins.IsOutput() {
+		outputIns := app.outputToStruct(ins.Output())
+		output.Output = &outputIns
+	}
+
+	if ins.IsKind() {
+		kind := app.kindToStruct(ins.Kind())
+		output.Kind = &kind
+	}
+
+	if ins.IsInstruction() {
+		instruction := app.instructionToStruct(ins.Instruction())
+		output.Instruction = &instruction
+	}
+
+	if ins.IsLinkInstruction() {
+		linkInstruction := app.linkInstructionToStruct(ins.LinkInstruction())
+		output.LinkInstruction = &linkInstruction
+	}
+
+	if ins.IsLayerInstruction() {
+		layerInstruction := app.layerInstructionToStruct(ins.LayerInstruction())
+		output.LayerInstruction = &layerInstruction
+	}
+
+	if ins.IsCondition() {
+		condition := app.conditionToStruct(ins.Condition())
+		output.Condition = &condition
+	}
+
+	if ins.IsAssignment() {
+		assignment := app.assignmentToStruct(ins.Assignment())
+		output.Assignment = &assignment
+	}
+
+	if ins.IsAssignable() {
+		assignable := app.assignableToStruct(ins.Assignable())
+		output.Assignable = &assignable
+	}
+
+	if ins.IsBytes() {
+		bytes := app.bytesToStruct(ins.Bytes())
+		output.Bytes = &bytes
+	}
+
+	if ins.IsIdentity() {
+		identity := app.identityToStruct(ins.Identity())
+		output.Identity = &identity
+	}
+
+	if ins.IsEncryptor() {
+		encryptor := app.encryptorToStruct(ins.Encryptor())
+		output.Encryptor = &encryptor
+	}
+
+	if ins.IsSigner() {
+		signer := app.signerToStruct(ins.Signer())
+		output.Signer = &signer
+	}
+
+	if ins.IsSignatureVerify() {
+		signatureVerify := app.signatureVerifyToStruct(ins.SignatureVerify())
+		output.SignatureVerify = &signatureVerify
+	}
+
+	if ins.IsVoteVerify() {
+		voteVerify := app.voteVerifyToStruct(ins.VoteVerfy())
+		output.VoteVerify = &voteVerify
+	}
+
+	if ins.IsVote() {
+		vote := app.voteToStruct(ins.Vote())
+		output.Vote = &vote
+	}
+
+	if ins.IsBytesReference() {
+		ref := app.bytesReferenceToStruct(ins.BytesReference())
+		output.BytesReference = &ref
+	}
+
+	return output
 }
 
 // ToInstance converts bytes to resource layer instance
-func (app *resourceTokenLayerAdapter) ToInstance(ins structs_layers.Layer) (resources_layers.Layer, error) {
-	return nil, nil
+func (app *resourceTokenLayerAdapter) ToInstance(ins structs_tokens.Layer) (resources_layers.Layer, error) {
+	builder := app.builder.Create()
+	if ins.Layer != nil {
+		layer, err := app.structToLayer(*ins.Layer)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithLayer(layer)
+	}
+
+	if ins.Output != nil {
+		output, err := app.structToOutput(*ins.Output)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithOutput(output)
+	}
+
+	if ins.Kind != nil {
+		kind, err := app.structToKind(*ins.Kind)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithKind(kind)
+	}
+
+	if ins.Instruction != nil {
+		instruction, err := app.structToInstruction(*ins.Instruction)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithInstruction(instruction)
+	}
+
+	if ins.LinkInstruction != nil {
+		linkIns, err := app.structToLinkInstruction(*ins.LinkInstruction)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithLinkInstruction(linkIns)
+	}
+
+	if ins.LayerInstruction != nil {
+		layerIns, err := app.structToLayerInstruction(*ins.LayerInstruction)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithLayerInstruction(layerIns)
+	}
+
+	if ins.Condition != nil {
+		condition, err := app.structToCondition(*ins.Condition)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithCondition(condition)
+	}
+
+	if ins.Assignment != nil {
+		assignment, err := app.structToAssignment(*ins.Assignment)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithAssignment(assignment)
+	}
+
+	if ins.Assignable != nil {
+		assignable, err := app.structToAssignable(*ins.Assignable)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithAssignable(assignable)
+	}
+
+	if ins.Bytes != nil {
+		bytes, err := app.structToBytes(*ins.Bytes)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithBytes(bytes)
+	}
+
+	if ins.Identity != nil {
+		identity, err := app.structToIdentity(*ins.Identity)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithIdentity(identity)
+	}
+
+	if ins.Encryptor != nil {
+		encryptor, err := app.structToEncryptor(*ins.Encryptor)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithEncryptor(encryptor)
+	}
+
+	if ins.Signer != nil {
+		signer, err := app.structToSigner(*ins.Signer)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithSigner(signer)
+	}
+
+	if ins.SignatureVerify != nil {
+		signatureVerify, err := app.structToSignatureVerify(*ins.SignatureVerify)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithSignatureVerify(signatureVerify)
+	}
+
+	if ins.VoteVerify != nil {
+		voteVerify, err := app.structToVoteVerify(*ins.VoteVerify)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithVoteVerify(voteVerify)
+	}
+
+	if ins.Vote != nil {
+		vote, err := app.structToVote(*ins.Vote)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithVote(vote)
+	}
+
+	if ins.BytesReference != nil {
+		bytesReference, err := app.structToBytesReference(*ins.BytesReference)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithBytesReference(bytesReference)
+	}
+
+	return builder.Now()
 }
 
 func (app *resourceTokenLayerAdapter) layerToStruct(

@@ -17,7 +17,8 @@ type Builder interface {
 	WithOutput(output layers.Output) Builder
 	WithKind(kind layers.Kind) Builder
 	WithInstruction(ins layers.Instruction) Builder
-	WithLayerInstructions(layerIns layers.LayerInstruction) Builder
+	WithLinkInstruction(linkIns layers.LinkInstruction) Builder
+	WithLayerInstruction(layerIns layers.LayerInstruction) Builder
 	WithCondition(condition layers.Condition) Builder
 	WithAssignment(assignment layers.Assignment) Builder
 	WithAssignable(assignable layers.Assignable) Builder
@@ -68,5 +69,5 @@ type Layer interface {
 	IsVote() bool
 	Vote() layers.Vote
 	IsBytesReference() bool
-	BytesRefernece() layers.BytesReference
+	BytesReference() layers.BytesReference
 }
