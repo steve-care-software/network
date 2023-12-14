@@ -33,12 +33,6 @@ func (app *builder) Create() Builder {
 	)
 }
 
-// WithInput adds an input to the builder
-func (app *builder) WithInput(input string) Builder {
-	app.input = input
-	return app
-}
-
 // WithInstructions add instructions to the builder
 func (app *builder) WithInstructions(instructions Instructions) Builder {
 	app.instructions = instructions
@@ -51,12 +45,14 @@ func (app *builder) WithOutput(output Output) Builder {
 	return app
 }
 
+// WithInput adds an input to the builder
+func (app *builder) WithInput(input string) Builder {
+	app.input = input
+	return app
+}
+
 // Now builds a new Layer instance
 func (app *builder) Now() (Layer, error) {
-	if app.input == "" {
-		return nil, errors.New("the input is mandatory in order to build a Layer instance")
-	}
-
 	if app.instructions == nil {
 		return nil, errors.New("the instructions is mandatory in order to build a Layer instance")
 	}
@@ -65,16 +61,24 @@ func (app *builder) Now() (Layer, error) {
 		return nil, errors.New("the output is mandatory in order to build a Layer instance")
 	}
 
-	pHash, err := app.hashAdapter.FromMultiBytes([][]byte{
-		[]byte(app.input),
+	data := [][]byte{
 		app.instructions.Hash().Bytes(),
 		app.output.Hash().Bytes(),
-	})
+	}
 
+	if app.input != "" {
+		data = append(data, []byte(app.input))
+	}
+
+	pHash, err := app.hashAdapter.FromMultiBytes(data)
 	if err != nil {
 		return nil, err
 	}
 
-	return createLayer(*pHash, app.input, app.instructions, app.output), nil
+	if app.input != "" {
+		return createLayerWithInput(*pHash, app.instructions, app.output, app.input), nil
+	}
+
+	return createLayer(*pHash, app.instructions, app.output), nil
 
 }

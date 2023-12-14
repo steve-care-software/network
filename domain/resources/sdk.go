@@ -14,6 +14,12 @@ func NewBuilder() Builder {
 	)
 }
 
+// Adapter represents the resource adapter
+type Adapter interface {
+	ToBytes(ins Resource) ([]byte, error)
+	ToInstance(bytes []byte) (Resource, error)
+}
+
 // Builder represents the resource builder
 type Builder interface {
 	Create() Builder
