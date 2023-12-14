@@ -7,6 +7,7 @@ import (
 )
 
 type resourceTokenLayerAdapter struct {
+	conditionBuilder       layers.ConditionBuilder
 	assignmentBuilder      layers.AssignmentBuilder
 	assignableBuilder      layers.AssignableBuilder
 	bytesBuilder           layers.BytesBuilder
@@ -28,6 +29,42 @@ func (app *resourceTokenLayerAdapter) ToStruct(ins resources_layers.Layer) struc
 // ToInstance converts bytes to resource layer instance
 func (app *resourceTokenLayerAdapter) ToInstance(ins structs_layers.Layer) (resources_layers.Layer, error) {
 	return nil, nil
+}
+
+func (app *resourceTokenLayerAdapter) structsToInstructions(
+	list []structs_layers.Instruction,
+) (layers.Instructions, error) {
+	return nil, nil
+}
+
+func (app *resourceTokenLayerAdapter) instructionsToStructs(
+	ins layers.Instructions,
+) []structs_layers.Instruction {
+	return []structs_layers.Instruction{}
+}
+
+func (app *resourceTokenLayerAdapter) structToCondition(
+	ins structs_layers.Condition,
+) (layers.Condition, error) {
+	instructions, err := app.structsToInstructions(ins.Instructions)
+	if err != nil {
+		return nil, err
+	}
+
+	return app.conditionBuilder.Create().
+		WithInstructions(instructions).
+		WithVariable(ins.Variable).
+		Now()
+}
+
+func (app *resourceTokenLayerAdapter) conditionToStruct(
+	ins layers.Condition,
+) structs_layers.Condition {
+	instructions := app.instructionsToStructs(ins.Instructions())
+	return structs_layers.Condition{
+		Variable:     ins.Variable(),
+		Instructions: instructions,
+	}
 }
 
 func (app *resourceTokenLayerAdapter) structToAssignment(
