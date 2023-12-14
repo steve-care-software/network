@@ -7,6 +7,7 @@ import (
 )
 
 type resourceTokenLayerAdapter struct {
+	assignableBuilder      layers.AssignableBuilder
 	bytesBuilder           layers.BytesBuilder
 	identityBuilder        layers.IdentityBuilder
 	encryptorBuilder       layers.EncryptorBuilder
@@ -26,6 +27,48 @@ func (app *resourceTokenLayerAdapter) ToStruct(ins resources_layers.Layer) struc
 // ToInstance converts bytes to resource layer instance
 func (app *resourceTokenLayerAdapter) ToInstance(ins structs_layers.Layer) (resources_layers.Layer, error) {
 	return nil, nil
+}
+
+func (app *resourceTokenLayerAdapter) structToAssignable(
+	ins structs_layers.Assignable,
+) (layers.Assignable, error) {
+	builder := app.assignableBuilder.Create()
+	if ins.Bytes != nil {
+		bytes, err := app.structToBytes(*ins.Bytes)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithBytes(bytes)
+	}
+
+	if ins.Identity != nil {
+		identity, err := app.structToIdentity(*ins.Identity)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithIdentity(identity)
+	}
+
+	return builder.Now()
+}
+
+func (app *resourceTokenLayerAdapter) assignableToStruct(
+	ins layers.Assignable,
+) structs_layers.Assignable {
+	output := structs_layers.Assignable{}
+	if ins.IsBytes() {
+		bytes := app.bytesToStruct(ins.Bytes())
+		output.Bytes = &bytes
+	}
+
+	if ins.IsIdentity() {
+		identity := app.identityToStruct(ins.Identity())
+		output.Identity = &identity
+	}
+
+	return output
 }
 
 func (app *resourceTokenLayerAdapter) bytesToStruct(
