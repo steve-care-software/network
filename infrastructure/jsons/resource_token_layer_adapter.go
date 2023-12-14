@@ -7,6 +7,7 @@ import (
 )
 
 type resourceTokenLayerAdapter struct {
+	identityBuilder        layers.IdentityBuilder
 	encryptorBuilder       layers.EncryptorBuilder
 	signerBuilder          layers.SignerBuilder
 	signatureVerifyBuilder layers.SignatureVerifyBuilder
@@ -23,6 +24,48 @@ func (app *resourceTokenLayerAdapter) ToStruct(ins resources_layers.Layer) struc
 // ToInstance converts bytes to resource layer instance
 func (app *resourceTokenLayerAdapter) ToInstance(ins structs_layers.Layer) (resources_layers.Layer, error) {
 	return nil, nil
+}
+
+func (app *resourceTokenLayerAdapter) identityToStruct(
+	ins layers.Identity,
+) structs_layers.Identity {
+	output := structs_layers.Identity{}
+	if ins.IsSigner() {
+		signer := app.signerToStruct(ins.Signer())
+		output.Signer = &signer
+	}
+
+	if ins.IsEncryptor() {
+		encryptor := app.encryptorToStruct(ins.Encryptor())
+		output.Encryptor = &encryptor
+	}
+
+	return output
+}
+
+func (app *resourceTokenLayerAdapter) structToIdentity(
+	ins structs_layers.Identity,
+) (layers.Identity, error) {
+	builder := app.identityBuilder.Create()
+	if ins.Signer != nil {
+		signer, err := app.structToSigner(*ins.Signer)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithSigner(signer)
+	}
+
+	if ins.Encryptor != nil {
+		encryptor, err := app.structToEncryptor(*ins.Encryptor)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithEncryptor(encryptor)
+	}
+
+	return builder.Now()
 }
 
 func (app *resourceTokenLayerAdapter) encryptorToStruct(
