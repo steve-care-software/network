@@ -10,6 +10,7 @@ import (
 type resourceTokenLayerAdapter struct {
 	hashAdapter             hash.Adapter
 	linkAdapter             *resourceTokenLinkAdapter
+	kindBuilder             layers.KindBuilder
 	instructionsBuilder     layers.InstructionsBuilder
 	instructionBuilder      layers.InstructionBuilder
 	linkInstructionBuilder  layers.LinkInstructionBuilder
@@ -48,6 +49,36 @@ func (app *resourceTokenLayerAdapter) structToLayer(
 	ins structs_layers.Layer,
 ) (layers.Layer, error) {
 	return nil, nil
+}
+
+func (app *resourceTokenLayerAdapter) kindToStruct(
+	ins layers.Kind,
+) structs_layers.Kind {
+	output := structs_layers.Kind{}
+	if ins.IsContinue() {
+		output.IsContinue = ins.IsContinue()
+	}
+
+	if ins.IsPrompt() {
+		output.IsPrompt = ins.IsPrompt()
+	}
+
+	return output
+}
+
+func (app *resourceTokenLayerAdapter) structToKind(
+	ins structs_layers.Kind,
+) (layers.Kind, error) {
+	builder := app.kindBuilder.Create()
+	if ins.IsContinue {
+		builder.IsContinue()
+	}
+
+	if ins.IsPrompt {
+		builder.IsPrompt()
+	}
+
+	return builder.Now()
 }
 
 func (app *resourceTokenLayerAdapter) structsToInstructions(
