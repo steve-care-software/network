@@ -7,12 +7,14 @@ import (
 )
 
 type resourceTokenLayerAdapter struct {
+	bytesBuilder           layers.BytesBuilder
 	identityBuilder        layers.IdentityBuilder
 	encryptorBuilder       layers.EncryptorBuilder
 	signerBuilder          layers.SignerBuilder
 	signatureVerifyBuilder layers.SignatureVerifyBuilder
 	voteVerifyBuilder      layers.VoteVerifyBuilder
 	voteBuilder            layers.VoteBuilder
+	bytesReferencesBuilder layers.BytesReferencesBuilder
 	bytesReferenceBuilder  layers.BytesReferenceBuilder
 }
 
@@ -24,6 +26,62 @@ func (app *resourceTokenLayerAdapter) ToStruct(ins resources_layers.Layer) struc
 // ToInstance converts bytes to resource layer instance
 func (app *resourceTokenLayerAdapter) ToInstance(ins structs_layers.Layer) (resources_layers.Layer, error) {
 	return nil, nil
+}
+
+func (app *resourceTokenLayerAdapter) bytesToStruct(
+	ins layers.Bytes,
+) structs_layers.Bytes {
+	output := structs_layers.Bytes{}
+	if ins.IsJoin() {
+		join := app.bytesReferencesToStructs(ins.Join())
+		output.Join = join
+	}
+
+	if ins.IsCompare() {
+		compare := app.bytesReferencesToStructs(ins.Compare())
+		output.Compare = compare
+	}
+
+	if ins.IsHashBytes() {
+		hash := app.bytesReferenceToStruct(ins.HashBytes())
+		output.Hash = &hash
+	}
+
+	return output
+}
+
+func (app *resourceTokenLayerAdapter) structToBytes(
+	ins structs_layers.Bytes,
+) (layers.Bytes, error) {
+	builder := app.bytesBuilder.Create()
+	if ins.Join != nil && len(ins.Join) > 0 {
+		join, err := app.structsToBytesReferences(ins.Join)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithJoin(join)
+	}
+
+	if ins.Compare != nil && len(ins.Compare) > 0 {
+		compare, err := app.structsToBytesReferences(ins.Compare)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithCompare(compare)
+	}
+
+	if ins.Hash != nil {
+		hash, err := app.structToBytesReference(*ins.Hash)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithHashBytes(hash)
+	}
+
+	return builder.Now()
 }
 
 func (app *resourceTokenLayerAdapter) identityToStruct(
@@ -283,6 +341,36 @@ func (app *resourceTokenLayerAdapter) structToVote(
 	return app.voteBuilder.Create().
 		WithMessage(message).
 		WithRing(ins.Ring).
+		Now()
+}
+
+func (app *resourceTokenLayerAdapter) bytesReferencesToStructs(
+	ins layers.BytesReferences,
+) []structs_layers.BytesReference {
+	list := ins.List()
+	output := []structs_layers.BytesReference{}
+	for _, oneIns := range list {
+		str := app.bytesReferenceToStruct(oneIns)
+		output = append(output, str)
+	}
+
+	return output
+}
+
+func (app *resourceTokenLayerAdapter) structsToBytesReferences(
+	list []structs_layers.BytesReference,
+) (layers.BytesReferences, error) {
+	output := []layers.BytesReference{}
+	for _, oneIns := range list {
+		ins, err := app.structToBytesReference(oneIns)
+		if err != nil {
+			return nil, err
+		}
+
+		output = append(output, ins)
+	}
+	return app.bytesReferencesBuilder.Create().
+		WithList(output).
 		Now()
 }
 

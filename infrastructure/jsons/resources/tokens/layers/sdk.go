@@ -64,9 +64,9 @@ type Assignable struct {
 
 // Bytes represents the bytes
 type Bytes struct {
-	IsJoin    []BytesReference `json:"is_join"`
-	IsCompare []BytesReference `json:"is_compare"`
-	Hash      *BytesReference  `json:"hash"`
+	Join    []BytesReference `json:"join"`
+	Compare []BytesReference `json:"compare"`
+	Hash    *BytesReference  `json:"hash"`
 }
 
 // Identity represents the identity
