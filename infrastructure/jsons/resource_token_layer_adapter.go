@@ -1,24 +1,27 @@
 package jsons
 
 import (
+	"steve.care/network/domain/hash"
 	"steve.care/network/domain/receipts/commands/layers"
 	resources_layers "steve.care/network/domain/resources/tokens/layers"
 	structs_layers "steve.care/network/infrastructure/jsons/resources/tokens/layers"
 )
 
 type resourceTokenLayerAdapter struct {
-	conditionBuilder       layers.ConditionBuilder
-	assignmentBuilder      layers.AssignmentBuilder
-	assignableBuilder      layers.AssignableBuilder
-	bytesBuilder           layers.BytesBuilder
-	identityBuilder        layers.IdentityBuilder
-	encryptorBuilder       layers.EncryptorBuilder
-	signerBuilder          layers.SignerBuilder
-	signatureVerifyBuilder layers.SignatureVerifyBuilder
-	voteVerifyBuilder      layers.VoteVerifyBuilder
-	voteBuilder            layers.VoteBuilder
-	bytesReferencesBuilder layers.BytesReferencesBuilder
-	bytesReferenceBuilder  layers.BytesReferenceBuilder
+	hashAdapter             hash.Adapter
+	layerInstructionBuilder layers.LayerInstructionBuilder
+	conditionBuilder        layers.ConditionBuilder
+	assignmentBuilder       layers.AssignmentBuilder
+	assignableBuilder       layers.AssignableBuilder
+	bytesBuilder            layers.BytesBuilder
+	identityBuilder         layers.IdentityBuilder
+	encryptorBuilder        layers.EncryptorBuilder
+	signerBuilder           layers.SignerBuilder
+	signatureVerifyBuilder  layers.SignatureVerifyBuilder
+	voteVerifyBuilder       layers.VoteVerifyBuilder
+	voteBuilder             layers.VoteBuilder
+	bytesReferencesBuilder  layers.BytesReferencesBuilder
+	bytesReferenceBuilder   layers.BytesReferenceBuilder
 }
 
 // ToStruct converts a resource layer to struct
@@ -37,10 +40,63 @@ func (app *resourceTokenLayerAdapter) structsToInstructions(
 	return nil, nil
 }
 
+func (app *resourceTokenLayerAdapter) layerToStruct(
+	ins layers.Layer,
+) structs_layers.Layer {
+	return structs_layers.Layer{}
+}
+
+func (app *resourceTokenLayerAdapter) structToLayer(
+	ins structs_layers.Layer,
+) (layers.Layer, error) {
+	return nil, nil
+}
+
 func (app *resourceTokenLayerAdapter) instructionsToStructs(
 	ins layers.Instructions,
 ) []structs_layers.Instruction {
 	return []structs_layers.Instruction{}
+}
+
+func (app *resourceTokenLayerAdapter) structToLayerInstruction(
+	ins structs_layers.LayerInstruction,
+) (layers.LayerInstruction, error) {
+	builder := app.layerInstructionBuilder.Create()
+	if ins.Save != nil {
+		save, err := app.structToLayer(*ins.Save)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithSave(save)
+	}
+
+	if ins.Delete != "" {
+		pHash, err := app.hashAdapter.FromString(ins.Delete)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithDelete(*pHash)
+	}
+
+	return builder.Now()
+}
+
+func (app *resourceTokenLayerAdapter) layerInstructionToStruct(
+	ins layers.LayerInstruction,
+) structs_layers.LayerInstruction {
+	output := structs_layers.LayerInstruction{}
+	if ins.IsSave() {
+		layer := app.layerToStruct(ins.Save())
+		output.Save = &layer
+	}
+
+	if ins.IsDelete() {
+		output.Delete = string(ins.Delete())
+	}
+
+	return output
 }
 
 func (app *resourceTokenLayerAdapter) structToCondition(

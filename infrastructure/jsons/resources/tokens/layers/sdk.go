@@ -34,14 +34,14 @@ type Instruction struct {
 
 // LinkInstruction represents the link instruction
 type LinkInstruction struct {
-	IsSave   *links.Link `json:"is_save"`
-	IsDelete string      `json:"is_delete"`
+	Save   *links.Link `json:"save"`
+	Delete string      `json:"delete"`
 }
 
 // LayerInstruction represents a layer instruction
 type LayerInstruction struct {
-	IsSave   *Layer `json:"is_save"`
-	IsDelete string `json:"is_delete"`
+	Save   *Layer `json:"save"`
+	Delete string `json:"delete"`
 }
 
 // Condition represents the condition
