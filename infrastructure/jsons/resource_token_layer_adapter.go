@@ -9,6 +9,8 @@ import (
 
 type resourceTokenLayerAdapter struct {
 	hashAdapter             hash.Adapter
+	linkAdapter             *resourceTokenLinkAdapter
+	linkInstructionBuilder  layers.LinkInstructionBuilder
 	layerInstructionBuilder layers.LayerInstructionBuilder
 	conditionBuilder        layers.ConditionBuilder
 	assignmentBuilder       layers.AssignmentBuilder
@@ -40,6 +42,12 @@ func (app *resourceTokenLayerAdapter) structsToInstructions(
 	return nil, nil
 }
 
+func (app *resourceTokenLayerAdapter) instructionsToStructs(
+	ins layers.Instructions,
+) []structs_layers.Instruction {
+	return []structs_layers.Instruction{}
+}
+
 func (app *resourceTokenLayerAdapter) layerToStruct(
 	ins layers.Layer,
 ) structs_layers.Layer {
@@ -52,10 +60,45 @@ func (app *resourceTokenLayerAdapter) structToLayer(
 	return nil, nil
 }
 
-func (app *resourceTokenLayerAdapter) instructionsToStructs(
-	ins layers.Instructions,
-) []structs_layers.Instruction {
-	return []structs_layers.Instruction{}
+func (app *resourceTokenLayerAdapter) structToLinkInstruction(
+	ins structs_layers.LinkInstruction,
+) (layers.LinkInstruction, error) {
+	builder := app.linkInstructionBuilder.Create()
+	if ins.Save != nil {
+		save, err := app.linkAdapter.StructToLink(*ins.Save)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithSave(save)
+	}
+
+	if ins.Delete != "" {
+		pHash, err := app.hashAdapter.FromString(ins.Delete)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithDelete(*pHash)
+	}
+
+	return builder.Now()
+}
+
+func (app *resourceTokenLayerAdapter) linkInstructionToStruct(
+	ins layers.LinkInstruction,
+) structs_layers.LinkInstruction {
+	output := structs_layers.LinkInstruction{}
+	if ins.IsSave() {
+		layer := app.linkAdapter.LinkToStruct(ins.Save())
+		output.Save = &layer
+	}
+
+	if ins.IsDelete() {
+		output.Delete = string(ins.Delete())
+	}
+
+	return output
 }
 
 func (app *resourceTokenLayerAdapter) structToLayerInstruction(
