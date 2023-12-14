@@ -10,6 +10,7 @@ import (
 type resourceTokenLayerAdapter struct {
 	hashAdapter             hash.Adapter
 	linkAdapter             *resourceTokenLinkAdapter
+	instructionBuilder      layers.InstructionBuilder
 	linkInstructionBuilder  layers.LinkInstructionBuilder
 	layerInstructionBuilder layers.LayerInstructionBuilder
 	conditionBuilder        layers.ConditionBuilder
@@ -36,6 +37,18 @@ func (app *resourceTokenLayerAdapter) ToInstance(ins structs_layers.Layer) (reso
 	return nil, nil
 }
 
+func (app *resourceTokenLayerAdapter) layerToStruct(
+	ins layers.Layer,
+) structs_layers.Layer {
+	return structs_layers.Layer{}
+}
+
+func (app *resourceTokenLayerAdapter) structToLayer(
+	ins structs_layers.Layer,
+) (layers.Layer, error) {
+	return nil, nil
+}
+
 func (app *resourceTokenLayerAdapter) structsToInstructions(
 	list []structs_layers.Instruction,
 ) (layers.Instructions, error) {
@@ -48,16 +61,91 @@ func (app *resourceTokenLayerAdapter) instructionsToStructs(
 	return []structs_layers.Instruction{}
 }
 
-func (app *resourceTokenLayerAdapter) layerToStruct(
-	ins layers.Layer,
-) structs_layers.Layer {
-	return structs_layers.Layer{}
+func (app *resourceTokenLayerAdapter) structToInstruction(
+	ins structs_layers.Instruction,
+) (layers.Instruction, error) {
+	builder := app.instructionBuilder.Create()
+	if ins.Stop {
+		builder.IsStop()
+	}
+
+	if ins.RaiseError != nil {
+		builder.WithRaiseError(*ins.RaiseError)
+	}
+
+	if ins.Condition != nil {
+		condition, err := app.structToCondition(*ins.Condition)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithCondition(condition)
+	}
+
+	if ins.Assignment != nil {
+		assignment, err := app.structToAssignment(*ins.Assignment)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithAssignment(assignment)
+	}
+
+	if ins.Link != nil {
+		linkIns, err := app.structToLinkInstruction(*ins.Link)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithLink(linkIns)
+	}
+
+	if ins.Layer != nil {
+		layerIns, err := app.structToLayerInstruction(*ins.Layer)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithLayer(layerIns)
+	}
+
+	return builder.Now()
 }
 
-func (app *resourceTokenLayerAdapter) structToLayer(
-	ins structs_layers.Layer,
-) (layers.Layer, error) {
-	return nil, nil
+func (app *resourceTokenLayerAdapter) instructionToStruct(
+	ins layers.Instruction,
+) structs_layers.Instruction {
+	output := structs_layers.Instruction{}
+	if ins.IsStop() {
+		output.Stop = ins.IsStop()
+	}
+
+	if ins.IsRaiseError() {
+		raiseError := ins.RaiseError()
+		output.RaiseError = &raiseError
+	}
+
+	if ins.IsCondition() {
+		condition := app.conditionToStruct(ins.Condition())
+		output.Condition = &condition
+	}
+
+	if ins.IsAssignment() {
+		assignment := app.assignmentToStruct(ins.Assignment())
+		output.Assignment = &assignment
+	}
+
+	if ins.IsLink() {
+		link := app.linkInstructionToStruct(ins.Link())
+		output.Link = &link
+	}
+
+	if ins.IsLayer() {
+		layer := app.layerInstructionToStruct(ins.Layer())
+		output.Layer = &layer
+	}
+
+	return output
 }
 
 func (app *resourceTokenLayerAdapter) structToLinkInstruction(
