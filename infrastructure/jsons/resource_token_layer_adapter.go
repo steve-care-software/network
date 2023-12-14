@@ -7,6 +7,7 @@ import (
 )
 
 type resourceTokenLayerAdapter struct {
+	voteVerifyBuilder     layers.VoteVerifyBuilder
 	voteBuilder           layers.VoteBuilder
 	bytesReferenceBuilder layers.BytesReferenceBuilder
 }
@@ -19,6 +20,32 @@ func (app *resourceTokenLayerAdapter) ToStruct(ins resources_layers.Layer) struc
 // ToInstance converts bytes to resource layer instance
 func (app *resourceTokenLayerAdapter) ToInstance(ins structs_layers.Layer) (resources_layers.Layer, error) {
 	return nil, nil
+}
+
+func (app *resourceTokenLayerAdapter) voteVerifyToStruct(
+	ins layers.VoteVerify,
+) structs_layers.VoteVerify {
+	message := app.bytesReferenceToStruct(ins.Message())
+	return structs_layers.VoteVerify{
+		Vote:       ins.Vote(),
+		Message:    message,
+		HashedRing: ins.HashedRing(),
+	}
+}
+
+func (app *resourceTokenLayerAdapter) structToVoteVerify(
+	ins structs_layers.VoteVerify,
+) (layers.VoteVerify, error) {
+	message, err := app.structToBytesReference(ins.Message)
+	if err != nil {
+		return nil, err
+	}
+
+	return app.voteVerifyBuilder.Create().
+		WithVote(ins.Vote).
+		WithHashedRing(ins.HashedRing).
+		WithMessage(message).
+		Now()
 }
 
 func (app *resourceTokenLayerAdapter) voteToStruct(
