@@ -8,7 +8,7 @@ import (
 // Receipt represents a receipt
 type Receipt struct {
 	Commands  []Command `json:"commands"`
-	Signature string    `json:"string"`
+	Signature []byte    `json:"string"`
 }
 
 // Command represents the command
@@ -16,7 +16,7 @@ type Command struct {
 	Input  []byte       `json:"input"`
 	Layer  layers.Layer `json:"layer"`
 	Result Result       `json:"result"`
-	Parent *links.Link  `json:"parent"`
+	Parent *Link        `json:"parent"`
 }
 
 // Result represents the result
@@ -33,9 +33,9 @@ type Success struct {
 
 // Failure represents a failure
 type Failure struct {
-	Code            uint  `json:"code"`
-	IsRaisedInLayer bool  `json:"is_raised_in_layer"`
-	Index           *uint `json:"index"`
+	Code          uint  `json:"code"`
+	RaisedInLayer bool  `json:"raised_in_layer"`
+	Index         *uint `json:"index"`
 }
 
 // Link represents a link

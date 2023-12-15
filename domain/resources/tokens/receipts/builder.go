@@ -5,11 +5,15 @@ import (
 
 	"steve.care/network/domain/receipts"
 	"steve.care/network/domain/receipts/commands"
+	"steve.care/network/domain/receipts/commands/results"
 )
 
 type builder struct {
 	receipt receipts.Receipt
 	command commands.Command
+	result  results.Result
+	success results.Success
+	failure results.Failure
 	link    commands.Link
 }
 
@@ -17,6 +21,9 @@ func createBuilder() Builder {
 	out := builder{
 		receipt: nil,
 		command: nil,
+		result:  nil,
+		success: nil,
+		failure: nil,
 		link:    nil,
 	}
 
@@ -40,6 +47,24 @@ func (app *builder) WithCommand(command commands.Command) Builder {
 	return app
 }
 
+// WithResult adds a result to the builder
+func (app *builder) WithResult(result results.Result) Builder {
+	app.result = result
+	return app
+}
+
+// WithSuccess adds a success to the builder
+func (app *builder) WithSuccess(success results.Success) Builder {
+	app.success = success
+	return app
+}
+
+// WithFailure adds a failure to the builder
+func (app *builder) WithFailure(failure results.Failure) Builder {
+	app.failure = failure
+	return app
+}
+
 // WithLink adds a link to the builder
 func (app *builder) WithLink(link commands.Link) Builder {
 	app.link = link
@@ -54,6 +79,18 @@ func (app *builder) Now() (Receipt, error) {
 
 	if app.command != nil {
 		return createReceiptWithCommand(app.command), nil
+	}
+
+	if app.result != nil {
+		return createReceiptWithReceipt(app.receipt), nil
+	}
+
+	if app.success != nil {
+		return createReceiptWithSuccess(app.success), nil
+	}
+
+	if app.failure != nil {
+		return createReceiptWithFailure(app.failure), nil
 	}
 
 	if app.link != nil {

@@ -21,8 +21,7 @@ type resourceTokenQueryAdapter struct {
 	integerOperatorBuilder    conditions.IntegerOperatorBuilder
 }
 
-// ToStruct converts a resource query to struct
-func (app *resourceTokenQueryAdapter) ToStruct(ins resources_queries.Query) structs_tokens.Query {
+func (app *resourceTokenQueryAdapter) toStruct(ins resources_queries.Query) structs_tokens.Query {
 	output := structs_tokens.Query{}
 	if ins.IsQuery() {
 		query := app.queryToStruct(ins.Query())
@@ -67,8 +66,7 @@ func (app *resourceTokenQueryAdapter) ToStruct(ins resources_queries.Query) stru
 	return output
 }
 
-// ToInstance converts bytes to resource query instance
-func (app *resourceTokenQueryAdapter) ToInstance(ins structs_tokens.Query) (resources_queries.Query, error) {
+func (app *resourceTokenQueryAdapter) toInstance(ins structs_tokens.Query) (resources_queries.Query, error) {
 	builder := app.builder.Create()
 	if ins.Query != nil {
 		query, err := app.structToQuery(*ins.Query)

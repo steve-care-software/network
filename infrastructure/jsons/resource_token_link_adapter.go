@@ -23,11 +23,10 @@ type resourceTokenLinkAdapter struct {
 	operatorBuilder          links.OperatorBuilder
 }
 
-// ToStruct converts a resource link to struct
-func (app *resourceTokenLinkAdapter) ToStruct(ins resources_links.Link) structs_tokens.Link {
+func (app *resourceTokenLinkAdapter) toStruct(ins resources_links.Link) structs_tokens.Link {
 	output := structs_tokens.Link{}
 	if ins.IsLink() {
-		link := app.LinkToStruct(ins.Link())
+		link := app.linkToStruct(ins.Link())
 		output.Link = &link
 	}
 
@@ -74,11 +73,10 @@ func (app *resourceTokenLinkAdapter) ToStruct(ins resources_links.Link) structs_
 	return output
 }
 
-// ToInstance converts bytes to resource link instance
-func (app *resourceTokenLinkAdapter) ToInstance(ins structs_tokens.Link) (resources_links.Link, error) {
+func (app *resourceTokenLinkAdapter) toInstance(ins structs_tokens.Link) (resources_links.Link, error) {
 	builder := app.builder.Create()
 	if ins.Link != nil {
-		link, err := app.StructToLink(*ins.Link)
+		link, err := app.structToLink(*ins.Link)
 		if err != nil {
 			return nil, err
 		}
@@ -161,8 +159,7 @@ func (app *resourceTokenLinkAdapter) ToInstance(ins structs_tokens.Link) (resour
 	return builder.Now()
 }
 
-// LinkToStruct converts a link to struct
-func (app *resourceTokenLinkAdapter) LinkToStruct(
+func (app *resourceTokenLinkAdapter) linkToStruct(
 	ins links.Link,
 ) structs_links.Link {
 	origin := app.originToStruct(ins.Origin())
@@ -173,8 +170,7 @@ func (app *resourceTokenLinkAdapter) LinkToStruct(
 	}
 }
 
-// StructToLink converts a struct to link
-func (app *resourceTokenLinkAdapter) StructToLink(
+func (app *resourceTokenLinkAdapter) structToLink(
 	ins structs_links.Link,
 ) (links.Link, error) {
 	origin, err := app.structToOrigin(ins.Origin)

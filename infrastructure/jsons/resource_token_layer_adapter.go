@@ -33,8 +33,7 @@ type resourceTokenLayerAdapter struct {
 	bytesReferenceBuilder   layers.BytesReferenceBuilder
 }
 
-// ToStruct converts a resource layer to struct
-func (app *resourceTokenLayerAdapter) ToStruct(ins resources_layers.Layer) structs_tokens.Layer {
+func (app *resourceTokenLayerAdapter) toStruct(ins resources_layers.Layer) structs_tokens.Layer {
 	output := structs_tokens.Layer{}
 	if ins.IsLayer() {
 		layer := app.layerToStruct(ins.Layer())
@@ -124,8 +123,7 @@ func (app *resourceTokenLayerAdapter) ToStruct(ins resources_layers.Layer) struc
 	return output
 }
 
-// ToInstance converts bytes to resource layer instance
-func (app *resourceTokenLayerAdapter) ToInstance(ins structs_tokens.Layer) (resources_layers.Layer, error) {
+func (app *resourceTokenLayerAdapter) toInstance(ins structs_tokens.Layer) (resources_layers.Layer, error) {
 	builder := app.builder.Create()
 	if ins.Layer != nil {
 		layer, err := app.structToLayer(*ins.Layer)
@@ -505,7 +503,7 @@ func (app *resourceTokenLayerAdapter) structToLinkInstruction(
 ) (layers.LinkInstruction, error) {
 	builder := app.linkInstructionBuilder.Create()
 	if ins.Save != nil {
-		save, err := app.linkAdapter.StructToLink(*ins.Save)
+		save, err := app.linkAdapter.structToLink(*ins.Save)
 		if err != nil {
 			return nil, err
 		}
@@ -530,7 +528,7 @@ func (app *resourceTokenLayerAdapter) linkInstructionToStruct(
 ) structs_layers.LinkInstruction {
 	output := structs_layers.LinkInstruction{}
 	if ins.IsSave() {
-		layer := app.linkAdapter.LinkToStruct(ins.Save())
+		layer := app.linkAdapter.linkToStruct(ins.Save())
 		output.Save = &layer
 	}
 
