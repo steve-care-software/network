@@ -7,11 +7,14 @@ import (
 )
 
 type resourceTokenLinkAdapter struct {
-	hashAdapter           hash.Adapter
-	originBuilder         links.OriginBuilder
-	originValueBuilder    links.OriginValueBuilder
-	originResourceBuilder links.OriginResourceBuilder
-	operatorBuilder       links.OperatorBuilder
+	hashAdapter              hash.Adapter
+	conditionBuilder         links.ConditionBuilder
+	conditionValueBuilder    links.ConditionValueBuilder
+	conditionResourceBuilder links.ConditionResourceBuilder
+	originBuilder            links.OriginBuilder
+	originValueBuilder       links.OriginValueBuilder
+	originResourceBuilder    links.OriginResourceBuilder
+	operatorBuilder          links.OperatorBuilder
 }
 
 // LinkToStruct converts a link to struct
@@ -26,6 +29,113 @@ func (app *resourceTokenLinkAdapter) StructToLink(
 	ins structs_links.Link,
 ) (links.Link, error) {
 	return nil, nil
+}
+
+func (app *resourceTokenLinkAdapter) conditionToStruct(
+	ins links.Condition,
+) structs_links.Condition {
+	resource := app.conditionResourceToStruct(ins.Resource())
+	operator := app.operatorToStruct(ins.Operator())
+	next := app.conditionValueToStruct(ins.Next())
+	return structs_links.Condition{
+		Resource: resource,
+		Operator: operator,
+		Next:     next,
+	}
+}
+
+func (app *resourceTokenLinkAdapter) structToCondition(
+	ins structs_links.Condition,
+) (links.Condition, error) {
+	resource, err := app.structToConditionResource(ins.Resource)
+	if err != nil {
+		return nil, err
+	}
+
+	operator, err := app.structToOperator(ins.Operator)
+	if err != nil {
+		return nil, err
+	}
+
+	next, err := app.structToConditionValue(ins.Next)
+	if err != nil {
+		return nil, err
+	}
+
+	return app.conditionBuilder.Create().
+		WithResource(resource).
+		WithOperator(operator).
+		WithNext(next).
+		Now()
+}
+
+func (app *resourceTokenLinkAdapter) conditionValueToStruct(
+	ins links.ConditionValue,
+) structs_links.ConditionValue {
+	output := structs_links.ConditionValue{}
+	if ins.IsResource() {
+		resource := app.conditionResourceToStruct(ins.Resource())
+		output.Resource = &resource
+	}
+
+	if ins.IsCondition() {
+		condition := app.conditionToStruct(ins.Condition())
+		output.Condition = &condition
+	}
+
+	return output
+}
+
+func (app *resourceTokenLinkAdapter) structToConditionValue(
+	ins structs_links.ConditionValue,
+) (links.ConditionValue, error) {
+	builder := app.conditionValueBuilder.Create()
+	if ins.Resource != nil {
+		resource, err := app.structToConditionResource(*ins.Resource)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithResource(resource)
+	}
+
+	if ins.Condition != nil {
+		condition, err := app.structToCondition(*ins.Condition)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithCondition(condition)
+	}
+
+	return builder.Now()
+}
+
+func (app *resourceTokenLinkAdapter) conditionResourceToStruct(
+	ins links.ConditionResource,
+) structs_links.ConditionResource {
+	output := structs_links.ConditionResource{
+		Code: ins.Code(),
+	}
+
+	if ins.IsRaisedInLayer() {
+		output.IsRaisedInLayer = ins.IsRaisedInLayer()
+	}
+
+	return output
+}
+
+func (app *resourceTokenLinkAdapter) structToConditionResource(
+	ins structs_links.ConditionResource,
+) (links.ConditionResource, error) {
+	builder := app.conditionResourceBuilder.Create().
+		WithCode(ins.Code)
+
+	if ins.IsRaisedInLayer {
+		builder.IsRaisedInLayer()
+	}
+
+	return builder.Now()
 }
 
 func (app *resourceTokenLinkAdapter) originToStruct(
