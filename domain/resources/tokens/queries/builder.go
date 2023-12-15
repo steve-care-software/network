@@ -3,12 +3,12 @@ package queries
 import (
 	"errors"
 
-	"steve.care/network/domain/criterias"
-	"steve.care/network/domain/criterias/conditions"
+	"steve.care/network/domain/queries"
+	"steve.care/network/domain/queries/conditions"
 )
 
 type builder struct {
-	criteria    criterias.Criteria
+	query       queries.Query
 	condition   conditions.Condition
 	pointer     conditions.Pointer
 	element     conditions.Element
@@ -20,7 +20,7 @@ type builder struct {
 
 func createBuilder() Builder {
 	out := builder{
-		criteria:    nil,
+		query:       nil,
 		condition:   nil,
 		pointer:     nil,
 		element:     nil,
@@ -38,9 +38,9 @@ func (app *builder) Create() Builder {
 	return createBuilder()
 }
 
-// WithCriteria adds a criteria to the builder
-func (app *builder) WithCriteria(criteria criterias.Criteria) Builder {
-	app.criteria = criteria
+// WithQuery adds a query to the builder
+func (app *builder) WithQuery(query queries.Query) Builder {
+	app.query = query
 	return app
 }
 
@@ -88,8 +88,8 @@ func (app *builder) WithIntegerOperator(intOperator conditions.IntegerOperator) 
 
 // Now builds a new Query instance
 func (app *builder) Now() (Query, error) {
-	if app.criteria != nil {
-		return createQueryWithCriteria(app.criteria), nil
+	if app.query != nil {
+		return createQueryWithQuery(app.query), nil
 	}
 
 	if app.condition != nil {

@@ -1,13 +1,13 @@
 package queries
 
 import (
-	"steve.care/network/domain/criterias"
-	"steve.care/network/domain/criterias/conditions"
 	"steve.care/network/domain/hash"
+	"steve.care/network/domain/queries"
+	"steve.care/network/domain/queries/conditions"
 )
 
 type query struct {
-	criteria    criterias.Criteria
+	query       queries.Query
 	condition   conditions.Condition
 	pointer     conditions.Pointer
 	element     conditions.Element
@@ -17,11 +17,11 @@ type query struct {
 	intOperator conditions.IntegerOperator
 }
 
-func createQueryWithCriteria(
-	criteria criterias.Criteria,
+func createQueryWithQuery(
+	query queries.Query,
 ) Query {
 	return createQueryInternally(
-		criteria,
+		query,
 		nil,
 		nil,
 		nil,
@@ -138,7 +138,7 @@ func createQueryWithIntegerOperator(
 }
 
 func createQueryInternally(
-	criteria criterias.Criteria,
+	queryIns queries.Query,
 	condition conditions.Condition,
 	pointer conditions.Pointer,
 	element conditions.Element,
@@ -148,7 +148,7 @@ func createQueryInternally(
 	intOperator conditions.IntegerOperator,
 ) Query {
 	out := query{
-		criteria:    criteria,
+		query:       queryIns,
 		condition:   condition,
 		pointer:     pointer,
 		element:     element,
@@ -163,8 +163,8 @@ func createQueryInternally(
 
 // Hash returns the hash
 func (obj *query) Hash() hash.Hash {
-	if obj.IsCriteria() {
-		return obj.criteria.Hash()
+	if obj.IsQuery() {
+		return obj.query.Hash()
 	}
 
 	if obj.IsCondition() {
@@ -194,14 +194,14 @@ func (obj *query) Hash() hash.Hash {
 	return obj.intOperator.Hash()
 }
 
-// IsCriteria returns true if there is a criteria, false otherwise
-func (obj *query) IsCriteria() bool {
-	return obj.criteria != nil
+// IsQuery returns true if there is a query, false otherwise
+func (obj *query) IsQuery() bool {
+	return obj.query != nil
 }
 
-// Criteria returns the criteria, if any
-func (obj *query) Criteria() criterias.Criteria {
-	return obj.criteria
+// Query returns the query, if any
+func (obj *query) Query() queries.Query {
+	return obj.query
 }
 
 // IsCondition returns true if there is a condition, false otherwise

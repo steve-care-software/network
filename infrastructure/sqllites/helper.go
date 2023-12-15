@@ -3,7 +3,7 @@ package sqllites
 import (
 	"fmt"
 
-	"steve.care/network/domain/criterias/conditions"
+	"steve.care/network/domain/queries/conditions"
 )
 
 func getSchema() string {

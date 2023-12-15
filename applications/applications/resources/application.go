@@ -27,19 +27,19 @@ func (app *application) Amount() (uint, error) {
 	return app.repository.Amount()
 }
 
-// AmountByCriteria returns the amount of resources by criteria
-func (app *application) AmountByCriteria(criteria hash.Hash) (uint, error) {
-	return app.repository.AmountByCriteria(criteria)
+// AmountByQuery returns the amount of resources by criteria
+func (app *application) AmountByQuery(criteria hash.Hash) (uint, error) {
+	return app.repository.AmountByQuery(criteria)
 }
 
-// ListByCriteria lists resource hashes by criteria
-func (app *application) ListByCriteria(criteria hash.Hash) ([]hash.Hash, error) {
-	return app.repository.ListByCriteria(criteria)
+// ListByQuery lists resource hashes by criteria
+func (app *application) ListByQuery(criteria hash.Hash) ([]hash.Hash, error) {
+	return app.repository.ListByQuery(criteria)
 }
 
-// RetrieveByCriteria retrieves a resource by criteria
-func (app *application) RetrieveByCriteria(criteria hash.Hash) (resources.Resource, error) {
-	return app.repository.RetrieveByCriteria(criteria)
+// RetrieveByQuery retrieves a resource by criteria
+func (app *application) RetrieveByQuery(criteria hash.Hash) (resources.Resource, error) {
+	return app.repository.RetrieveByQuery(criteria)
 }
 
 // Insert inserts a resource

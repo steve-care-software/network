@@ -1,9 +1,9 @@
 package queries
 
 import (
-	"steve.care/network/domain/criterias"
-	"steve.care/network/domain/criterias/conditions"
 	"steve.care/network/domain/hash"
+	"steve.care/network/domain/queries"
+	"steve.care/network/domain/queries/conditions"
 )
 
 // NewBuilder creates a new builder instance
@@ -14,7 +14,7 @@ func NewBuilder() Builder {
 // Builder represents a query builder
 type Builder interface {
 	Create() Builder
-	WithCriteria(criteria criterias.Criteria) Builder
+	WithQuery(query queries.Query) Builder
 	WithCondition(condition conditions.Condition) Builder
 	WithPointer(pointer conditions.Pointer) Builder
 	WithElement(element conditions.Element) Builder
@@ -28,8 +28,8 @@ type Builder interface {
 // Query represents the query resource
 type Query interface {
 	Hash() hash.Hash
-	IsCriteria() bool
-	Criteria() criterias.Criteria
+	IsQuery() bool
+	Query() queries.Query
 	IsCondition() bool
 	Condition() conditions.Condition
 	IsPointer() bool

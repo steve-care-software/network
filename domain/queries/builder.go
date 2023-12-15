@@ -1,16 +1,17 @@
-package criterias
+package queries
 
 import (
 	"errors"
 
-	"steve.care/network/domain/criterias/conditions"
 	"steve.care/network/domain/hash"
+	"steve.care/network/domain/queries/conditions"
 )
 
 type builder struct {
 	hashAdapter hash.Adapter
 	entity      string
 	condition   conditions.Condition
+	fields      []string
 }
 
 func createBuilder(
@@ -20,6 +21,7 @@ func createBuilder(
 		hashAdapter: hashAdapter,
 		entity:      "",
 		condition:   nil,
+		fields:      nil,
 	}
 
 	return &out
@@ -44,26 +46,48 @@ func (app *builder) WithCondition(condition conditions.Condition) Builder {
 	return app
 }
 
-// Now builds a new Criteria instance
-func (app *builder) Now() (Criteria, error) {
+// WithFields add fields to the builder
+func (app *builder) WithFields(fields []string) Builder {
+	app.fields = fields
+	return app
+}
+
+// Now builds a new Query instance
+func (app *builder) Now() (Query, error) {
 	if app.entity == "" {
-		return nil, errors.New("the entity is mandatory in order to build a Criteria instance")
+		return nil, errors.New("the entity is mandatory in order to build a Query instance")
 	}
 
 	if app.condition == nil {
-		return nil, errors.New("the condition is mandatory in order to build a Criteria instance")
+		return nil, errors.New("the condition is mandatory in order to build a Query instance")
 	}
 
-	pHash, err := app.hashAdapter.FromMultiBytes([][]byte{
+	data := [][]byte{
 		[]byte(app.entity),
 		app.condition.Hash().Bytes(),
-	})
+	}
 
+	if app.fields != nil && len(app.fields) <= 0 {
+		for _, oneField := range app.fields {
+			data = append(data, []byte(oneField))
+		}
+	}
+
+	pHash, err := app.hashAdapter.FromMultiBytes(data)
 	if err != nil {
 		return nil, err
 	}
 
-	return createCriteria(
+	if app.fields != nil && len(app.fields) <= 0 {
+		return createQueryWithFields(
+			*pHash,
+			app.entity,
+			app.condition,
+			app.fields,
+		), nil
+	}
+
+	return createQuery(
 		*pHash,
 		app.entity,
 		app.condition,
