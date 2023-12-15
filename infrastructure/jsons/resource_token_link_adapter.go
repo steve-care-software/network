@@ -8,6 +8,8 @@ import (
 
 type resourceTokenLinkAdapter struct {
 	hashAdapter           hash.Adapter
+	originBuilder         links.OriginBuilder
+	originValueBuilder    links.OriginValueBuilder
 	originResourceBuilder links.OriginResourceBuilder
 	operatorBuilder       links.OperatorBuilder
 }
@@ -24,6 +26,86 @@ func (app *resourceTokenLinkAdapter) StructToLink(
 	ins structs_links.Link,
 ) (links.Link, error) {
 	return nil, nil
+}
+
+func (app *resourceTokenLinkAdapter) originToStruct(
+	ins links.Origin,
+) structs_links.Origin {
+	resource := app.originResourceToStruct(ins.Resource())
+	operator := app.operatorToStruct(ins.Operator())
+	next := app.originValueToStruct(ins.Next())
+	return structs_links.Origin{
+		Resource: resource,
+		Operator: operator,
+		Next:     next,
+	}
+}
+
+func (app *resourceTokenLinkAdapter) structToOrigin(
+	ins structs_links.Origin,
+) (links.Origin, error) {
+	resource, err := app.structToOriginResource(ins.Resource)
+	if err != nil {
+		return nil, err
+	}
+
+	operator, err := app.structToOperator(ins.Operator)
+	if err != nil {
+		return nil, err
+	}
+
+	next, err := app.structToOriginValue(ins.Next)
+	if err != nil {
+		return nil, err
+	}
+
+	return app.originBuilder.Create().
+		WithResource(resource).
+		WithOperator(operator).
+		WithNext(next).
+		Now()
+}
+
+func (app *resourceTokenLinkAdapter) originValueToStruct(
+	ins links.OriginValue,
+) structs_links.OriginValue {
+	output := structs_links.OriginValue{}
+	if ins.IsResource() {
+		resource := app.originResourceToStruct(ins.Resource())
+		output.Resource = &resource
+	}
+
+	if ins.IsOrigin() {
+		origin := app.originToStruct(ins.Origin())
+		output.Origin = &origin
+	}
+
+	return output
+}
+
+func (app *resourceTokenLinkAdapter) structToOriginValue(
+	ins structs_links.OriginValue,
+) (links.OriginValue, error) {
+	builder := app.originValueBuilder.Create()
+	if ins.Resource != nil {
+		resource, err := app.structToOriginResource(*ins.Resource)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithResource(resource)
+	}
+
+	if ins.Origin != nil {
+		origin, err := app.structToOrigin(*ins.Origin)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithOrigin(origin)
+	}
+
+	return builder.Now()
 }
 
 func (app *resourceTokenLinkAdapter) originResourceToStruct(
