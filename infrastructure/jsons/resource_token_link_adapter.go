@@ -8,6 +8,7 @@ import (
 
 type resourceTokenLinkAdapter struct {
 	hashAdapter              hash.Adapter
+	elementBuilder           links.ElementBuilder
 	conditionBuilder         links.ConditionBuilder
 	conditionValueBuilder    links.ConditionValueBuilder
 	conditionResourceBuilder links.ConditionResourceBuilder
@@ -29,6 +30,44 @@ func (app *resourceTokenLinkAdapter) StructToLink(
 	ins structs_links.Link,
 ) (links.Link, error) {
 	return nil, nil
+}
+
+func (app *resourceTokenLinkAdapter) elementToStruct(
+	ins links.Element,
+) structs_links.Element {
+	output := structs_links.Element{
+		Layer: ins.Layer().String(),
+	}
+
+	if ins.HasCondition() {
+		condition := app.conditionToStruct(ins.Condition())
+		output.Condition = &condition
+	}
+
+	return output
+}
+
+func (app *resourceTokenLinkAdapter) structToElement(
+	ins structs_links.Element,
+) (links.Element, error) {
+	pLayerHash, err := app.hashAdapter.FromString(ins.Layer)
+	if err != nil {
+		return nil, err
+	}
+
+	builder := app.elementBuilder.Create().
+		WithLayer(*pLayerHash)
+
+	if ins.Condition != nil {
+		condition, err := app.structToCondition(*ins.Condition)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithCondition(condition)
+	}
+
+	return builder.Now()
 }
 
 func (app *resourceTokenLinkAdapter) conditionToStruct(
