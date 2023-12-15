@@ -23,7 +23,7 @@ type resourceTokenLinkAdapter struct {
 	operatorBuilder          links.OperatorBuilder
 }
 
-// ToStruct converts a resource layer to struct
+// ToStruct converts a resource link to struct
 func (app *resourceTokenLinkAdapter) ToStruct(ins resources_links.Link) structs_tokens.Link {
 	output := structs_tokens.Link{}
 	if ins.IsLink() {
@@ -74,7 +74,7 @@ func (app *resourceTokenLinkAdapter) ToStruct(ins resources_links.Link) structs_
 	return output
 }
 
-// ToInstance converts bytes to resource layer instance
+// ToInstance converts bytes to resource link instance
 func (app *resourceTokenLinkAdapter) ToInstance(ins structs_tokens.Link) (resources_links.Link, error) {
 	builder := app.builder.Create()
 	if ins.Link != nil {

@@ -4,6 +4,7 @@ package queries
 type Query struct {
 	Entity    string    `json:"entity"`
 	Condition Condition `json:"condition"`
+	Fields    []string  `json:"fields"`
 }
 
 // Condition represents a condition
