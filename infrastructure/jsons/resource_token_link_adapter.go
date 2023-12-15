@@ -3,11 +3,14 @@ package jsons
 import (
 	"steve.care/network/domain/hash"
 	"steve.care/network/domain/receipts/commands/links"
+	resources_links "steve.care/network/domain/resources/tokens/links"
+	structs_tokens "steve.care/network/infrastructure/jsons/resources/tokens"
 	structs_links "steve.care/network/infrastructure/jsons/resources/tokens/links"
 )
 
 type resourceTokenLinkAdapter struct {
 	hashAdapter              hash.Adapter
+	builder                  resources_links.Builder
 	linkBuilder              links.Builder
 	elementsBuilder          links.ElementsBuilder
 	elementBuilder           links.ElementBuilder
@@ -18,6 +21,144 @@ type resourceTokenLinkAdapter struct {
 	originValueBuilder       links.OriginValueBuilder
 	originResourceBuilder    links.OriginResourceBuilder
 	operatorBuilder          links.OperatorBuilder
+}
+
+// ToStruct converts a resource layer to struct
+func (app *resourceTokenLinkAdapter) ToStruct(ins resources_links.Link) structs_tokens.Link {
+	output := structs_tokens.Link{}
+	if ins.IsLink() {
+		link := app.LinkToStruct(ins.Link())
+		output.Link = &link
+	}
+
+	if ins.IsElement() {
+		element := app.elementToStruct(ins.Element())
+		output.Element = &element
+	}
+
+	if ins.IsCondition() {
+		condition := app.conditionToStruct(ins.Condition())
+		output.Condition = &condition
+	}
+
+	if ins.IsConditionValue() {
+		conditionValue := app.conditionValueToStruct(ins.ConditionValue())
+		output.ConditionValue = &conditionValue
+	}
+
+	if ins.IsConditionResource() {
+		conditionResource := app.conditionResourceToStruct(ins.ConditionResource())
+		output.ConditionResource = &conditionResource
+	}
+
+	if ins.IsOrigin() {
+		origin := app.originToStruct(ins.Origin())
+		output.Origin = &origin
+	}
+
+	if ins.IsOriginValue() {
+		originValue := app.originValueToStruct(ins.OriginValue())
+		output.OriginValue = &originValue
+	}
+
+	if ins.IsOriginResource() {
+		originResource := app.originResourceToStruct(ins.OriginResource())
+		output.OriginResource = &originResource
+	}
+
+	if ins.IsOperator() {
+		operator := app.operatorToStruct(ins.Operator())
+		output.Operator = &operator
+	}
+
+	return output
+}
+
+// ToInstance converts bytes to resource layer instance
+func (app *resourceTokenLinkAdapter) ToInstance(ins structs_tokens.Link) (resources_links.Link, error) {
+	builder := app.builder.Create()
+	if ins.Link != nil {
+		link, err := app.StructToLink(*ins.Link)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithLink(link)
+	}
+
+	if ins.Element != nil {
+		element, err := app.structToElement(*ins.Element)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithElement(element)
+	}
+
+	if ins.Condition != nil {
+		condition, err := app.structToCondition(*ins.Condition)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithCondition(condition)
+	}
+
+	if ins.ConditionValue != nil {
+		conditionValue, err := app.structToConditionValue(*ins.ConditionValue)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithConditionValue(conditionValue)
+	}
+
+	if ins.ConditionResource != nil {
+		conditionResource, err := app.structToConditionResource(*ins.ConditionResource)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithConditionResource(conditionResource)
+	}
+
+	if ins.Origin != nil {
+		origin, err := app.structToOrigin(*ins.Origin)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithOrigin(origin)
+	}
+
+	if ins.OriginValue != nil {
+		originValue, err := app.structToOriginValue(*ins.OriginValue)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithOriginValue(originValue)
+	}
+
+	if ins.OriginResource != nil {
+		originResource, err := app.structToOriginResource(*ins.OriginResource)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithOriginResource(originResource)
+	}
+
+	if ins.Operator != nil {
+		operator, err := app.structToOperator(*ins.Operator)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithOperator(operator)
+	}
+
+	return builder.Now()
 }
 
 // LinkToStruct converts a link to struct
