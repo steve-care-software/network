@@ -1,9 +1,9 @@
 package resources
 
-import "steve.care/network/domain/resources/tokens"
+import "steve.care/network/infrastructure/jsons/resources/tokens"
 
 // Resource represents a resource
 type Resource struct {
 	Token     tokens.Token `json:"token"`
-	Signature string       `json:"signature"`
+	Signature []byte       `json:"signature"`
 }

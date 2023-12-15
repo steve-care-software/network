@@ -1,6 +1,8 @@
 package tokens
 
 import (
+	"time"
+
 	"steve.care/network/infrastructure/jsons/resources/tokens/layers"
 	"steve.care/network/infrastructure/jsons/resources/tokens/links"
 	"steve.care/network/infrastructure/jsons/resources/tokens/queries"
@@ -10,6 +12,12 @@ import (
 
 // Token represents a token
 type Token struct {
+	Content   Content   `json:"content"`
+	CreatedOn time.Time `json:"created_on"`
+}
+
+// Content represents the token content
+type Content struct {
 	Layer   *Layer   `json:"layer"`
 	Link    *Link    `json:"link"`
 	Query   *Query   `json:"query"`
