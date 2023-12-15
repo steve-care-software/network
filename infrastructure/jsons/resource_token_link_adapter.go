@@ -8,6 +8,7 @@ import (
 
 type resourceTokenLinkAdapter struct {
 	hashAdapter              hash.Adapter
+	linkBuilder              links.Builder
 	elementsBuilder          links.ElementsBuilder
 	elementBuilder           links.ElementBuilder
 	conditionBuilder         links.ConditionBuilder
@@ -23,14 +24,32 @@ type resourceTokenLinkAdapter struct {
 func (app *resourceTokenLinkAdapter) LinkToStruct(
 	ins links.Link,
 ) structs_links.Link {
-	return structs_links.Link{}
+	origin := app.originToStruct(ins.Origin())
+	elements := app.elementsToStructs(ins.Elements())
+	return structs_links.Link{
+		Origin:   origin,
+		Elements: elements,
+	}
 }
 
 // StructToLink converts a struct to link
 func (app *resourceTokenLinkAdapter) StructToLink(
 	ins structs_links.Link,
 ) (links.Link, error) {
-	return nil, nil
+	origin, err := app.structToOrigin(ins.Origin)
+	if err != nil {
+		return nil, err
+	}
+
+	elements, err := app.structsToElements(ins.Elements)
+	if err != nil {
+		return nil, err
+	}
+
+	return app.linkBuilder.Create().
+		WithOrigin(origin).
+		WithElements(elements).
+		Now()
 }
 
 func (app *resourceTokenLinkAdapter) elementsToStructs(
