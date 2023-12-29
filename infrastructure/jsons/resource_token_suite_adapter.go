@@ -16,6 +16,24 @@ type resourceTokenSuiteAdapter struct {
 	expectationBuilder expectations.Builder
 }
 
+func createResourceTokenSuiteAdapter(
+	layerAdapter *resourceTokenLayerAdapter,
+	linkAdapter *resourceTokenLinkAdapter,
+	builder resources_suites.Builder,
+	suiteBuilder suites.Builder,
+	expectationBuilder expectations.Builder,
+) *resourceTokenSuiteAdapter {
+	out := resourceTokenSuiteAdapter{
+		layerAdapter:       layerAdapter,
+		linkAdapter:        linkAdapter,
+		builder:            builder,
+		suiteBuilder:       suiteBuilder,
+		expectationBuilder: expectationBuilder,
+	}
+
+	return &out
+}
+
 func (app *resourceTokenSuiteAdapter) toStruct(ins resources_suites.Suite) structs_tokens.Suite {
 	output := structs_tokens.Suite{}
 	if ins.IsSuite() {

@@ -8,10 +8,17 @@ import (
 	account_encryptors "steve.care/network/domain/accounts/encryptors"
 	"steve.care/network/domain/accounts/signers"
 	"steve.care/network/domain/encryptors"
+	"steve.care/network/domain/hash"
+	commands_layers "steve.care/network/domain/receipts/commands/layers"
+	"steve.care/network/domain/resources"
+	"steve.care/network/domain/resources/tokens"
+	"steve.care/network/domain/resources/tokens/layers"
 )
 
 const notActiveErrorMsg = "the application NEVER began a transactional state, therefore that method cannot be executed"
 const currentActiveErrorMsg = "the application ALREADY began a transactional state, therefore that method cannot be executed"
+
+const timeLayout = "2006-01-02T15:04:05.999999999Z07:00"
 
 // NewApplication creates a new application
 func NewApplication(
@@ -60,6 +67,38 @@ func NewAccountService(
 		encryptorBuilder,
 		signerFactory,
 		bitrate,
+		txPtr,
+	)
+}
+
+// NewResourceRepository creates a new resource repository
+func NewResourceRepository(
+	dbPtr *sql.DB,
+) resources.Repository {
+	hashAdapter := hash.NewAdapter()
+	signatureAdapter := signers.NewSignatureAdapter()
+	builder := resources.NewBuilder()
+	tokenBuilder := tokens.NewBuilder()
+	layerBuilder := layers.NewBuilder()
+	cmdLayerBuilder := commands_layers.NewBuilder()
+	cmdLayerBytesReferenceBuilder := commands_layers.NewBytesReferenceBuilder()
+	return createResourceRepository(
+		hashAdapter,
+		signatureAdapter,
+		builder,
+		tokenBuilder,
+		layerBuilder,
+		cmdLayerBuilder,
+		cmdLayerBytesReferenceBuilder,
+		dbPtr,
+	)
+}
+
+// NewResourceService creates a new resoruce service
+func NewResourceService(
+	txPtr *sql.Tx,
+) resources.Service {
+	return createResourceService(
 		txPtr,
 	)
 }

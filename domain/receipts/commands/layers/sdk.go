@@ -125,18 +125,18 @@ func NewSignatureVerifyBuilder() SignatureVerifyBuilder {
 	)
 }
 
-// NewVoteBuilder creates a new vote builder
-func NewVoteBuilder() VoteBuilder {
-	hashAdapter := hash.NewAdapter()
-	return createVoteBuilder(
-		hashAdapter,
-	)
-}
-
 // NewVoteVerifyBuilder creates a new vote verify builder
 func NewVoteVerifyBuilder() VoteVerifyBuilder {
 	hashAdapter := hash.NewAdapter()
 	return createVoteVerifyBuilder(
+		hashAdapter,
+	)
+}
+
+// NewVoteBuilder creates a new vote builder
+func NewVoteBuilder() VoteBuilder {
+	hashAdapter := hash.NewAdapter()
+	return createVoteBuilder(
 		hashAdapter,
 	)
 }

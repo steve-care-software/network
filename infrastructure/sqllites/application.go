@@ -8,6 +8,7 @@ import (
 	"steve.care/network/applications"
 	core_applications "steve.care/network/applications/applications"
 	accounts_applications "steve.care/network/applications/applications/accounts"
+	resources_applications "steve.care/network/applications/applications/resources"
 	"steve.care/network/domain/accounts"
 	"steve.care/network/domain/encryptors"
 )
@@ -45,52 +46,27 @@ func (app *application) Init(name string, script string) (core_applications.Appl
 		return nil, errors.New(currentActiveErrorMsg)
 	}
 
-	database, err := app.openDatabaseIfNotAlready(name)
+	err := app.openDatabaseIfNotAlready(name)
 	if err != nil {
 		return nil, err
 	}
 
-	_, err = database.Exec(script)
+	_, err = app.currentDb.Exec(script)
 	if err != nil {
 		return nil, err
 	}
 
-	return app.begin(database)
-}
-
-// InitInMemory inits an application with a script in memory
-func (app *application) InitInMemory(script string) (core_applications.Application, error) {
-	database, err := app.openDatabaseInMemoryIfNotAlready()
-	if err != nil {
-		return nil, err
-	}
-
-	_, err = database.Exec(script)
-	if err != nil {
-		return nil, err
-	}
-
-	return app.begin(database)
+	return app.begin()
 }
 
 // Begin begins the application
 func (app *application) Begin(name string) (core_applications.Application, error) {
-	database, err := app.openDatabaseIfNotAlready(name)
+	err := app.openDatabaseIfNotAlready(name)
 	if err != nil {
 		return nil, err
 	}
 
-	return app.begin(database)
-}
-
-// BeginInMemory begins the application in memory
-func (app *application) BeginInMemory() (core_applications.Application, error) {
-	database, err := app.openDatabaseInMemoryIfNotAlready()
-	if err != nil {
-		return nil, err
-	}
-
-	return app.begin(database)
+	return app.begin()
 }
 
 // Commit commits the application
@@ -135,9 +111,9 @@ func (app *application) Close() error {
 	return nil
 }
 
-func (app *application) begin(database *sql.DB) (core_applications.Application, error) {
+func (app *application) begin() (core_applications.Application, error) {
 	if !app.isTransactionActive() {
-		trxApp, err := database.Begin()
+		trxApp, err := app.currentDb.Begin()
 		if err != nil {
 			return nil, err
 		}
@@ -165,35 +141,36 @@ func (app *application) begin(database *sql.DB) (core_applications.Application, 
 		app.bitrate,
 	)
 
+	resourceRepository := NewResourceRepository(
+		app.currentDb,
+	)
+
+	resourceService := NewResourceService(
+		app.currentTrx,
+	)
+
+	resourceApplication := resources_applications.NewApplication(
+		resourceRepository,
+		resourceService,
+	)
+
 	return core_applications.NewApplication(
 		accountApplication,
+		resourceApplication,
 	), nil
 }
 
-func (app *application) openDatabaseIfNotAlready(name string) (*sql.DB, error) {
+func (app *application) openDatabaseIfNotAlready(name string) error {
 	if !app.isDatabaseOpen() {
 		database, err := app.open(name)
 		if err != nil {
-			return nil, err
+			return err
 		}
 
 		app.currentDb = database
 	}
 
-	return app.currentDb, nil
-}
-
-func (app *application) openDatabaseInMemoryIfNotAlready() (*sql.DB, error) {
-	if !app.isDatabaseOpen() {
-		database, err := app.openInMemory()
-		if err != nil {
-			return nil, err
-		}
-
-		app.currentDb = database
-	}
-
-	return app.currentDb, nil
+	return nil
 }
 
 func (app *application) isActive() bool {
@@ -207,11 +184,6 @@ func (app *application) isTransactionActive() bool {
 
 func (app *application) isDatabaseOpen() bool {
 	return app.currentDb != nil
-}
-
-func (app *application) openInMemory() (*sql.DB, error) {
-	basePath := filepath.Join(app.basePath, ":memory:")
-	return sql.Open("sqlite3", basePath)
 }
 
 func (app *application) open(name string) (*sql.DB, error) {

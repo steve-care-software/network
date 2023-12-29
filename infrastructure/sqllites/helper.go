@@ -9,7 +9,41 @@ import (
 func getSchema() string {
 	return `
 		DROP TABLE IF EXISTS accounts;
-		CREATE TABLE accounts(username TEXT PRIMARY KEY, cipher BLOB);
+		CREATE TABLE accounts (
+			username TEXT PRIMARY KEY,
+			cipher BLOB
+		);
+
+		DROP TABLE IF EXISTS layer_bytes_reference;
+		CREATE TABLE layer_bytes_reference (
+			hash BLOB PRIMARY KEY,
+			variable TEXT,
+			bytes BLOB
+		);
+
+		DROP TABLE IF EXISTS layer;
+		CREATE TABLE layer (
+			hash BLOB PRIMARY KEY,
+			bytes_reference BLOB,
+			FOREIGN KEY(bytes_reference) REFERENCES layer_bytes_reference(hash)
+		);
+
+		DROP TABLE IF EXISTS token;
+		CREATE TABLE token (
+			hash BLOB PRIMARY KEY,
+			layer BLOB,
+			created_on TEXT,
+			FOREIGN KEY(layer) REFERENCES layer(hash)
+		);
+
+		DROP TABLE IF EXISTS resource;
+		CREATE TABLE resource (
+			hash BLOB PRIMARY KEY,
+			token BLOB,
+			signature BLOB,
+			FOREIGN KEY(token) REFERENCES token(hash)
+		);
+
 	`
 }
 

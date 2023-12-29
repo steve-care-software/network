@@ -45,11 +45,11 @@ func (app *voteBuilder) WithMessage(message BytesReference) VoteBuilder {
 
 // Now builds a new Vote instance
 func (app *voteBuilder) Now() (Vote, error) {
-	if app.ring != "" {
+	if app.ring == "" {
 		return nil, errors.New("the ring variable is mandatory in order to build a Vote instance")
 	}
 
-	if app.message != nil {
+	if app.message == nil {
 		return nil, errors.New("the message is mandatory in order to build a Vote instance")
 	}
 

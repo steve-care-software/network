@@ -48,6 +48,9 @@ type Repository interface {
 
 	// RetrieveByQuery retrieves a resource by criteria
 	RetrieveByQuery(criteria hash.Hash) (Resource, error)
+
+	// RetrieveByHash retrieves a resource by hash
+	RetrieveByHash(hash hash.Hash) (Resource, error)
 }
 
 // Service represents a resource service

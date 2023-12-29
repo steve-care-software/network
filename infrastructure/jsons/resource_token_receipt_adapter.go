@@ -24,6 +24,36 @@ type resourceTokenReceiptAdapter struct {
 	linkBuilder      commands.LinkBuilder
 }
 
+func createResourceTokenReceiptAdapter(
+	layerAdapter *resourceTokenLayerAdapter,
+	linkAdapter *resourceTokenLinkAdapter,
+	signatureAdapter signers.SignatureAdapter,
+	builder resources_receipts.Builder,
+	receiptBuilder receipts.Builder,
+	commandsBuilder commands.Builder,
+	commandBuilder commands.CommandBuilder,
+	resultBuilder results.Builder,
+	failureBuilder results.FailureBuilder,
+	successBuilder results.SuccessBuilder,
+	linkBuilder commands.LinkBuilder,
+) *resourceTokenReceiptAdapter {
+	out := resourceTokenReceiptAdapter{
+		layerAdapter:     layerAdapter,
+		linkAdapter:      linkAdapter,
+		signatureAdapter: signatureAdapter,
+		builder:          builder,
+		receiptBuilder:   receiptBuilder,
+		commandsBuilder:  commandsBuilder,
+		commandBuilder:   commandBuilder,
+		resultBuilder:    resultBuilder,
+		failureBuilder:   failureBuilder,
+		successBuilder:   successBuilder,
+		linkBuilder:      linkBuilder,
+	}
+
+	return &out
+}
+
 func (app *resourceTokenReceiptAdapter) toStruct(ins resources_receipts.Receipt) (*structs_tokens.Receipt, error) {
 	output := structs_tokens.Receipt{}
 	if ins.IsReceipt() {

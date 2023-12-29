@@ -45,11 +45,11 @@ func (app *signatureVerifyBuilder) WithMessage(message BytesReference) Signature
 
 // Now builds a new SignatureVerify instance
 func (app *signatureVerifyBuilder) Now() (SignatureVerify, error) {
-	if app.signature != "" {
+	if app.signature == "" {
 		return nil, errors.New("the signature variable is mandatory in order to build a SignatureVerify instance")
 	}
 
-	if app.message != nil {
+	if app.message == nil {
 		return nil, errors.New("the message is mandatory in order to build a SignatureVerify instance")
 	}
 

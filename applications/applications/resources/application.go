@@ -42,6 +42,11 @@ func (app *application) RetrieveByQuery(criteria hash.Hash) (resources.Resource,
 	return app.repository.RetrieveByQuery(criteria)
 }
 
+// RetrieveByHash retrieves a resource by hash
+func (app *application) RetrieveByHash(hash hash.Hash) (resources.Resource, error) {
+	return app.repository.RetrieveByHash(hash)
+}
+
 // Insert inserts a resource
 func (app *application) Insert(ins resources.Resource) error {
 	return app.service.Insert(ins)

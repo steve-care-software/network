@@ -1,6 +1,8 @@
 package layers
 
 import (
+	"errors"
+
 	"steve.care/network/domain/hash"
 )
 
@@ -37,6 +39,10 @@ func (app *bytesReferencesBuilder) WithList(list []BytesReference) BytesReferenc
 func (app *bytesReferencesBuilder) Now() (BytesReferences, error) {
 	if app.list != nil && len(app.list) <= 0 {
 		app.list = nil
+	}
+
+	if app.list == nil {
+		return nil, errors.New("there must be at least 1 BytesReference in order to build a BytesReferences instance")
 	}
 
 	data := [][]byte{}

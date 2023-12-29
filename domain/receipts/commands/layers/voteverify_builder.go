@@ -53,15 +53,15 @@ func (app *voteVerifyBuilder) WithHashedRing(hashedRing string) VoteVerifyBuilde
 
 // Now builds a new VoteVerify instance
 func (app *voteVerifyBuilder) Now() (VoteVerify, error) {
-	if app.vote != "" {
+	if app.vote == "" {
 		return nil, errors.New("the vote variable is mandatory in order to build a VoteVerify instance")
 	}
 
-	if app.message != nil {
+	if app.message == nil {
 		return nil, errors.New("the message is mandatory in order to build a VoteVerify instance")
 	}
 
-	if app.hashedRing != "" {
+	if app.hashedRing == "" {
 		return nil, errors.New("the hashedRing variable is mandatory in order to build a VoteVerify instance")
 	}
 

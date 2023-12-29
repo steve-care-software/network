@@ -30,6 +30,9 @@ type Application interface {
 	// RetrieveByQuery retrieves a resource by criteria
 	RetrieveByQuery(criteria hash.Hash) (resources.Resource, error)
 
+	// RetrieveByHash retrieves a resource by hash
+	RetrieveByHash(hash hash.Hash) (resources.Resource, error)
+
 	// Insert inserts a resource
 	Insert(ins resources.Resource) error
 
