@@ -1,6 +1,8 @@
 package links
 
 import (
+	"errors"
+
 	"steve.care/network/domain/hash"
 )
 
@@ -37,6 +39,10 @@ func (app *elementsBuilder) WithList(list []Element) ElementsBuilder {
 func (app *elementsBuilder) Now() (Elements, error) {
 	if app.list != nil && len(app.list) <= 0 {
 		app.list = nil
+	}
+
+	if len(app.list) <= 0 {
+		return nil, errors.New("there must be at least 1 Element in order to build an Elements instance")
 	}
 
 	data := [][]byte{}

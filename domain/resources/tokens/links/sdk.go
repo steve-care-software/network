@@ -2,7 +2,7 @@ package links
 
 import (
 	"steve.care/network/domain/hash"
-	"steve.care/network/domain/receipts/commands/links"
+	"steve.care/network/domain/receipts/commands/layers/links"
 )
 
 // NewBuilder creates a new builder

@@ -1,5 +1,200 @@
 package layers
 
+import (
+	"steve.care/network/domain/hash"
+	"steve.care/network/domain/receipts/commands/layers/links"
+)
+
+// NewLayerWithInputForTests creates a new layer with input for tests
+func NewLayerWithInputForTests(instructions Instructions, output Output, input string) Layer {
+	ins, err := NewBuilder().Create().WithInstructions(instructions).WithOutput(output).WithInput(input).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+// NewLayerForTests creates a new layer for tests
+func NewLayerForTests(instructions Instructions, output Output) Layer {
+	ins, err := NewBuilder().Create().WithInstructions(instructions).WithOutput(output).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+// NewOutputWithExecuteForTests creates a new output with execute for tests
+func NewOutputWithExecuteForTests(variable string, kind Kind, execute string) Output {
+	ins, err := NewOutputBuilder().Create().WithVariable(variable).WithKind(kind).WithExecute(execute).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+// NewOutputForTests creates a new output for tests
+func NewOutputForTests(variable string, kind Kind) Output {
+	ins, err := NewOutputBuilder().Create().WithVariable(variable).WithKind(kind).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+// NewKindWithContinueForTests creates a new kind with continue for tests
+func NewKindWithContinueForTests() Kind {
+	ins, err := NewKindBuilder().Create().IsContinue().Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+// NewKindWithPromptForTests creates a new kind with prompt for tests
+func NewKindWithPromptForTests() Kind {
+	ins, err := NewKindBuilder().Create().IsPrompt().Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+// NewInstructionsForTests creates new instructions for tests
+func NewInstructionsForTests(list []Instruction) Instructions {
+	ins, err := NewInstructionsBuilder().Create().WithList(list).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+// NewInstructionWithLayerInstructionForTests creates a new instruction with layerInstruction for tests
+func NewInstructionWithLayerInstructionForTests(layer LayerInstruction) Instruction {
+	ins, err := NewInstructionBuilder().Create().WithLayer(layer).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+// NewInstructionWithLinkInstructionForTests creates a new instruction with linkInstruction for tests
+func NewInstructionWithLinkInstructionForTests(link LinkInstruction) Instruction {
+	ins, err := NewInstructionBuilder().Create().WithLink(link).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+// NewInstructionWithAssignmentForTests creates a new instruction with assignment for tests
+func NewInstructionWithAssignmentForTests(assignment Assignment) Instruction {
+	ins, err := NewInstructionBuilder().Create().WithAssignment(assignment).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+// NewInstructionWithConditionForTests creates a new instruction with condition for tests
+func NewInstructionWithConditionForTests(condition Condition) Instruction {
+	ins, err := NewInstructionBuilder().Create().WithCondition(condition).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+// NewInstructionWithRaiseErrorForTests creates a new instruction with raiseError for tests
+func NewInstructionWithRaiseErrorForTests(raiseError uint) Instruction {
+	ins, err := NewInstructionBuilder().Create().WithRaiseError(raiseError).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+// NewInstructionWithStopForTests creates a new instruction with stop for tests
+func NewInstructionWithStopForTests() Instruction {
+	ins, err := NewInstructionBuilder().Create().IsStop().Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+// NewLinkInstructionWithDeleteForTests creates a new link instructions with delete for tests
+func NewLinkInstructionWithDeleteForTests(del hash.Hash) LinkInstruction {
+	ins, err := NewLinkInstructionBuilder().Create().WithDelete(del).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+// NewLinkInstructionWithSaveForTests creates a new link instructions with save for tests
+func NewLinkInstructionWithSaveForTests(save links.Link) LinkInstruction {
+	ins, err := NewLinkInstructionBuilder().Create().WithSave(save).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+// NewLayerInstructionWithDeleteForTests creates a new layer instructions with delete for tests
+func NewLayerInstructionWithDeleteForTests(del hash.Hash) LayerInstruction {
+	ins, err := NewLayerInstructionBuilder().Create().WithDelete(del).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+// NewLayerInstructionWithSaveForTests creates a new layer instructions with save for tests
+func NewLayerInstructionWithSaveForTests(save Layer) LayerInstruction {
+	ins, err := NewLayerInstructionBuilder().Create().WithSave(save).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+// NewConditionForTest creates a new condition for tests
+func NewConditionForTest(variable string, instructions Instructions) Condition {
+	ins, err := NewConditionBuilder().Create().WithVariable(variable).WithInstructions(instructions).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+// NewAssignmentForTests creates a new assignment for tests
+func NewAssignmentForTests(name string, assignable Assignable) Assignment {
+	ins, err := NewAssignmentBuilder().Create().WithName(name).WithAssignable(assignable).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
 // NewAssignableWithIdentityForTests creates a new assignable with identity for tests
 func NewAssignableWithIdentityForTests(input Identity) Assignable {
 	ins, err := NewAssignableBuilder().Create().WithIdentity(input).Now()

@@ -1,6 +1,10 @@
 package links
 
-import "steve.care/network/domain/hash"
+import (
+	"errors"
+
+	"steve.care/network/domain/hash"
+)
 
 type operatorBuilder struct {
 	hashAdapter hash.Adapter
@@ -60,6 +64,10 @@ func (app *operatorBuilder) Now() (Operator, error) {
 
 	if app.isXor {
 		data = append(data, []byte("isXor"))
+	}
+
+	if len(data) != 1 {
+		return nil, errors.New("the operator is invalid")
 	}
 
 	pHash, err := app.hashAdapter.FromMultiBytes(data)

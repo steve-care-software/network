@@ -3,7 +3,7 @@ package commands
 import (
 	"steve.care/network/domain/hash"
 	"steve.care/network/domain/receipts/commands/layers"
-	"steve.care/network/domain/receipts/commands/links"
+	"steve.care/network/domain/receipts/commands/layers/links"
 	"steve.care/network/domain/receipts/commands/results"
 )
 
