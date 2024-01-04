@@ -4,14 +4,14 @@ import (
 	"database/sql"
 
 	"steve.care/network/domain/hash"
-	commands_layers "steve.care/network/domain/receipts/commands/layers"
-	"steve.care/network/domain/resources"
-	"steve.care/network/domain/resources/tokens"
-	"steve.care/network/domain/resources/tokens/layers"
-	"steve.care/network/domain/resources/tokens/links"
-	"steve.care/network/domain/resources/tokens/queries"
-	"steve.care/network/domain/resources/tokens/receipts"
-	"steve.care/network/domain/resources/tokens/suites"
+	commands_layers "steve.care/network/domain/programs/logics/libraries/layers"
+	"steve.care/network/domain/programs/blockchains/blocks/executions/actions/resources"
+	"steve.care/network/domain/programs/blockchains/blocks/executions/actions/resources/tokens"
+	"steve.care/network/domain/programs/blockchains/blocks/executions/actions/resources/tokens/layers"
+	"steve.care/network/domain/programs/blockchains/blocks/executions/actions/resources/tokens/links"
+	"steve.care/network/domain/programs/blockchains/blocks/executions/actions/resources/tokens/queries"
+	"steve.care/network/domain/programs/blockchains/blocks/executions/actions/resources/tokens/receipts"
+	"steve.care/network/domain/programs/blockchains/blocks/executions/actions/resources/tokens/suites"
 )
 
 type resourceService struct {

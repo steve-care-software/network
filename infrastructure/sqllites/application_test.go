@@ -9,10 +9,10 @@ import (
 	"bytes"
 
 	"steve.care/network/domain/credentials"
-	commands_layers "steve.care/network/domain/receipts/commands/layers"
-	"steve.care/network/domain/resources"
-	"steve.care/network/domain/resources/tokens"
-	"steve.care/network/domain/resources/tokens/layers"
+	"steve.care/network/domain/programs/blockchains/blocks/executions/actions/resources"
+	"steve.care/network/domain/programs/blockchains/blocks/executions/actions/resources/tokens"
+	"steve.care/network/domain/programs/blockchains/blocks/executions/actions/resources/tokens/layers"
+	commands_layers "steve.care/network/domain/programs/logics/libraries/layers"
 	"steve.care/network/infrastructure/edwards25519"
 	"steve.care/network/infrastructure/jsons"
 )

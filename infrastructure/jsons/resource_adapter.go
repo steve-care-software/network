@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 
 	"steve.care/network/domain/accounts/signers"
-	"steve.care/network/domain/resources"
+	"steve.care/network/domain/programs/blockchains/blocks/executions/actions/resources"
 	structs "steve.care/network/infrastructure/jsons/resources"
 )
 

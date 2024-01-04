@@ -8,10 +8,10 @@ import (
 
 	"steve.care/network/domain/accounts/signers"
 	"steve.care/network/domain/hash"
-	commands_layers "steve.care/network/domain/receipts/commands/layers"
-	"steve.care/network/domain/resources"
-	"steve.care/network/domain/resources/tokens"
-	"steve.care/network/domain/resources/tokens/layers"
+	commands_layers "steve.care/network/domain/programs/logics/libraries/layers"
+	"steve.care/network/domain/programs/blockchains/blocks/executions/actions/resources"
+	"steve.care/network/domain/programs/blockchains/blocks/executions/actions/resources/tokens"
+	"steve.care/network/domain/programs/blockchains/blocks/executions/actions/resources/tokens/layers"
 )
 
 type resourceRepository struct {

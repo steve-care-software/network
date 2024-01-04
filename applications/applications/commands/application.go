@@ -8,8 +8,8 @@ import (
 	"steve.care/network/applications/applications/accounts"
 	"steve.care/network/domain/credentials"
 	"steve.care/network/domain/hash"
+	"steve.care/network/domain/programs/logics/libraries/layers"
 	"steve.care/network/domain/receipts"
-	"steve.care/network/domain/receipts/commands/layers"
 	"steve.care/network/domain/stacks"
 
 	identity_accounts "steve.care/network/domain/accounts"
@@ -78,7 +78,7 @@ func (app *application) Begin() (*uint, error) {
 	return nil, nil
 }
 
-//  End ends the context and returns the receipt
+// End ends the context and returns the receipt
 func (app *application) End(context uint) (receipts.Receipt, error) {
 	return nil, nil
 }
@@ -369,25 +369,6 @@ func (app *application) executeInstruction(
 		}
 
 		currentFrameAssignments = append(currentFrameAssignments, stackAssignment)
-	}
-
-	if instruction.IsLayer() {
-		layerInstruction := instruction.Layer()
-		if layerInstruction.IsSave() {
-
-		}
-
-		if layerInstruction.IsDelete() {
-			hash := layerInstruction.Delete()
-			err := app.deleteLayerByHash(hash)
-			if err != nil {
-				// failure
-			}
-		}
-	}
-
-	if instruction.IsLink() {
-
 	}
 
 	updatedFrameBuilder := app.stackFrameBuilder.Create()

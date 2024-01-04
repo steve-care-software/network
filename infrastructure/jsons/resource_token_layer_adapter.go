@@ -2,35 +2,33 @@ package jsons
 
 import (
 	"steve.care/network/domain/hash"
-	"steve.care/network/domain/receipts/commands/layers"
-	resources_layers "steve.care/network/domain/resources/tokens/layers"
+	resources_layers "steve.care/network/domain/programs/blockchains/blocks/executions/actions/resources/tokens/layers"
+	"steve.care/network/domain/programs/logics/libraries/layers"
 	structs_tokens "steve.care/network/infrastructure/jsons/resources/tokens"
 	structs_layers "steve.care/network/infrastructure/jsons/resources/tokens/layers"
 )
 
 type resourceTokenLayerAdapter struct {
-	hashAdapter             hash.Adapter
-	builder                 resources_layers.Builder
-	linkAdapter             *resourceTokenLinkAdapter
-	layerBuilder            layers.Builder
-	outputBuilder           layers.OutputBuilder
-	kindBuilder             layers.KindBuilder
-	instructionsBuilder     layers.InstructionsBuilder
-	instructionBuilder      layers.InstructionBuilder
-	linkInstructionBuilder  layers.LinkInstructionBuilder
-	layerInstructionBuilder layers.LayerInstructionBuilder
-	conditionBuilder        layers.ConditionBuilder
-	assignmentBuilder       layers.AssignmentBuilder
-	assignableBuilder       layers.AssignableBuilder
-	bytesBuilder            layers.BytesBuilder
-	identityBuilder         layers.IdentityBuilder
-	encryptorBuilder        layers.EncryptorBuilder
-	signerBuilder           layers.SignerBuilder
-	signatureVerifyBuilder  layers.SignatureVerifyBuilder
-	voteVerifyBuilder       layers.VoteVerifyBuilder
-	voteBuilder             layers.VoteBuilder
-	bytesReferencesBuilder  layers.BytesReferencesBuilder
-	bytesReferenceBuilder   layers.BytesReferenceBuilder
+	hashAdapter            hash.Adapter
+	builder                resources_layers.Builder
+	linkAdapter            *resourceTokenLinkAdapter
+	layerBuilder           layers.Builder
+	outputBuilder          layers.OutputBuilder
+	kindBuilder            layers.KindBuilder
+	instructionsBuilder    layers.InstructionsBuilder
+	instructionBuilder     layers.InstructionBuilder
+	conditionBuilder       layers.ConditionBuilder
+	assignmentBuilder      layers.AssignmentBuilder
+	assignableBuilder      layers.AssignableBuilder
+	bytesBuilder           layers.BytesBuilder
+	identityBuilder        layers.IdentityBuilder
+	encryptorBuilder       layers.EncryptorBuilder
+	signerBuilder          layers.SignerBuilder
+	signatureVerifyBuilder layers.SignatureVerifyBuilder
+	voteVerifyBuilder      layers.VoteVerifyBuilder
+	voteBuilder            layers.VoteBuilder
+	bytesReferencesBuilder layers.BytesReferencesBuilder
+	bytesReferenceBuilder  layers.BytesReferenceBuilder
 }
 
 func (app *resourceTokenLayerAdapter) toStruct(ins resources_layers.Layer) structs_tokens.Layer {
@@ -53,16 +51,6 @@ func (app *resourceTokenLayerAdapter) toStruct(ins resources_layers.Layer) struc
 	if ins.IsInstruction() {
 		instruction := app.instructionToStruct(ins.Instruction())
 		output.Instruction = &instruction
-	}
-
-	if ins.IsLinkInstruction() {
-		linkInstruction := app.linkInstructionToStruct(ins.LinkInstruction())
-		output.LinkInstruction = &linkInstruction
-	}
-
-	if ins.IsLayerInstruction() {
-		layerInstruction := app.layerInstructionToStruct(ins.LayerInstruction())
-		output.LayerInstruction = &layerInstruction
 	}
 
 	if ins.IsCondition() {
@@ -159,24 +147,6 @@ func (app *resourceTokenLayerAdapter) toInstance(ins structs_tokens.Layer) (reso
 		}
 
 		builder.WithInstruction(instruction)
-	}
-
-	if ins.LinkInstruction != nil {
-		linkIns, err := app.structToLinkInstruction(*ins.LinkInstruction)
-		if err != nil {
-			return nil, err
-		}
-
-		builder.WithLinkInstruction(linkIns)
-	}
-
-	if ins.LayerInstruction != nil {
-		layerIns, err := app.structToLayerInstruction(*ins.LayerInstruction)
-		if err != nil {
-			return nil, err
-		}
-
-		builder.WithLayerInstruction(layerIns)
 	}
 
 	if ins.Condition != nil {
@@ -441,24 +411,6 @@ func (app *resourceTokenLayerAdapter) structToInstruction(
 		builder.WithAssignment(assignment)
 	}
 
-	if ins.Link != nil {
-		linkIns, err := app.structToLinkInstruction(*ins.Link)
-		if err != nil {
-			return nil, err
-		}
-
-		builder.WithLink(linkIns)
-	}
-
-	if ins.Layer != nil {
-		layerIns, err := app.structToLayerInstruction(*ins.Layer)
-		if err != nil {
-			return nil, err
-		}
-
-		builder.WithLayer(layerIns)
-	}
-
 	return builder.Now()
 }
 
@@ -483,98 +435,6 @@ func (app *resourceTokenLayerAdapter) instructionToStruct(
 	if ins.IsAssignment() {
 		assignment := app.assignmentToStruct(ins.Assignment())
 		output.Assignment = &assignment
-	}
-
-	if ins.IsLink() {
-		link := app.linkInstructionToStruct(ins.Link())
-		output.Link = &link
-	}
-
-	if ins.IsLayer() {
-		layer := app.layerInstructionToStruct(ins.Layer())
-		output.Layer = &layer
-	}
-
-	return output
-}
-
-func (app *resourceTokenLayerAdapter) structToLinkInstruction(
-	ins structs_layers.LinkInstruction,
-) (layers.LinkInstruction, error) {
-	builder := app.linkInstructionBuilder.Create()
-	if ins.Save != nil {
-		save, err := app.linkAdapter.structToLink(*ins.Save)
-		if err != nil {
-			return nil, err
-		}
-
-		builder.WithSave(save)
-	}
-
-	if ins.Delete != "" {
-		pHash, err := app.hashAdapter.FromString(ins.Delete)
-		if err != nil {
-			return nil, err
-		}
-
-		builder.WithDelete(*pHash)
-	}
-
-	return builder.Now()
-}
-
-func (app *resourceTokenLayerAdapter) linkInstructionToStruct(
-	ins layers.LinkInstruction,
-) structs_layers.LinkInstruction {
-	output := structs_layers.LinkInstruction{}
-	if ins.IsSave() {
-		layer := app.linkAdapter.linkToStruct(ins.Save())
-		output.Save = &layer
-	}
-
-	if ins.IsDelete() {
-		output.Delete = string(ins.Delete())
-	}
-
-	return output
-}
-
-func (app *resourceTokenLayerAdapter) structToLayerInstruction(
-	ins structs_layers.LayerInstruction,
-) (layers.LayerInstruction, error) {
-	builder := app.layerInstructionBuilder.Create()
-	if ins.Save != nil {
-		save, err := app.structToLayer(*ins.Save)
-		if err != nil {
-			return nil, err
-		}
-
-		builder.WithSave(save)
-	}
-
-	if ins.Delete != "" {
-		pHash, err := app.hashAdapter.FromString(ins.Delete)
-		if err != nil {
-			return nil, err
-		}
-
-		builder.WithDelete(*pHash)
-	}
-
-	return builder.Now()
-}
-
-func (app *resourceTokenLayerAdapter) layerInstructionToStruct(
-	ins layers.LayerInstruction,
-) structs_layers.LayerInstruction {
-	output := structs_layers.LayerInstruction{}
-	if ins.IsSave() {
-		layer := app.layerToStruct(ins.Save())
-		output.Save = &layer
-	}
-
-	if ins.IsDelete() {
-		output.Delete = string(ins.Delete())
 	}
 
 	return output

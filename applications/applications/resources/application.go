@@ -2,7 +2,7 @@ package resources
 
 import (
 	"steve.care/network/domain/hash"
-	"steve.care/network/domain/resources"
+	"steve.care/network/domain/programs/blockchains/blocks/executions/actions/resources"
 )
 
 type application struct {

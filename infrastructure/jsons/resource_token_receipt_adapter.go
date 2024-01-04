@@ -5,7 +5,7 @@ import (
 	"steve.care/network/domain/receipts"
 	"steve.care/network/domain/receipts/commands"
 	"steve.care/network/domain/receipts/commands/results"
-	resources_receipts "steve.care/network/domain/resources/tokens/receipts"
+	resources_receipts "steve.care/network/domain/programs/blockchains/blocks/executions/actions/resources/tokens/receipts"
 	structs_tokens "steve.care/network/infrastructure/jsons/resources/tokens"
 	structs_receipts "steve.care/network/infrastructure/jsons/resources/tokens/receipts"
 )

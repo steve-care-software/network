@@ -1,7 +1,7 @@
 package jsons
 
 import (
-	"steve.care/network/domain/resources/tokens"
+	"steve.care/network/domain/programs/blockchains/blocks/executions/actions/resources/tokens"
 	structs_tokens "steve.care/network/infrastructure/jsons/resources/tokens"
 )
 
