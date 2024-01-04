@@ -6,31 +6,41 @@ type assignable struct {
 	hash     hash.Hash
 	bytes    Bytes
 	identity Identity
+	engine   Engine
 }
 
 func createAssignableWithBytes(
 	hash hash.Hash,
 	bytes Bytes,
 ) Assignable {
-	return createAssignableInternally(hash, bytes, nil)
+	return createAssignableInternally(hash, bytes, nil, nil)
 }
 
 func createAssignableWithIdentity(
 	hash hash.Hash,
 	identity Identity,
 ) Assignable {
-	return createAssignableInternally(hash, nil, identity)
+	return createAssignableInternally(hash, nil, identity, nil)
+}
+
+func createAssignableWithEngine(
+	hash hash.Hash,
+	engine Engine,
+) Assignable {
+	return createAssignableInternally(hash, nil, nil, engine)
 }
 
 func createAssignableInternally(
 	hash hash.Hash,
 	bytes Bytes,
 	identity Identity,
+	engine Engine,
 ) Assignable {
 	out := assignable{
 		hash:     hash,
 		bytes:    bytes,
 		identity: identity,
+		engine:   engine,
 	}
 
 	return &out
@@ -59,4 +69,14 @@ func (obj *assignable) IsIdentity() bool {
 // Identity returns the identity, if any
 func (obj *assignable) Identity() Identity {
 	return obj.identity
+}
+
+// IsEngine returns true if there is engine, false otherwise
+func (obj *assignable) IsEngine() bool {
+	return obj.engine != nil
+}
+
+// Engine returns the engine, if any
+func (obj *assignable) Engine() Engine {
+	return obj.engine
 }

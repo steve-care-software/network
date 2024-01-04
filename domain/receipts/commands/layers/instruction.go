@@ -8,8 +8,7 @@ type instruction struct {
 	raiseError uint
 	condition  Condition
 	assignment Assignment
-	link       LinkInstruction
-	layer      LayerInstruction
+	resource   InstructionResource
 }
 
 func createInstructionWithIsStop(
@@ -19,7 +18,6 @@ func createInstructionWithIsStop(
 		hash,
 		true,
 		0,
-		nil,
 		nil,
 		nil,
 		nil,
@@ -37,7 +35,6 @@ func createInstructionWithRaiseError(
 		nil,
 		nil,
 		nil,
-		nil,
 	)
 }
 
@@ -50,7 +47,6 @@ func createInstructionWithCondition(
 		false,
 		0,
 		condition,
-		nil,
 		nil,
 		nil,
 	)
@@ -67,13 +63,12 @@ func createInstructionWithAssignment(
 		nil,
 		assignment,
 		nil,
-		nil,
 	)
 }
 
-func createInstructionWithLink(
+func createInstructionWithResource(
 	hash hash.Hash,
-	link LinkInstruction,
+	resource InstructionResource,
 ) Instruction {
 	return createInstructionInternally(
 		hash,
@@ -81,23 +76,7 @@ func createInstructionWithLink(
 		0,
 		nil,
 		nil,
-		link,
-		nil,
-	)
-}
-
-func createInstructionWithLayer(
-	hash hash.Hash,
-	layer LayerInstruction,
-) Instruction {
-	return createInstructionInternally(
-		hash,
-		false,
-		0,
-		nil,
-		nil,
-		nil,
-		layer,
+		resource,
 	)
 }
 
@@ -107,8 +86,7 @@ func createInstructionInternally(
 	raiseError uint,
 	condition Condition,
 	assignment Assignment,
-	link LinkInstruction,
-	layer LayerInstruction,
+	resource InstructionResource,
 ) Instruction {
 	out := instruction{
 		hash:       hash,
@@ -116,8 +94,7 @@ func createInstructionInternally(
 		raiseError: raiseError,
 		condition:  condition,
 		assignment: assignment,
-		link:       link,
-		layer:      layer,
+		resource:   resource,
 	}
 
 	return &out
@@ -163,22 +140,12 @@ func (obj *instruction) Assignment() Assignment {
 	return obj.assignment
 }
 
-// IsLink returns true if link, false otherwise
-func (obj *instruction) IsLink() bool {
-	return obj.link != nil
+// IsResource returns true if resource, false otherwise
+func (obj *instruction) IsResource() bool {
+	return obj.resource != nil
 }
 
-// Link returns the link, if any
-func (obj *instruction) Link() LinkInstruction {
-	return obj.link
-}
-
-// IsLayer returns true if layer, false otherwise
-func (obj *instruction) IsLayer() bool {
-	return obj.layer != nil
-}
-
-// Layer returns the layer, if any
-func (obj *instruction) Layer() LayerInstruction {
-	return obj.layer
+// Resource returns the resource, if any
+func (obj *instruction) Resource() InstructionResource {
+	return obj.resource
 }

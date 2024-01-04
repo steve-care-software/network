@@ -1,10 +1,5 @@
 package layers
 
-import (
-	"steve.care/network/domain/hash"
-	"steve.care/network/domain/receipts/commands/layers/links"
-)
-
 // NewLayerWithInputForTests creates a new layer with input for tests
 func NewLayerWithInputForTests(instructions Instructions, output Output, input string) Layer {
 	ins, err := NewBuilder().Create().WithInstructions(instructions).WithOutput(output).WithInput(input).Now()
@@ -75,26 +70,6 @@ func NewInstructionsForTests(list []Instruction) Instructions {
 	return ins
 }
 
-// NewInstructionWithLayerInstructionForTests creates a new instruction with layerInstruction for tests
-func NewInstructionWithLayerInstructionForTests(layer LayerInstruction) Instruction {
-	ins, err := NewInstructionBuilder().Create().WithLayer(layer).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	return ins
-}
-
-// NewInstructionWithLinkInstructionForTests creates a new instruction with linkInstruction for tests
-func NewInstructionWithLinkInstructionForTests(link LinkInstruction) Instruction {
-	ins, err := NewInstructionBuilder().Create().WithLink(link).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	return ins
-}
-
 // NewInstructionWithAssignmentForTests creates a new instruction with assignment for tests
 func NewInstructionWithAssignmentForTests(assignment Assignment) Instruction {
 	ins, err := NewInstructionBuilder().Create().WithAssignment(assignment).Now()
@@ -128,46 +103,6 @@ func NewInstructionWithRaiseErrorForTests(raiseError uint) Instruction {
 // NewInstructionWithStopForTests creates a new instruction with stop for tests
 func NewInstructionWithStopForTests() Instruction {
 	ins, err := NewInstructionBuilder().Create().IsStop().Now()
-	if err != nil {
-		panic(err)
-	}
-
-	return ins
-}
-
-// NewLinkInstructionWithDeleteForTests creates a new link instructions with delete for tests
-func NewLinkInstructionWithDeleteForTests(del hash.Hash) LinkInstruction {
-	ins, err := NewLinkInstructionBuilder().Create().WithDelete(del).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	return ins
-}
-
-// NewLinkInstructionWithSaveForTests creates a new link instructions with save for tests
-func NewLinkInstructionWithSaveForTests(save links.Link) LinkInstruction {
-	ins, err := NewLinkInstructionBuilder().Create().WithSave(save).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	return ins
-}
-
-// NewLayerInstructionWithDeleteForTests creates a new layer instructions with delete for tests
-func NewLayerInstructionWithDeleteForTests(del hash.Hash) LayerInstruction {
-	ins, err := NewLayerInstructionBuilder().Create().WithDelete(del).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	return ins
-}
-
-// NewLayerInstructionWithSaveForTests creates a new layer instructions with save for tests
-func NewLayerInstructionWithSaveForTests(save Layer) LayerInstruction {
-	ins, err := NewLayerInstructionBuilder().Create().WithSave(save).Now()
 	if err != nil {
 		panic(err)
 	}

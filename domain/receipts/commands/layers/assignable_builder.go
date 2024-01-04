@@ -10,6 +10,7 @@ type assignableBuilder struct {
 	hashAdapter hash.Adapter
 	bytes       Bytes
 	identity    Identity
+	engine      Engine
 }
 
 func createAssignableBuilder(
@@ -19,6 +20,7 @@ func createAssignableBuilder(
 		hashAdapter: hashAdapter,
 		bytes:       nil,
 		identity:    nil,
+		engine:      nil,
 	}
 
 	return &out
@@ -43,6 +45,12 @@ func (app *assignableBuilder) WithIdentity(identity Identity) AssignableBuilder 
 	return app
 }
 
+// WithEngine adds an engine to the builder
+func (app *assignableBuilder) WithEngine(engine Engine) AssignableBuilder {
+	app.engine = engine
+	return app
+}
+
 // Now builds a new Assignable instance
 func (app *assignableBuilder) Now() (Assignable, error) {
 	data := [][]byte{}
@@ -56,6 +64,11 @@ func (app *assignableBuilder) Now() (Assignable, error) {
 		data = append(data, app.identity.Hash().Bytes())
 	}
 
+	if app.engine != nil {
+		data = append(data, []byte("engine"))
+		data = append(data, app.engine.Hash().Bytes())
+	}
+
 	if len(data) <= 0 {
 		return nil, errors.New("the Assignable is invalid")
 	}
@@ -67,6 +80,10 @@ func (app *assignableBuilder) Now() (Assignable, error) {
 
 	if app.bytes != nil {
 		return createAssignableWithBytes(*pHash, app.bytes), nil
+	}
+
+	if app.engine != nil {
+		return createAssignableWithEngine(*pHash, app.engine), nil
 	}
 
 	return createAssignableWithIdentity(*pHash, app.identity), nil

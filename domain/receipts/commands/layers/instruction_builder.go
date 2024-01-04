@@ -13,8 +13,7 @@ type instructionBuilder struct {
 	raiseError  uint
 	condition   Condition
 	assignment  Assignment
-	link        LinkInstruction
-	layer       LayerInstruction
+	resource    InstructionResource
 }
 
 func createInstructionBuilder(
@@ -26,8 +25,7 @@ func createInstructionBuilder(
 		raiseError:  0,
 		condition:   nil,
 		assignment:  nil,
-		link:        nil,
-		layer:       nil,
+		resource:    nil,
 	}
 
 	return &out
@@ -58,15 +56,9 @@ func (app *instructionBuilder) WithAssignment(assignment Assignment) Instruction
 	return app
 }
 
-// WithLink adds a link to the builder
-func (app *instructionBuilder) WithLink(link LinkInstruction) InstructionBuilder {
-	app.link = link
-	return app
-}
-
-// WithLayer adds a layer to the builder
-func (app *instructionBuilder) WithLayer(layer LayerInstruction) InstructionBuilder {
-	app.layer = layer
+// WithResource adds a resource to the builder
+func (app *instructionBuilder) WithResource(resource InstructionResource) InstructionBuilder {
+	app.resource = resource
 	return app
 }
 
@@ -98,14 +90,9 @@ func (app *instructionBuilder) Now() (Instruction, error) {
 		data = append(data, app.assignment.Hash().Bytes())
 	}
 
-	if app.link != nil {
-		data = append(data, []byte("link"))
-		data = append(data, app.link.Hash().Bytes())
-	}
-
-	if app.layer != nil {
-		data = append(data, []byte("layer"))
-		data = append(data, app.layer.Hash().Bytes())
+	if app.resource != nil {
+		data = append(data, []byte("resource"))
+		data = append(data, app.resource.Hash().Bytes())
 	}
 
 	if len(data) <= 0 {
@@ -129,12 +116,8 @@ func (app *instructionBuilder) Now() (Instruction, error) {
 		return createInstructionWithCondition(*pHash, app.condition), nil
 	}
 
-	if app.link != nil {
-		return createInstructionWithLink(*pHash, app.link), nil
-	}
-
-	if app.layer != nil {
-		return createInstructionWithLayer(*pHash, app.layer), nil
+	if app.resource != nil {
+		return createInstructionWithResource(*pHash, app.resource), nil
 	}
 
 	return createInstructionWithAssignment(*pHash, app.assignment), nil

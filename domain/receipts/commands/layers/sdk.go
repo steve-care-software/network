@@ -2,7 +2,6 @@ package layers
 
 import (
 	"steve.care/network/domain/hash"
-	"steve.care/network/domain/receipts/commands/layers/links"
 )
 
 // NewBuilder creates a new builder instance
@@ -45,23 +44,15 @@ func NewInstructionBuilder() InstructionBuilder {
 	)
 }
 
-// NewLinkInstructionBuilder creates a new link instruction builder
-func NewLinkInstructionBuilder() LinkInstructionBuilder {
+// NewInstructionResourceBuilder creates a new instruction resource builder
+func NewInstructionResourceBuilder() InstructionResourceBuilder {
 	hashAdapter := hash.NewAdapter()
-	return createLinkInstructionBuilder(
+	return createInstructionResourceBuilder(
 		hashAdapter,
 	)
 }
 
-// NewLayerInstructionBuilder creates a new layer instruction builder
-func NewLayerInstructionBuilder() LayerInstructionBuilder {
-	hashAdapter := hash.NewAdapter()
-	return createLayerInstructionBuilder(
-		hashAdapter,
-	)
-}
-
-// NewConditionBuildercreates a new condition builder
+// NewConditionBuilder creates a new condition builder
 func NewConditionBuilder() ConditionBuilder {
 	hashAdapter := hash.NewAdapter()
 	return createConditionBuilder(
@@ -81,6 +72,22 @@ func NewAssignmentBuilder() AssignmentBuilder {
 func NewAssignableBuilder() AssignableBuilder {
 	hashAdapter := hash.NewAdapter()
 	return createAssignableBuilder(
+		hashAdapter,
+	)
+}
+
+// NewEngineBuilder creates a new engine builder
+func NewEngineBuilder() EngineBuilder {
+	hashAdapter := hash.NewAdapter()
+	return createEngineBuilder(
+		hashAdapter,
+	)
+}
+
+// NewAssignableResourceBuilder creates a new assignable resource builder
+func NewAssignableResourceBuilder() AssignableResourceBuilder {
+	hashAdapter := hash.NewAdapter()
+	return createAssignableResourceBuilder(
 		hashAdapter,
 	)
 }
@@ -227,8 +234,7 @@ type InstructionBuilder interface {
 	WithRaiseError(raiseError uint) InstructionBuilder
 	WithCondition(condition Condition) InstructionBuilder
 	WithAssignment(assignment Assignment) InstructionBuilder
-	WithLink(link LinkInstruction) InstructionBuilder
-	WithLayer(layer LayerInstruction) InstructionBuilder
+	WithResource(resource InstructionResource) InstructionBuilder
 	IsStop() InstructionBuilder
 	Now() (Instruction, error)
 }
@@ -243,44 +249,25 @@ type Instruction interface {
 	Condition() Condition
 	IsAssignment() bool
 	Assignment() Assignment
-	IsLink() bool
-	Link() LinkInstruction
-	IsLayer() bool
-	Layer() LayerInstruction
+	IsResource() bool
+	Resource() InstructionResource
 }
 
-// LinkInstructionBuilder represents a link instruction builder
-type LinkInstructionBuilder interface {
-	Create() LinkInstructionBuilder
-	WithSave(save links.Link) LinkInstructionBuilder
-	WithDelete(delete hash.Hash) LinkInstructionBuilder
-	Now() (LinkInstruction, error)
+// InstructionResourceBuilder represents the instruction resource builder
+type InstructionResourceBuilder interface {
+	Create() InstructionResourceBuilder
+	WithSave(save string) InstructionResourceBuilder
+	WithDelete(del string) InstructionResourceBuilder
+	Now() (InstructionResource, error)
 }
 
-// LinkInstruction represents a link instruction
-type LinkInstruction interface {
+// InstructionResource represents an instruction resource
+type InstructionResource interface {
 	Hash() hash.Hash
 	IsSave() bool
-	Save() links.Link
+	Save() string
 	IsDelete() bool
-	Delete() hash.Hash
-}
-
-// LayerInstructionBuilder represents a layer instruction builder
-type LayerInstructionBuilder interface {
-	Create() LayerInstructionBuilder
-	WithSave(save Layer) LayerInstructionBuilder
-	WithDelete(delete hash.Hash) LayerInstructionBuilder
-	Now() (LayerInstruction, error)
-}
-
-// LayerInstruction represents a layer instruction
-type LayerInstruction interface {
-	Hash() hash.Hash
-	IsSave() bool
-	Save() Layer
-	IsDelete() bool
-	Delete() hash.Hash
+	Delete() string
 }
 
 // ConditionBuilder represents a condition builder
@@ -318,6 +305,7 @@ type AssignableBuilder interface {
 	Create() AssignableBuilder
 	WithBytes(bytes Bytes) AssignableBuilder
 	WithIdentity(identity Identity) AssignableBuilder
+	WithEngine(engine Engine) AssignableBuilder
 	Now() (Assignable, error)
 }
 
@@ -328,6 +316,53 @@ type Assignable interface {
 	Bytes() Bytes
 	IsIdentity() bool
 	Identity() Identity
+	IsEngine() bool
+	Engine() Engine
+}
+
+// EngineBuilder represents an engine builder
+type EngineBuilder interface {
+	Create() EngineBuilder
+	WithExecution(execution BytesReference) EngineBuilder
+	WithResource(resource AssignableResource) EngineBuilder
+	Now() (Engine, error)
+}
+
+// Engine represents an assignable engine
+type Engine interface {
+	Hash() hash.Hash
+	IsExecution() bool
+	Execution() BytesReference
+	IsResource() bool
+	Resource() AssignableResource
+}
+
+// AssignableResourceBuilder represents an assignable resource builder
+type AssignableResourceBuilder interface {
+	Create() AssignableResourceBuilder
+	WithCompile(compile BytesReference) AssignableResourceBuilder
+	WithDecompile(decompile string) AssignableResourceBuilder
+	WihAmountByQuery(amountByQuery BytesReference) AssignableResourceBuilder
+	WithRetrieveByQuery(retrieveByQuery BytesReference) AssignableResourceBuilder
+	WithRetrieveByHash(retrieveByHash BytesReference) AssignableResourceBuilder
+	IsAmount() AssignableResourceBuilder
+	Now() (AssignableResource, error)
+}
+
+// AssignableResource represents an assignable resource
+type AssignableResource interface {
+	Hash() hash.Hash
+	IsCompile() bool
+	Compile() BytesReference
+	IsDecompile() bool
+	Decompile() string
+	IsAmountByQuery() bool
+	AmountByQuery() BytesReference
+	IsRetrieveByQuery() bool
+	RetrieveByQuery() BytesReference
+	IsRetrieveByHash() bool
+	RetrieveByHash() BytesReference
+	IsAmount() bool
 }
 
 // BytesBuilder represents a bytes builder
