@@ -1,0 +1,74 @@
+package libraries
+
+import (
+	"steve.care/network/domain/hash"
+	"steve.care/network/domain/programs/logics/libraries/layers"
+	"steve.care/network/domain/programs/logics/libraries/layers/links"
+)
+
+type library struct {
+	hash   hash.Hash
+	layers layers.Layers
+	links  links.Links
+}
+
+func createLibraryWithLayers(
+	hash hash.Hash,
+	layers layers.Layers,
+) Library {
+	return createLibraryInternally(hash, layers, nil)
+}
+
+func createLibraryWithLinks(
+	hash hash.Hash,
+	links links.Links,
+) Library {
+	return createLibraryInternally(hash, nil, links)
+}
+
+func createLibraryWithLayersAndLinks(
+	hash hash.Hash,
+	layers layers.Layers,
+	links links.Links,
+) Library {
+	return createLibraryInternally(hash, layers, links)
+}
+
+func createLibraryInternally(
+	hash hash.Hash,
+	layers layers.Layers,
+	links links.Links,
+) Library {
+	out := library{
+		hash:   hash,
+		layers: layers,
+		links:  links,
+	}
+
+	return &out
+}
+
+// Hash returns the hash
+func (obj *library) Hash() hash.Hash {
+	return obj.hash
+}
+
+// HasLayers returns true if there is layers, false otherwise
+func (obj *library) HasLayers() bool {
+	return obj.layers != nil
+}
+
+// Layers returns the layers, if any
+func (obj *library) Layers() layers.Layers {
+	return obj.layers
+}
+
+// HasLinks returns true if there is links, false otherwise
+func (obj *library) HasLinks() bool {
+	return obj.links != nil
+}
+
+// Links returns the links, if any
+func (obj *library) Links() links.Links {
+	return obj.links
+}

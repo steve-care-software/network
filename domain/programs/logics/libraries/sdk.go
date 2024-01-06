@@ -6,6 +6,14 @@ import (
 	"steve.care/network/domain/programs/logics/libraries/layers/links"
 )
 
+// NewBuilder creates a new builder
+func NewBuilder() Builder {
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(
+		hashAdapter,
+	)
+}
+
 // Builder represents the library builder
 type Builder interface {
 	Create() Builder
