@@ -2,7 +2,9 @@ package programs
 
 import (
 	"steve.care/network/domain/credentials"
+	"steve.care/network/domain/hash"
 	"steve.care/network/domain/programs"
+	"steve.care/network/domain/programs/blockchains/blocks/executions"
 	"steve.care/network/domain/receipts"
 )
 
@@ -15,5 +17,12 @@ type Builder interface {
 
 // Application represents the program application
 type Application interface {
-	Execute(input []byte, program programs.Program, receipt receipts.Receipt) (receipts.Receipt, error)
+	Root() (programs.Program, error)
+	Children(path []hash.Hash) ([]hash.Hash, error)
+	Retrieve(path []hash.Hash) (programs.Program, error)
+	Insert(name string, description string) error
+	Update(program programs.Program, execution executions.Execution) error
+	Convert(receipt receipts.Receipt) (executions.Execution, error)
+	Delete(hash hash.Hash) error
+	Execute(input []byte, program programs.Program, context receipts.Receipt) (receipts.Receipt, error)
 }
