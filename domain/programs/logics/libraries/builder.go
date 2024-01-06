@@ -47,17 +47,16 @@ func (app *builder) WithLinks(links links.Links) Builder {
 
 // Now builds a new Library instance
 func (app *builder) Now() (Library, error) {
-	data := [][]byte{}
-	if app.layers != nil {
-		data = append(data, app.layers.Hash().Bytes())
+	if app.layers == nil {
+		return nil, errors.New("the layers is mandatory in order to build a Library instance")
+	}
+
+	data := [][]byte{
+		app.layers.Hash().Bytes(),
 	}
 
 	if app.links != nil {
 		data = append(data, app.links.Hash().Bytes())
-	}
-
-	if len(data) <= 0 {
-		return nil, errors.New("the Library is invalid")
 	}
 
 	pHash, err := app.hashAdapter.FromMultiBytes(data)
@@ -65,13 +64,9 @@ func (app *builder) Now() (Library, error) {
 		return nil, err
 	}
 
-	if app.layers != nil && app.links != nil {
-		return createLibraryWithLayersAndLinks(*pHash, app.layers, app.links), nil
+	if app.links != nil {
+		return createLibraryWithLinks(*pHash, app.layers, app.links), nil
 	}
 
-	if app.layers != nil {
-		return createLibraryWithLayers(*pHash, app.layers), nil
-	}
-
-	return createLibraryWithLinks(*pHash, app.links), nil
+	return createLibrary(*pHash, app.layers), nil
 }

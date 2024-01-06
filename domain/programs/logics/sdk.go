@@ -22,7 +22,6 @@ type Builder interface {
 type Logic interface {
 	Hash() hash.Hash
 	Entry() layers.Layer
-	HasLibrary() bool
 	Library() libraries.Library
 	HasSuites() bool
 	Suites() suites.Suites

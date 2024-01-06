@@ -25,7 +25,6 @@ type Builder interface {
 // Library represents the library
 type Library interface {
 	Hash() hash.Hash
-	HasLayers() bool
 	Layers() layers.Layers
 	HasLinks() bool
 	Links() links.Links

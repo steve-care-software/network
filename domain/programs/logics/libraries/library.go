@@ -12,7 +12,7 @@ type library struct {
 	links  links.Links
 }
 
-func createLibraryWithLayers(
+func createLibrary(
 	hash hash.Hash,
 	layers layers.Layers,
 ) Library {
@@ -20,13 +20,6 @@ func createLibraryWithLayers(
 }
 
 func createLibraryWithLinks(
-	hash hash.Hash,
-	links links.Links,
-) Library {
-	return createLibraryInternally(hash, nil, links)
-}
-
-func createLibraryWithLayersAndLinks(
 	hash hash.Hash,
 	layers layers.Layers,
 	links links.Links,
@@ -51,11 +44,6 @@ func createLibraryInternally(
 // Hash returns the hash
 func (obj *library) Hash() hash.Hash {
 	return obj.hash
-}
-
-// HasLayers returns true if there is layers, false otherwise
-func (obj *library) HasLayers() bool {
-	return obj.layers != nil
 }
 
 // Layers returns the layers, if any
