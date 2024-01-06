@@ -2,7 +2,7 @@ package programs
 
 import (
 	"steve.care/network/domain/hash"
-	"steve.care/network/domain/programs/blockchains"
+	"steve.care/network/domain/programs/blocks"
 	"steve.care/network/domain/programs/logics"
 )
 
@@ -12,7 +12,7 @@ type Builder interface {
 	WithName(name string) Builder
 	WithDescription(description string) Builder
 	WithLogic(logic logics.Logic) Builder
-	WithBlockchain(blockchain blockchains.Blockchain) Builder
+	WithHead(head blocks.Block) Builder
 	WithParent(parent Program) Builder
 	Now() (Program, error)
 }
@@ -22,8 +22,8 @@ type Program interface {
 	Hash() hash.Hash
 	Name() string
 	Description() string
-	HasBlockchain() bool
-	Blockchain() blockchains.Blockchain
+	HasHead() bool
+	Head() blocks.Block
 	HasLogic() bool
 	Logic() logics.Logic
 	HasParent() bool

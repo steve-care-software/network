@@ -2,7 +2,7 @@ package executions
 
 import (
 	"steve.care/network/domain/hash"
-	"steve.care/network/domain/programs/blockchains/blocks/executions/actions"
+	"steve.care/network/domain/programs/blocks/executions/actions"
 )
 
 type execution struct {

@@ -4,7 +4,7 @@ import (
 	"errors"
 
 	"steve.care/network/domain/hash"
-	"steve.care/network/domain/programs/blockchains/blocks/executions"
+	"steve.care/network/domain/programs/blocks/executions"
 )
 
 type builder struct {

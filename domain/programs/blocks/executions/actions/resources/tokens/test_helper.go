@@ -3,7 +3,7 @@ package tokens
 import (
 	"time"
 
-	"steve.care/network/domain/programs/blockchains/blocks/executions/actions/resources/tokens/layers"
+	"steve.care/network/domain/programs/blocks/executions/actions/resources/tokens/layers"
 )
 
 // NewTokenWithLayerForTests creates a new token with layer for tests

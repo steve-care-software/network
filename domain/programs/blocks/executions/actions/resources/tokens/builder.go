@@ -6,11 +6,11 @@ import (
 	"time"
 
 	"steve.care/network/domain/hash"
-	"steve.care/network/domain/programs/blockchains/blocks/executions/actions/resources/tokens/layers"
-	"steve.care/network/domain/programs/blockchains/blocks/executions/actions/resources/tokens/links"
-	"steve.care/network/domain/programs/blockchains/blocks/executions/actions/resources/tokens/queries"
-	"steve.care/network/domain/programs/blockchains/blocks/executions/actions/resources/tokens/receipts"
-	"steve.care/network/domain/programs/blockchains/blocks/executions/actions/resources/tokens/suites"
+	"steve.care/network/domain/programs/blocks/executions/actions/resources/tokens/layers"
+	"steve.care/network/domain/programs/blocks/executions/actions/resources/tokens/links"
+	"steve.care/network/domain/programs/blocks/executions/actions/resources/tokens/queries"
+	"steve.care/network/domain/programs/blocks/executions/actions/resources/tokens/receipts"
+	"steve.care/network/domain/programs/blocks/executions/actions/resources/tokens/suites"
 )
 
 type builder struct {

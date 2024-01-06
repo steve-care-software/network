@@ -2,7 +2,7 @@ package resources
 
 import (
 	"steve.care/network/domain/accounts/signers"
-	"steve.care/network/domain/programs/blockchains/blocks/executions/actions/resources/tokens"
+	"steve.care/network/domain/programs/blocks/executions/actions/resources/tokens"
 )
 
 // NewResourceForTests creates a new resource for tests
