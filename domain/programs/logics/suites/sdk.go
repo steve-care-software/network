@@ -13,6 +13,12 @@ func NewBuilder() Builder {
 	return createBuilder(hashAdapter)
 }
 
+// Suites represents suites
+type Suites interface {
+	Hash() hash.Hash
+	List() []Suite
+}
+
 // Builder represents a suite builder
 type Builder interface {
 	Create() Builder
