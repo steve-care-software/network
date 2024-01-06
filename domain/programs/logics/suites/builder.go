@@ -6,7 +6,7 @@ import (
 	"steve.care/network/domain/hash"
 	"steve.care/network/domain/programs/logics/libraries/layers"
 	"steve.care/network/domain/programs/logics/libraries/layers/links"
-	"steve.care/network/domain/suites/expectations"
+	"steve.care/network/domain/programs/logics/suites/expectations"
 )
 
 type builder struct {

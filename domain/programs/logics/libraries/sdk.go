@@ -6,6 +6,14 @@ import (
 	"steve.care/network/domain/programs/logics/libraries/layers/links"
 )
 
+// Builder represents the library builder
+type Builder interface {
+	Create() Builder
+	WithLayers(layers layers.Layers) Builder
+	WithLinks(links links.Links) Builder
+	Now() (Library, error)
+}
+
 // Library represents the library
 type Library interface {
 	Hash() hash.Hash

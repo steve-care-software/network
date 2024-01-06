@@ -2,8 +2,8 @@ package suites
 
 import (
 	"steve.care/network/domain/hash"
-	"steve.care/network/domain/suites"
-	"steve.care/network/domain/suites/expectations"
+	"steve.care/network/domain/programs/logics/suites"
+	"steve.care/network/domain/programs/logics/suites/expectations"
 )
 
 type suite struct {

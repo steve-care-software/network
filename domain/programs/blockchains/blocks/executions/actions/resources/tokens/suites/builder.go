@@ -3,8 +3,8 @@ package suites
 import (
 	"errors"
 
-	"steve.care/network/domain/suites"
-	"steve.care/network/domain/suites/expectations"
+	"steve.care/network/domain/programs/logics/suites"
+	"steve.care/network/domain/programs/logics/suites/expectations"
 )
 
 type builder struct {
