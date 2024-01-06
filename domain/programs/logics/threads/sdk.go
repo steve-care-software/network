@@ -7,6 +7,22 @@ import (
 	"steve.care/network/domain/programs/logics/libraries/layers"
 )
 
+// NewBuilder creates a new builder instance
+func NewBuilder() Builder {
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(
+		hashAdapter,
+	)
+}
+
+// NewThreadBuilder creates a new thread builder
+func NewThreadBuilder() ThreadBuilder {
+	hashAdapter := hash.NewAdapter()
+	return createThreadBuilder(
+		hashAdapter,
+	)
+}
+
 // Builder represents a threads builder
 type Builder interface {
 	Create() Builder

@@ -3,7 +3,6 @@ package widgets
 import (
 	"steve.care/network/domain/dashboards/widgets/viewports"
 	"steve.care/network/domain/hash"
-	"steve.care/network/domain/programs"
 )
 
 // Widgets represents widgets
@@ -17,6 +16,6 @@ type Widget interface {
 	Hash() hash.Hash
 	Title() string
 	Viewport() viewports.Viewport
-	Program() programs.Program
+	Program() hash.Hash
 	Input() []byte
 }
