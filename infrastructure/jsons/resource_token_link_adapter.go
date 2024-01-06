@@ -2,8 +2,8 @@ package jsons
 
 import (
 	"steve.care/network/domain/hash"
+	resources_links "steve.care/network/domain/programs/blocks/executions/actions/resources/tokens/links"
 	"steve.care/network/domain/programs/logics/libraries/layers/links"
-	resources_links "steve.care/network/domain/programs/blockchains/blocks/executions/actions/resources/tokens/links"
 	structs_tokens "steve.care/network/infrastructure/jsons/resources/tokens"
 	structs_links "steve.care/network/infrastructure/jsons/resources/tokens/links"
 )

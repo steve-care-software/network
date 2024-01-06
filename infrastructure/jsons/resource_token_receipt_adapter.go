@@ -2,10 +2,10 @@ package jsons
 
 import (
 	"steve.care/network/domain/accounts/signers"
+	resources_receipts "steve.care/network/domain/programs/blocks/executions/actions/resources/tokens/receipts"
 	"steve.care/network/domain/receipts"
 	"steve.care/network/domain/receipts/commands"
 	"steve.care/network/domain/receipts/commands/results"
-	resources_receipts "steve.care/network/domain/programs/blockchains/blocks/executions/actions/resources/tokens/receipts"
 	structs_tokens "steve.care/network/infrastructure/jsons/resources/tokens"
 	structs_receipts "steve.care/network/infrastructure/jsons/resources/tokens/receipts"
 )

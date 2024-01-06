@@ -7,10 +7,25 @@ import (
 	"steve.care/network/domain/programs/logics/suites/expectations"
 )
 
-// NewBuilder creates a new builder
+// NewBuilder creates a new builder instance
 func NewBuilder() Builder {
 	hashAdapter := hash.NewAdapter()
-	return createBuilder(hashAdapter)
+	return createBuilder(
+		hashAdapter,
+	)
+}
+
+// NewSuiteBuilder creates a new builder
+func NewSuiteBuilder() SuiteBuilder {
+	hashAdapter := hash.NewAdapter()
+	return createSuiteBuilder(hashAdapter)
+}
+
+// Builder represents suites builder
+type Builder interface {
+	Create() Builder
+	WithList(list []Suite) Builder
+	Now() (Suites, error)
 }
 
 // Suites represents suites
@@ -19,12 +34,12 @@ type Suites interface {
 	List() []Suite
 }
 
-// Builder represents a suite builder
-type Builder interface {
-	Create() Builder
-	WithOrigin(origin links.Origin) Builder
-	WithInput(input layers.Layer) Builder
-	WithExpectation(expectation expectations.Expectation) Builder
+// SuiteBuilder represents a suite builder
+type SuiteBuilder interface {
+	Create() SuiteBuilder
+	WithOrigin(origin links.Origin) SuiteBuilder
+	WithInput(input layers.Layer) SuiteBuilder
+	WithExpectation(expectation expectations.Expectation) SuiteBuilder
 	Now() (Suite, error)
 }
 

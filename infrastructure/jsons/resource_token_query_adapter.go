@@ -4,7 +4,7 @@ import (
 	"steve.care/network/domain/queries"
 	"steve.care/network/domain/queries/conditions"
 
-	resources_queries "steve.care/network/domain/programs/blockchains/blocks/executions/actions/resources/tokens/queries"
+	resources_queries "steve.care/network/domain/programs/blocks/executions/actions/resources/tokens/queries"
 	structs_tokens "steve.care/network/infrastructure/jsons/resources/tokens"
 	structs_queries "steve.care/network/infrastructure/jsons/resources/tokens/queries"
 )

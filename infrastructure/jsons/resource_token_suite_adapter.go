@@ -1,7 +1,7 @@
 package jsons
 
 import (
-	resources_suites "steve.care/network/domain/programs/blockchains/blocks/executions/actions/resources/tokens/suites"
+	resources_suites "steve.care/network/domain/programs/blocks/executions/actions/resources/tokens/suites"
 	"steve.care/network/domain/programs/logics/suites"
 	"steve.care/network/domain/programs/logics/suites/expectations"
 	structs_tokens "steve.care/network/infrastructure/jsons/resources/tokens"
@@ -12,7 +12,7 @@ type resourceTokenSuiteAdapter struct {
 	layerAdapter       *resourceTokenLayerAdapter
 	linkAdapter        *resourceTokenLinkAdapter
 	builder            resources_suites.Builder
-	suiteBuilder       suites.Builder
+	suiteBuilder       suites.SuiteBuilder
 	expectationBuilder expectations.Builder
 }
 
@@ -20,7 +20,7 @@ func createResourceTokenSuiteAdapter(
 	layerAdapter *resourceTokenLayerAdapter,
 	linkAdapter *resourceTokenLinkAdapter,
 	builder resources_suites.Builder,
-	suiteBuilder suites.Builder,
+	suiteBuilder suites.SuiteBuilder,
 	expectationBuilder expectations.Builder,
 ) *resourceTokenSuiteAdapter {
 	out := resourceTokenSuiteAdapter{
