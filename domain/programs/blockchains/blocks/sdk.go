@@ -5,6 +5,14 @@ import (
 	"steve.care/network/domain/programs/blockchains/blocks/executions"
 )
 
+// NewBuilder creates a new builder instance
+func NewBuilder() Builder {
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(
+		hashAdapter,
+	)
+}
+
 // Builder represents the block builder
 type Builder interface {
 	Create() Builder
