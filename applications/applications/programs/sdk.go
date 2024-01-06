@@ -18,11 +18,13 @@ type Builder interface {
 // Application represents the program application
 type Application interface {
 	Root() (programs.Program, error)
-	Children(path []hash.Hash) ([]hash.Hash, error)
-	Retrieve(path []hash.Hash) (programs.Program, error)
-	Insert(name string, description string) error
+	Children(spacesPath [][]string) ([][]string, error)
+	Revisions(spacesPath [][]string) ([]hash.Hash, error)
+	Retrieve(hash hash.Hash) (programs.Program, error)
+	Insert(space []string, description string) error
 	Update(program programs.Program, execution executions.Execution) error
 	Convert(receipt receipts.Receipt) (executions.Execution, error)
-	Delete(hash hash.Hash) error
+	Rewind(space []string) error
+	Delete(space []string) error
 	Execute(input []byte, program programs.Program, context receipts.Receipt) (receipts.Receipt, error)
 }
