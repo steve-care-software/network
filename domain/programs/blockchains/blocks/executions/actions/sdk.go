@@ -5,6 +5,22 @@ import (
 	"steve.care/network/domain/programs/blockchains/blocks/executions/actions/resources"
 )
 
+// NewBuilder creates a new builder instance
+func NewBuilder() Builder {
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(
+		hashAdapter,
+	)
+}
+
+// NewActionBuilder creates a new action builder
+func NewActionBuilder() ActionBuilder {
+	hashAdapter := hash.NewAdapter()
+	return createActionBuilder(
+		hashAdapter,
+	)
+}
+
 // Builder represents the actions builder
 type Builder interface {
 	Create() Builder
