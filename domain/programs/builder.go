@@ -10,7 +10,7 @@ import (
 
 type builder struct {
 	hashAdapter hash.Adapter
-	space       []string
+	name        string
 	description string
 	head        blocks.Block
 	logic       logics.Logic
@@ -22,7 +22,7 @@ func createBuilder(
 ) Builder {
 	out := builder{
 		hashAdapter: hashAdapter,
-		space:       nil,
+		name:        "",
 		description: "",
 		head:        nil,
 		logic:       nil,
@@ -39,9 +39,9 @@ func (app *builder) Create() Builder {
 	)
 }
 
-// WithSpace adds a space to the builder
-func (app *builder) WithSpace(space []string) Builder {
-	app.space = space
+// WithName adds a name to the builder
+func (app *builder) WithName(name string) Builder {
+	app.name = name
 	return app
 }
 
@@ -71,25 +71,8 @@ func (app *builder) WithParent(parent Program) Builder {
 
 // Now builds a new Program instance
 func (app *builder) Now() (Program, error) {
-	if app.space != nil && len(app.space) <= 0 {
-		app.space = nil
-	}
-
-	if app.space == nil {
-		return nil, errors.New("the space is mandatory in order to build a Program instance")
-	}
-
-	validSpace := []string{}
-	for _, oneSpace := range app.space {
-		if oneSpace == "" {
-			continue
-		}
-
-		validSpace = append(validSpace, oneSpace)
-	}
-
-	if len(validSpace) <= 0 {
-		return nil, errors.New("the space elements must NOT be empty in order to build a Program instance")
+	if app.name == "" {
+		return nil, errors.New("the name is mandatory in order to build a Program instance")
 	}
 
 	if app.description == "" {
@@ -97,11 +80,8 @@ func (app *builder) Now() (Program, error) {
 	}
 
 	data := [][]byte{
+		[]byte(app.name),
 		[]byte(app.description),
-	}
-
-	for _, oneSpace := range app.space {
-		data = append(data, []byte(oneSpace))
 	}
 
 	if app.head != nil {
@@ -122,32 +102,32 @@ func (app *builder) Now() (Program, error) {
 	}
 
 	if app.head != nil && app.logic != nil && app.parent != nil {
-		return createProgramWithHeadAndLogicAndParent(*pHash, validSpace, app.description, app.head, app.logic, app.parent), nil
+		return createProgramWithHeadAndLogicAndParent(*pHash, app.name, app.description, app.head, app.logic, app.parent), nil
 	}
 
 	if app.head != nil && app.logic != nil {
-		return createProgramWithHeadAndLogic(*pHash, validSpace, app.description, app.head, app.logic), nil
+		return createProgramWithHeadAndLogic(*pHash, app.name, app.description, app.head, app.logic), nil
 	}
 
 	if app.head != nil && app.parent != nil {
-		return createProgramWithHeadAndParent(*pHash, validSpace, app.description, app.head, app.parent), nil
+		return createProgramWithHeadAndParent(*pHash, app.name, app.description, app.head, app.parent), nil
 	}
 
 	if app.logic != nil && app.parent != nil {
-		return createProgramWithLogicAndParent(*pHash, validSpace, app.description, app.logic, app.parent), nil
+		return createProgramWithLogicAndParent(*pHash, app.name, app.description, app.logic, app.parent), nil
 	}
 
 	if app.head != nil {
-		return createProgramWithHead(*pHash, validSpace, app.description, app.head), nil
+		return createProgramWithHead(*pHash, app.name, app.description, app.head), nil
 	}
 
 	if app.logic != nil {
-		return createProgramWithLogic(*pHash, validSpace, app.description, app.logic), nil
+		return createProgramWithLogic(*pHash, app.name, app.description, app.logic), nil
 	}
 
 	if app.parent != nil {
-		return createProgramWithParent(*pHash, validSpace, app.description, app.parent), nil
+		return createProgramWithParent(*pHash, app.name, app.description, app.parent), nil
 	}
 
-	return createProgram(*pHash, validSpace, app.description), nil
+	return createProgram(*pHash, app.name, app.description), nil
 }

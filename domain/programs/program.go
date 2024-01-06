@@ -8,7 +8,7 @@ import (
 
 type program struct {
 	hash        hash.Hash
-	space       []string
+	name        string
 	description string
 	head        blocks.Block
 	logic       logics.Logic
@@ -17,83 +17,83 @@ type program struct {
 
 func createProgram(
 	hash hash.Hash,
-	space []string,
+	name string,
 	description string,
 ) Program {
-	return createProgramInternally(hash, space, description, nil, nil, nil)
+	return createProgramInternally(hash, name, description, nil, nil, nil)
 }
 
 func createProgramWithHead(
 	hash hash.Hash,
-	space []string,
+	name string,
 	description string,
 	head blocks.Block,
 ) Program {
-	return createProgramInternally(hash, space, description, head, nil, nil)
+	return createProgramInternally(hash, name, description, head, nil, nil)
 }
 
 func createProgramWithLogic(
 	hash hash.Hash,
-	space []string,
+	name string,
 	description string,
 	logic logics.Logic,
 ) Program {
-	return createProgramInternally(hash, space, description, nil, logic, nil)
+	return createProgramInternally(hash, name, description, nil, logic, nil)
 }
 
 func createProgramWithParent(
 	hash hash.Hash,
-	space []string,
+	name string,
 	description string,
 	parent Program,
 ) Program {
-	return createProgramInternally(hash, space, description, nil, nil, parent)
+	return createProgramInternally(hash, name, description, nil, nil, parent)
 }
 
 func createProgramWithHeadAndLogic(
 	hash hash.Hash,
-	space []string,
+	name string,
 	description string,
 	head blocks.Block,
 	logic logics.Logic,
 ) Program {
-	return createProgramInternally(hash, space, description, head, logic, nil)
+	return createProgramInternally(hash, name, description, head, logic, nil)
 }
 
 func createProgramWithHeadAndParent(
 	hash hash.Hash,
-	space []string,
+	name string,
 	description string,
 	head blocks.Block,
 	parent Program,
 ) Program {
-	return createProgramInternally(hash, space, description, head, nil, parent)
+	return createProgramInternally(hash, name, description, head, nil, parent)
 }
 
 func createProgramWithLogicAndParent(
 	hash hash.Hash,
-	space []string,
+	name string,
 	description string,
 	logic logics.Logic,
 	parent Program,
 ) Program {
-	return createProgramInternally(hash, space, description, nil, logic, nil)
+	return createProgramInternally(hash, name, description, nil, logic, nil)
 }
 
 func createProgramWithHeadAndLogicAndParent(
 	hash hash.Hash,
-	space []string,
+	name string,
 	description string,
 	head blocks.Block,
 	logic logics.Logic,
 	parent Program,
 ) Program {
-	return createProgramInternally(hash, space, description, head, logic, parent)
+	return createProgramInternally(hash, name, description, head, logic, parent)
 }
 
 func createProgramInternally(
 	hash hash.Hash,
-	space []string,
+	name string,
 	description string,
 	head blocks.Block,
 	logic logics.Logic,
@@ -101,7 +101,7 @@ func createProgramInternally(
 ) Program {
 	out := program{
 		hash:        hash,
-		space:       space,
+		name:        name,
 		description: description,
 		head:        head,
 		logic:       logic,
@@ -116,9 +116,9 @@ func (obj *program) Hash() hash.Hash {
 	return obj.hash
 }
 
-// Space returns the space
-func (obj *program) Space() []string {
-	return obj.space
+// Name returns the name
+func (obj *program) Name() string {
+	return obj.name
 }
 
 // Description returns the description
