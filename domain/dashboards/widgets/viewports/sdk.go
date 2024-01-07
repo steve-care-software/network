@@ -1,8 +1,6 @@
 package viewports
 
 import (
-	"steve.care/network/domain/dashboards/widgets/viewports/dimensions"
-	"steve.care/network/domain/dashboards/widgets/viewports/positions"
 	"steve.care/network/domain/hash"
 )
 
@@ -17,16 +15,14 @@ func NewBuilder() Builder {
 // Builder represents the viewport builder
 type Builder interface {
 	Create() Builder
-	WithLayer(layer uint) Builder
-	WithPosition(position positions.Position) Builder
-	WithDimension(dimension dimensions.Dimension) Builder
+	WithRow(row uint) Builder
+	WithHeight(height uint) Builder
 	Now() (Viewport, error)
 }
 
 // Viewport represents a viewport
 type Viewport interface {
 	Hash() hash.Hash
-	Layer() uint
-	Position() positions.Position
-	Dimension() dimensions.Dimension
+	Row() uint
+	Height() uint
 }

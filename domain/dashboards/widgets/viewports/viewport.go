@@ -1,29 +1,24 @@
 package viewports
 
 import (
-	"steve.care/network/domain/dashboards/widgets/viewports/dimensions"
-	"steve.care/network/domain/dashboards/widgets/viewports/positions"
 	"steve.care/network/domain/hash"
 )
 
 type viewport struct {
-	hash      hash.Hash
-	layer     uint
-	position  positions.Position
-	dimension dimensions.Dimension
+	hash   hash.Hash
+	row    uint
+	height uint
 }
 
 func createViewport(
 	hash hash.Hash,
-	layer uint,
-	position positions.Position,
-	dimension dimensions.Dimension,
+	row uint,
+	height uint,
 ) Viewport {
 	out := viewport{
-		hash:      hash,
-		layer:     layer,
-		position:  position,
-		dimension: dimension,
+		hash:   hash,
+		row:    row,
+		height: height,
 	}
 
 	return &out
@@ -34,17 +29,12 @@ func (obj *viewport) Hash() hash.Hash {
 	return obj.hash
 }
 
-// Layer returns the layer
-func (obj *viewport) Layer() uint {
-	return obj.layer
+// Row returns the row
+func (obj *viewport) Row() uint {
+	return obj.row
 }
 
-// Position returns the position
-func (obj *viewport) Position() positions.Position {
-	return obj.position
-}
-
-// Dimension returns the dimension
-func (obj *viewport) Dimension() dimensions.Dimension {
-	return obj.dimension
+// Height returns the height
+func (obj *viewport) Height() uint {
+	return obj.height
 }

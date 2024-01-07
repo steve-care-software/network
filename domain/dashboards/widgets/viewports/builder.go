@@ -4,16 +4,13 @@ import (
 	"errors"
 	"strconv"
 
-	"steve.care/network/domain/dashboards/widgets/viewports/dimensions"
-	"steve.care/network/domain/dashboards/widgets/viewports/positions"
 	"steve.care/network/domain/hash"
 )
 
 type builder struct {
 	hashAdapter hash.Adapter
-	pLayer      *uint
-	position    positions.Position
-	dimension   dimensions.Dimension
+	pRow        *uint
+	height      uint
 }
 
 func createBuilder(
@@ -21,9 +18,8 @@ func createBuilder(
 ) Builder {
 	out := builder{
 		hashAdapter: hashAdapter,
-		pLayer:      nil,
-		position:    nil,
-		dimension:   nil,
+		pRow:        nil,
+		height:      0,
 	}
 
 	return &out
@@ -36,47 +32,36 @@ func (app *builder) Create() Builder {
 	)
 }
 
-// WithLayer adds a layer to the builder
-func (app *builder) WithLayer(layer uint) Builder {
-	app.pLayer = &layer
+// WithRow adds a row to the builder
+func (app *builder) WithRow(row uint) Builder {
+	app.pRow = &row
 	return app
 }
 
-// WithPosition adds a position to the builder
-func (app *builder) WithPosition(position positions.Position) Builder {
-	app.position = position
-	return app
-}
-
-// WithDimension adds a dimension to the builder
-func (app *builder) WithDimension(dimension dimensions.Dimension) Builder {
-	app.dimension = dimension
+// WithHeight adds a height to the builder
+func (app *builder) WithHeight(height uint) Builder {
+	app.height = height
 	return app
 }
 
 // Now builds a new Viewport instance
 func (app *builder) Now() (Viewport, error) {
-	if app.pLayer == nil {
-		return nil, errors.New("the layer is mandatory in order to build a Viewport instance")
+	if app.pRow == nil {
+		return nil, errors.New("the row is mandatory in order to build a Viewport instance")
 	}
 
-	if app.position == nil {
-		return nil, errors.New("the position is mandatory in order to build a Viewport instance")
-	}
-
-	if app.dimension == nil {
-		return nil, errors.New("the dimension is mandatory in order to build a Viewport instance")
+	if app.height <= 0 {
+		return nil, errors.New("the height must be greater than zero (0) in order to build a Viewport instance")
 	}
 
 	pHash, err := app.hashAdapter.FromMultiBytes([][]byte{
-		[]byte(strconv.Itoa(int(*app.pLayer))),
-		app.position.Hash().Bytes(),
-		app.dimension.Hash().Bytes(),
+		[]byte(strconv.Itoa(int(*app.pRow))),
+		[]byte(strconv.Itoa(int(app.height))),
 	})
 
 	if err != nil {
 		return nil, err
 	}
 
-	return createViewport(*pHash, *app.pLayer, app.position, app.dimension), nil
+	return createViewport(*pHash, *app.pRow, app.height), nil
 }
