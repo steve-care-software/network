@@ -4,6 +4,14 @@ import (
 	"steve.care/network/domain/hash"
 )
 
+// NewBuilder creates a new builder
+func NewBuilder() Builder {
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(
+		hashAdapter,
+	)
+}
+
 // Builder represents the dimension builder
 type Builder interface {
 	Create() Builder
