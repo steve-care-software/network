@@ -3,6 +3,7 @@ package accounts
 import (
 	account_encryptors "steve.care/network/domain/accounts/encryptors"
 	"steve.care/network/domain/accounts/signers"
+	"steve.care/network/domain/accounts/workspaces"
 	"steve.care/network/domain/credentials"
 )
 
@@ -23,6 +24,7 @@ type Builder interface {
 	WithUsername(username string) Builder
 	WithEncryptor(encryptor account_encryptors.Encryptor) Builder
 	WithSigner(signer signers.Signer) Builder
+	WithWorkspace(workspace workspaces.Workspace) Builder
 	Now() (Account, error)
 }
 
@@ -31,6 +33,8 @@ type Account interface {
 	Username() string
 	Encryptor() account_encryptors.Encryptor
 	Signer() signers.Signer
+	HasWorkspace() bool
+	Workspace() workspaces.Workspace
 }
 
 // UpdateCriteriaBuilder represents an update criteria builder

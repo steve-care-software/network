@@ -5,10 +5,27 @@ import (
 	"steve.care/network/domain/hash"
 )
 
+// Builder represents the widgets builder
+type Builder interface {
+	Create() Builder
+	WithList(list []Widget) Builder
+	Now() (Widgets, error)
+}
+
 // Widgets represents widgets
 type Widgets interface {
 	Hash() hash.Hash
 	List() []Widget
+}
+
+// WidgetBuilder represents the widget builder
+type WidgetBuilder interface {
+	Create() WidgetBuilder
+	WithTitle(title string) WidgetBuilder
+	WithProgram(program hash.Hash) WidgetBuilder
+	WithInput(input []byte) WidgetBuilder
+	WithViewport(viewport viewports.Viewport) WidgetBuilder
+	Now() (Widget, error)
 }
 
 // Widget represents a dashboard widget

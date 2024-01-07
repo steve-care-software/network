@@ -5,12 +5,14 @@ import (
 
 	"steve.care/network/domain/accounts/encryptors"
 	"steve.care/network/domain/accounts/signers"
+	"steve.care/network/domain/accounts/workspaces"
 )
 
 type builder struct {
 	username  string
 	encryptor encryptors.Encryptor
 	signer    signers.Signer
+	workspace workspaces.Workspace
 }
 
 func createBuilder() Builder {
@@ -18,6 +20,7 @@ func createBuilder() Builder {
 		username:  "",
 		encryptor: nil,
 		signer:    nil,
+		workspace: nil,
 	}
 
 	return &out
@@ -46,6 +49,12 @@ func (app *builder) WithSigner(signer signers.Signer) Builder {
 	return app
 }
 
+// WithWorkspace adds a workspace to the builder
+func (app *builder) WithWorkspace(workspace workspaces.Workspace) Builder {
+	app.workspace = workspace
+	return app
+}
+
 // Now builds a new Account instance
 func (app *builder) Now() (Account, error) {
 	if app.username == "" {
@@ -58,6 +67,15 @@ func (app *builder) Now() (Account, error) {
 
 	if app.signer == nil {
 		return nil, errors.New("the signer is mandatory in order to build an Account instance")
+	}
+
+	if app.workspace != nil {
+		return createAccountWithWorkspace(
+			app.username,
+			app.encryptor,
+			app.signer,
+			app.workspace,
+		), nil
 	}
 
 	return createAccount(
