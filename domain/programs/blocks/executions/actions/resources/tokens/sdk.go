@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"steve.care/network/domain/hash"
+	"steve.care/network/domain/programs/blocks/executions/actions/resources/tokens/dashboards"
 	"steve.care/network/domain/programs/blocks/executions/actions/resources/tokens/layers"
 	"steve.care/network/domain/programs/blocks/executions/actions/resources/tokens/links"
 	"steve.care/network/domain/programs/blocks/executions/actions/resources/tokens/queries"
@@ -27,6 +28,7 @@ type Builder interface {
 	WithSuite(suite suites.Suite) Builder
 	WithReceipt(receipt receipts.Receipt) Builder
 	WithQuery(query queries.Query) Builder
+	WithDashboard(dashboard dashboards.Dashboard) Builder
 	CreatedOn(createdOn time.Time) Builder
 	Now() (Token, error)
 }
@@ -51,4 +53,6 @@ type Content interface {
 	Receipt() receipts.Receipt
 	IsQuery() bool
 	Query() queries.Query
+	IsDashboard() bool
+	Dashboard() dashboards.Dashboard
 }

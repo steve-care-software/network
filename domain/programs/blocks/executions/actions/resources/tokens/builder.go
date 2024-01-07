@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"steve.care/network/domain/hash"
+	"steve.care/network/domain/programs/blocks/executions/actions/resources/tokens/dashboards"
 	"steve.care/network/domain/programs/blocks/executions/actions/resources/tokens/layers"
 	"steve.care/network/domain/programs/blocks/executions/actions/resources/tokens/links"
 	"steve.care/network/domain/programs/blocks/executions/actions/resources/tokens/queries"
@@ -20,6 +21,7 @@ type builder struct {
 	suite       suites.Suite
 	receipt     receipts.Receipt
 	query       queries.Query
+	dashboard   dashboards.Dashboard
 	pCreatedOn  *time.Time
 }
 
@@ -33,6 +35,7 @@ func createBuilder(
 		suite:       nil,
 		receipt:     nil,
 		query:       nil,
+		dashboard:   nil,
 		pCreatedOn:  nil,
 	}
 
@@ -76,6 +79,12 @@ func (app *builder) WithQuery(query queries.Query) Builder {
 	return app
 }
 
+// WithDashboard adds a dashboard to the builder
+func (app *builder) WithDashboard(dashboard dashboards.Dashboard) Builder {
+	app.dashboard = dashboard
+	return app
+}
+
 // CreatedOn adds a creation time to the builder
 func (app *builder) CreatedOn(createdOn time.Time) Builder {
 	app.pCreatedOn = &createdOn
@@ -116,6 +125,11 @@ func (app *builder) Now() (Token, error) {
 	if app.query != nil {
 		content = createContentWithQuery(app.query)
 		data = append(data, app.query.Hash().Bytes())
+	}
+
+	if app.dashboard != nil {
+		content = createContentWithDashboard(app.dashboard)
+		data = append(data, app.dashboard.Hash().Bytes())
 	}
 
 	if content == nil {

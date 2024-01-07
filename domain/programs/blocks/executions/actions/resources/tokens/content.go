@@ -2,6 +2,7 @@ package tokens
 
 import (
 	"steve.care/network/domain/hash"
+	"steve.care/network/domain/programs/blocks/executions/actions/resources/tokens/dashboards"
 	"steve.care/network/domain/programs/blocks/executions/actions/resources/tokens/layers"
 	"steve.care/network/domain/programs/blocks/executions/actions/resources/tokens/links"
 	"steve.care/network/domain/programs/blocks/executions/actions/resources/tokens/queries"
@@ -10,11 +11,12 @@ import (
 )
 
 type content struct {
-	layer   layers.Layer
-	link    links.Link
-	suite   suites.Suite
-	receipt receipts.Receipt
-	query   queries.Query
+	layer     layers.Layer
+	link      links.Link
+	suite     suites.Suite
+	receipt   receipts.Receipt
+	query     queries.Query
+	dashboard dashboards.Dashboard
 }
 
 func createContentWithLayer(
@@ -22,6 +24,7 @@ func createContentWithLayer(
 ) Content {
 	return createContentInternally(
 		layer,
+		nil,
 		nil,
 		nil,
 		nil,
@@ -38,6 +41,7 @@ func createContentWithLink(
 		nil,
 		nil,
 		nil,
+		nil,
 	)
 }
 
@@ -48,6 +52,7 @@ func createContentWithSuite(
 		nil,
 		nil,
 		suite,
+		nil,
 		nil,
 		nil,
 	)
@@ -62,6 +67,7 @@ func createContentWithReceipt(
 		nil,
 		receipt,
 		nil,
+		nil,
 	)
 }
 
@@ -74,6 +80,20 @@ func createContentWithQuery(
 		nil,
 		nil,
 		query,
+		nil,
+	)
+}
+
+func createContentWithDashboard(
+	dashboard dashboards.Dashboard,
+) Content {
+	return createContentInternally(
+		nil,
+		nil,
+		nil,
+		nil,
+		nil,
+		dashboard,
 	)
 }
 
@@ -83,13 +103,15 @@ func createContentInternally(
 	suite suites.Suite,
 	receipt receipts.Receipt,
 	query queries.Query,
+	dashboard dashboards.Dashboard,
 ) Content {
 	out := content{
-		layer:   layer,
-		link:    link,
-		suite:   suite,
-		receipt: receipt,
-		query:   query,
+		layer:     layer,
+		link:      link,
+		suite:     suite,
+		receipt:   receipt,
+		query:     query,
+		dashboard: dashboard,
 	}
 
 	return &out
@@ -148,4 +170,14 @@ func (obj *content) IsQuery() bool {
 // Query returns the query, if any
 func (obj *content) Query() queries.Query {
 	return obj.query
+}
+
+// IsDashboard returns true if there is a query, false otherwise
+func (obj *content) IsDashboard() bool {
+	return obj.dashboard != nil
+}
+
+// Dashboard returns the dashboard, if any
+func (obj *content) Dashboard() dashboards.Dashboard {
+	return obj.dashboard
 }
