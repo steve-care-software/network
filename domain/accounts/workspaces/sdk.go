@@ -4,6 +4,11 @@ import (
 	"steve.care/network/domain/dashboards"
 )
 
+// NewBuilder creates a new builder instance
+func NewBuilder() Builder {
+	return createBuilder()
+}
+
 // Builder represents the workspace builder
 type Builder interface {
 	Create() Builder
