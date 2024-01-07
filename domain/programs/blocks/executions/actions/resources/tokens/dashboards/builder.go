@@ -6,8 +6,6 @@ import (
 	"steve.care/network/domain/dashboards"
 	"steve.care/network/domain/dashboards/widgets"
 	"steve.care/network/domain/dashboards/widgets/viewports"
-	"steve.care/network/domain/dashboards/widgets/viewports/dimensions"
-	"steve.care/network/domain/dashboards/widgets/viewports/positions"
 )
 
 type builder struct {
@@ -15,8 +13,6 @@ type builder struct {
 	widgets   widgets.Widgets
 	widget    widgets.Widget
 	viewport  viewports.Viewport
-	dimension dimensions.Dimension
-	position  positions.Position
 }
 
 func createBuilder() Builder {
@@ -25,8 +21,6 @@ func createBuilder() Builder {
 		widgets:   nil,
 		widget:    nil,
 		viewport:  nil,
-		dimension: nil,
-		position:  nil,
 	}
 
 	return &out
@@ -61,18 +55,6 @@ func (app *builder) WithViewport(viewport viewports.Viewport) Builder {
 	return app
 }
 
-// WithDimension adds a dimension to the builder
-func (app *builder) WithDimension(dimension dimensions.Dimension) Builder {
-	app.dimension = dimension
-	return app
-}
-
-// WithPosition adds a position to the builder
-func (app *builder) WithPosition(position positions.Position) Builder {
-	app.position = position
-	return app
-}
-
 // Now builds a new Dashboard instance
 func (app *builder) Now() (Dashboard, error) {
 	if app.dashboard != nil {
@@ -89,14 +71,6 @@ func (app *builder) Now() (Dashboard, error) {
 
 	if app.viewport != nil {
 		return createDashboardWithViewport(app.viewport), nil
-	}
-
-	if app.dimension != nil {
-		return createDashboardWithDimension(app.dimension), nil
-	}
-
-	if app.position != nil {
-		return createDashboardWithPosition(app.position), nil
 	}
 
 	return nil, errors.New("the Dashboard is invalid")

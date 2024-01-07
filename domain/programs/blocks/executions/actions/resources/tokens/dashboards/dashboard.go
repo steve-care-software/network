@@ -4,8 +4,6 @@ import (
 	"steve.care/network/domain/dashboards"
 	"steve.care/network/domain/dashboards/widgets"
 	"steve.care/network/domain/dashboards/widgets/viewports"
-	"steve.care/network/domain/dashboards/widgets/viewports/dimensions"
-	"steve.care/network/domain/dashboards/widgets/viewports/positions"
 	"steve.care/network/domain/hash"
 )
 
@@ -14,44 +12,30 @@ type dashboard struct {
 	widgets   widgets.Widgets
 	widget    widgets.Widget
 	viewport  viewports.Viewport
-	dimension dimensions.Dimension
-	position  positions.Position
 }
 
 func createDashboardWithDashboard(
 	dashboardIns dashboards.Dashboard,
 ) Dashboard {
-	return createDashboardInternally(dashboardIns, nil, nil, nil, nil, nil)
+	return createDashboardInternally(dashboardIns, nil, nil, nil)
 }
 
 func createDashboardWithWidgets(
 	widgets widgets.Widgets,
 ) Dashboard {
-	return createDashboardInternally(nil, widgets, nil, nil, nil, nil)
+	return createDashboardInternally(nil, widgets, nil, nil)
 }
 
 func createDashboardWithWidget(
 	widget widgets.Widget,
 ) Dashboard {
-	return createDashboardInternally(nil, nil, widget, nil, nil, nil)
+	return createDashboardInternally(nil, nil, widget, nil)
 }
 
 func createDashboardWithViewport(
 	viewport viewports.Viewport,
 ) Dashboard {
-	return createDashboardInternally(nil, nil, nil, viewport, nil, nil)
-}
-
-func createDashboardWithDimension(
-	dimension dimensions.Dimension,
-) Dashboard {
-	return createDashboardInternally(nil, nil, nil, nil, dimension, nil)
-}
-
-func createDashboardWithPosition(
-	position positions.Position,
-) Dashboard {
-	return createDashboardInternally(nil, nil, nil, nil, nil, position)
+	return createDashboardInternally(nil, nil, nil, viewport)
 }
 
 func createDashboardInternally(
@@ -59,16 +43,12 @@ func createDashboardInternally(
 	widgets widgets.Widgets,
 	widget widgets.Widget,
 	viewport viewports.Viewport,
-	dimension dimensions.Dimension,
-	position positions.Position,
 ) Dashboard {
 	out := dashboard{
 		dashboard: dashboardIns,
 		widgets:   widgets,
 		widget:    widget,
 		viewport:  viewport,
-		dimension: dimension,
-		position:  position,
 	}
 
 	return &out
@@ -88,15 +68,7 @@ func (obj *dashboard) Hash() hash.Hash {
 		return obj.widget.Hash()
 	}
 
-	if obj.IsViewport() {
-		return obj.viewport.Hash()
-	}
-
-	if obj.IsDimension() {
-		return obj.dimension.Hash()
-	}
-
-	return obj.position.Hash()
+	return obj.viewport.Hash()
 }
 
 // IsDashboard returns true if there is a dashboard, false otherwise
@@ -137,24 +109,4 @@ func (obj *dashboard) IsViewport() bool {
 // Viewport returns the viewport, if any
 func (obj *dashboard) Viewport() viewports.Viewport {
 	return obj.viewport
-}
-
-// IsDimension returns true if there is a dimension, false otherwise
-func (obj *dashboard) IsDimension() bool {
-	return obj.dimension != nil
-}
-
-// Dimension returns the dimension, if any
-func (obj *dashboard) Dimension() dimensions.Dimension {
-	return obj.dimension
-}
-
-// IsPosition returns true if there is a position, false otherwise
-func (obj *dashboard) IsPosition() bool {
-	return obj.position != nil
-}
-
-// Position returns the position, if any
-func (obj *dashboard) Position() positions.Position {
-	return obj.position
 }

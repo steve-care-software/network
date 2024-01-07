@@ -4,8 +4,6 @@ import (
 	"steve.care/network/domain/dashboards"
 	"steve.care/network/domain/dashboards/widgets"
 	"steve.care/network/domain/dashboards/widgets/viewports"
-	"steve.care/network/domain/dashboards/widgets/viewports/dimensions"
-	"steve.care/network/domain/dashboards/widgets/viewports/positions"
 	"steve.care/network/domain/hash"
 )
 
@@ -21,8 +19,6 @@ type Builder interface {
 	WithWidgets(widgets widgets.Widgets) Builder
 	WithWidget(widget widgets.Widget) Builder
 	WithViewport(viewport viewports.Viewport) Builder
-	WithDimension(dimension dimensions.Dimension) Builder
-	WithPosition(position positions.Position) Builder
 	Now() (Dashboard, error)
 }
 
@@ -37,8 +33,4 @@ type Dashboard interface {
 	Widget() widgets.Widget
 	IsViewport() bool
 	Viewport() viewports.Viewport
-	IsDimension() bool
-	Dimension() dimensions.Dimension
-	IsPosition() bool
-	Position() positions.Position
 }
