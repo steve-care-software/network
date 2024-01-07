@@ -6,7 +6,6 @@ type failure struct {
 	hash            hash.Hash
 	code            uint
 	isRaisedInLayer bool
-	pIndex          *uint
 }
 
 func createFailure(
@@ -14,29 +13,18 @@ func createFailure(
 	code uint,
 	isRaisedInLayer bool,
 ) Failure {
-	return createFailureInternally(hash, code, isRaisedInLayer, nil)
-}
-
-func createFailureWithIndex(
-	hash hash.Hash,
-	code uint,
-	isRaisedInLayer bool,
-	pIndex *uint,
-) Failure {
-	return createFailureInternally(hash, code, isRaisedInLayer, pIndex)
+	return createFailureInternally(hash, code, isRaisedInLayer)
 }
 
 func createFailureInternally(
 	hash hash.Hash,
 	code uint,
 	isRaisedInLayer bool,
-	pIndex *uint,
 ) Failure {
 	out := failure{
 		hash:            hash,
 		code:            code,
 		isRaisedInLayer: isRaisedInLayer,
-		pIndex:          pIndex,
 	}
 
 	return &out
@@ -55,14 +43,4 @@ func (obj *failure) Code() uint {
 // IsRaisedInLayer returns true if raisedInLayer, false otherwise
 func (obj *failure) IsRaisedInLayer() bool {
 	return obj.isRaisedInLayer
-}
-
-// HasIndex returns true if there is an index, false otherwise
-func (obj *failure) HasIndex() bool {
-	return obj.pIndex != nil
-}
-
-// Index returns the index, if any
-func (obj *failure) Index() *uint {
-	return obj.pIndex
 }

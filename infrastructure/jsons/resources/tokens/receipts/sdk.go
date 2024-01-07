@@ -33,9 +33,8 @@ type Success struct {
 
 // Failure represents a failure
 type Failure struct {
-	Code          uint  `json:"code"`
-	RaisedInLayer bool  `json:"raised_in_layer"`
-	Index         *uint `json:"index"`
+	Code          uint `json:"code"`
+	RaisedInLayer bool `json:"raised_in_layer"`
 }
 
 // Link represents a link

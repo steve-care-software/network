@@ -342,10 +342,6 @@ func (app *resourceTokenReceiptAdapter) failureToStruct(
 		RaisedInLayer: ins.IsRaisedInLayer(),
 	}
 
-	if ins.HasIndex() {
-		output.Index = ins.Index()
-	}
-
 	return output
 }
 
@@ -357,10 +353,6 @@ func (app *resourceTokenReceiptAdapter) structToFailure(
 
 	if ins.RaisedInLayer {
 		builder.IsRaisedInLayer()
-	}
-
-	if ins.Index != nil {
-		builder.WithIndex(*ins.Index)
 	}
 
 	return builder.Now()

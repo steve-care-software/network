@@ -11,7 +11,6 @@ type failureBuilder struct {
 	hashAdapter     hash.Adapter
 	code            uint
 	isRaisedInLayer bool
-	pIndex          *uint
 }
 
 func createFailureBuilder(
@@ -21,7 +20,6 @@ func createFailureBuilder(
 		hashAdapter:     hashAdapter,
 		code:            0,
 		isRaisedInLayer: false,
-		pIndex:          nil,
 	}
 
 	return &out
@@ -32,12 +30,6 @@ func (app *failureBuilder) Create() FailureBuilder {
 	return createFailureBuilder(
 		app.hashAdapter,
 	)
-}
-
-// WithIndex adds an index to the builder
-func (app *failureBuilder) WithIndex(index uint) FailureBuilder {
-	app.pIndex = &index
-	return app
 }
 
 // WithCode adds a code to the builder
@@ -63,22 +55,13 @@ func (app *failureBuilder) Now() (Failure, error) {
 		isRaisedInLayer = "true"
 	}
 
-	data := [][]byte{
+	pHash, err := app.hashAdapter.FromMultiBytes([][]byte{
 		[]byte(strconv.Itoa(int(app.code))),
 		[]byte(isRaisedInLayer),
-	}
+	})
 
-	if app.pIndex != nil {
-		data = append(data, []byte(strconv.Itoa(int(*app.pIndex))))
-	}
-
-	pHash, err := app.hashAdapter.FromMultiBytes(data)
 	if err != nil {
 		return nil, err
-	}
-
-	if app.pIndex != nil {
-		return createFailureWithIndex(*pHash, app.code, app.isRaisedInLayer, app.pIndex), nil
 	}
 
 	return createFailure(*pHash, app.code, app.isRaisedInLayer), nil

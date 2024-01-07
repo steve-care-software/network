@@ -1,6 +1,8 @@
 package commands
 
 import (
+	"errors"
+
 	"steve.care/network/domain/hash"
 )
 
@@ -37,6 +39,10 @@ func (app *builder) WithList(list []Command) Builder {
 func (app *builder) Now() (Commands, error) {
 	if app.list != nil && len(app.list) <= 0 {
 		app.list = nil
+	}
+
+	if app.list == nil {
+		return nil, errors.New("there must be at least 1 Command in order to build a Commands instance")
 	}
 
 	data := [][]byte{}
