@@ -5,6 +5,20 @@ import (
 	"steve.care/network/domain/hash"
 )
 
+// NewBuilder creates a new builder instance
+func NewBuilder() Builder {
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(
+		hashAdapter,
+	)
+}
+
+// NewDashboardBuilder creates a new dashboard builder
+func NewDashboardBuilder() DashboardBuilder {
+	hashAdapter := hash.NewAdapter()
+	return createDashboardBuilder(hashAdapter)
+}
+
 // Builder represents the dashboards builder
 type Builder interface {
 	Create() Builder
