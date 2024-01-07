@@ -46,5 +46,5 @@ func (obj *relationalOperator) IsAnd() bool {
 
 // IsOr returns true if or, false otherwise
 func (obj *relationalOperator) IsOr() bool {
-	return obj.isAnd
+	return obj.isOr
 }

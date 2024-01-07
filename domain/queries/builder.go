@@ -67,7 +67,7 @@ func (app *builder) Now() (Query, error) {
 		app.condition.Hash().Bytes(),
 	}
 
-	if app.fields != nil && len(app.fields) <= 0 {
+	if app.fields != nil && len(app.fields) > 0 {
 		for _, oneField := range app.fields {
 			data = append(data, []byte(oneField))
 		}
@@ -78,7 +78,7 @@ func (app *builder) Now() (Query, error) {
 		return nil, err
 	}
 
-	if app.fields != nil && len(app.fields) <= 0 {
+	if app.fields != nil && len(app.fields) > 0 {
 		return createQueryWithFields(
 			*pHash,
 			app.entity,

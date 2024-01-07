@@ -75,21 +75,6 @@ type Condition interface {
 	Element() Element
 }
 
-// PointerBuilder represents a pointer builder
-type PointerBuilder interface {
-	Create() PointerBuilder
-	WithEntity(entity string) PointerBuilder
-	WithField(field string) PointerBuilder
-	Now() (Pointer, error)
-}
-
-// Pointer represents a field pointer
-type Pointer interface {
-	Hash() hash.Hash
-	Entity() string
-	Field() string
-}
-
 // ElementBuilder represents an element builder
 type ElementBuilder interface {
 	Create() ElementBuilder
@@ -122,6 +107,21 @@ type Resource interface {
 	Field() Pointer
 	IsValue() bool
 	Value() interface{}
+}
+
+// PointerBuilder represents a pointer builder
+type PointerBuilder interface {
+	Create() PointerBuilder
+	WithEntity(entity string) PointerBuilder
+	WithField(field string) PointerBuilder
+	Now() (Pointer, error)
+}
+
+// Pointer represents a field pointer
+type Pointer interface {
+	Hash() hash.Hash
+	Entity() string
+	Field() string
 }
 
 // OperatorBuilder represents an operator builder

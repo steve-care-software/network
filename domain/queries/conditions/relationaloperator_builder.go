@@ -17,8 +17,8 @@ func createRelationalOperatorBuilder(
 ) RelationalOperatorBuilder {
 	out := relationalOperatorBuilder{
 		hashAdapter: hashAdapter,
-		isAnd:       true,
-		isOr:        true,
+		isAnd:       false,
+		isOr:        false,
 	}
 
 	return &out

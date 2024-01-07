@@ -1,6 +1,10 @@
 package conditions
 
-import "steve.care/network/domain/hash"
+import (
+	"errors"
+
+	"steve.care/network/domain/hash"
+)
 
 type integerOperatorBuilder struct {
 	hashAdapter   hash.Adapter
@@ -52,16 +56,24 @@ func (app *integerOperatorBuilder) Now() (IntegerOperator, error) {
 	isSmallerThan := "false"
 	isBiggerThan := "false"
 	isEqual := "false"
+	isValid := false
 	if app.isSmallerThan {
 		isSmallerThan = "true"
+		isValid = true
 	}
 
 	if app.isBiggerThan {
 		isBiggerThan = "true"
+		isValid = true
 	}
 
 	if app.isEqual {
 		isEqual = "true"
+		isValid = true
+	}
+
+	if !isValid {
+		return nil, errors.New("the IntegerOperator is invalid")
 	}
 
 	pHash, err := app.hashAdapter.FromMultiBytes([][]byte{
@@ -90,9 +102,5 @@ func (app *integerOperatorBuilder) Now() (IntegerOperator, error) {
 		return createIntegerOperatorWithBiggerThan(*pHash), nil
 	}
 
-	if app.isEqual {
-		return createIntegerOperatorWithEqual(*pHash), nil
-	}
-
-	return createIntegerOperator(*pHash), nil
+	return createIntegerOperatorWithEqual(*pHash), nil
 }

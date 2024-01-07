@@ -9,17 +9,6 @@ type integerOperator struct {
 	isEqual       bool
 }
 
-func createIntegerOperator(
-	hash hash.Hash,
-) IntegerOperator {
-	return createIntegerOperatorInternally(
-		hash,
-		false,
-		false,
-		false,
-	)
-}
-
 func createIntegerOperatorWithSmallerThan(
 	hash hash.Hash,
 ) IntegerOperator {
