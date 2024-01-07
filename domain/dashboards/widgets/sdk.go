@@ -15,7 +15,8 @@ type Widgets interface {
 type Widget interface {
 	Hash() hash.Hash
 	Title() string
-	Viewport() viewports.Viewport
 	Program() hash.Hash
 	Input() []byte
+	HasViewport() bool
+	Viewport() viewports.Viewport
 }
