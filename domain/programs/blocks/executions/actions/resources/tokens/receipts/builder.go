@@ -82,7 +82,7 @@ func (app *builder) Now() (Receipt, error) {
 	}
 
 	if app.result != nil {
-		return createReceiptWithReceipt(app.receipt), nil
+		return createReceiptWithResult(app.result), nil
 	}
 
 	if app.success != nil {

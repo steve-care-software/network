@@ -124,6 +124,14 @@ func (obj *receipt) Hash() hash.Hash {
 		return obj.command.Hash()
 	}
 
+	if obj.IsSuccess() {
+		return obj.success.Hash()
+	}
+
+	if obj.IsFailure() {
+		return obj.failure.Hash()
+	}
+
 	return obj.link.Hash()
 }
 
