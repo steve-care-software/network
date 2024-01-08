@@ -7,40 +7,44 @@ import (
 )
 
 type builder struct {
-	layer           layers.Layer
-	output          layers.Output
-	kind            layers.Kind
-	instruction     layers.Instruction
-	condition       layers.Condition
-	assignment      layers.Assignment
-	assignable      layers.Assignable
-	bytes           layers.Bytes
-	identity        layers.Identity
-	encryptor       layers.Encryptor
-	signer          layers.Signer
-	signatureVerify layers.SignatureVerify
-	voteVerify      layers.VoteVerify
-	vote            layers.Vote
-	bytesReference  layers.BytesReference
+	layer              layers.Layer
+	output             layers.Output
+	kind               layers.Kind
+	instruction        layers.Instruction
+	condition          layers.Condition
+	assignment         layers.Assignment
+	assignable         layers.Assignable
+	engine             layers.Engine
+	assignableResource layers.AssignableResource
+	bytes              layers.Bytes
+	identity           layers.Identity
+	encryptor          layers.Encryptor
+	signer             layers.Signer
+	signatureVerify    layers.SignatureVerify
+	voteVerify         layers.VoteVerify
+	vote               layers.Vote
+	bytesReference     layers.BytesReference
 }
 
 func createBuilder() Builder {
 	out := builder{
-		layer:           nil,
-		output:          nil,
-		kind:            nil,
-		instruction:     nil,
-		condition:       nil,
-		assignment:      nil,
-		assignable:      nil,
-		bytes:           nil,
-		identity:        nil,
-		encryptor:       nil,
-		signer:          nil,
-		signatureVerify: nil,
-		voteVerify:      nil,
-		vote:            nil,
-		bytesReference:  nil,
+		layer:              nil,
+		output:             nil,
+		kind:               nil,
+		instruction:        nil,
+		condition:          nil,
+		assignment:         nil,
+		assignable:         nil,
+		engine:             nil,
+		assignableResource: nil,
+		bytes:              nil,
+		identity:           nil,
+		encryptor:          nil,
+		signer:             nil,
+		signatureVerify:    nil,
+		voteVerify:         nil,
+		vote:               nil,
+		bytesReference:     nil,
 	}
 
 	return &out
@@ -90,6 +94,18 @@ func (app *builder) WithAssignment(assignment layers.Assignment) Builder {
 // WithAssignable adds an assignable to the builder
 func (app *builder) WithAssignable(assignable layers.Assignable) Builder {
 	app.assignable = assignable
+	return app
+}
+
+// WithEngine adds an engine to the builder
+func (app *builder) WithEngine(engine layers.Engine) Builder {
+	app.engine = engine
+	return app
+}
+
+// WithAssignableResource adds an assignableResource to the builder
+func (app *builder) WithAssignableResource(assignableResource layers.AssignableResource) Builder {
+	app.assignableResource = assignableResource
 	return app
 }
 
@@ -169,6 +185,14 @@ func (app *builder) Now() (Layer, error) {
 
 	if app.assignable != nil {
 		return createLayerWithAssignable(app.assignable), nil
+	}
+
+	if app.engine != nil {
+		return createLayerWithEngine(app.engine), nil
+	}
+
+	if app.assignableResource != nil {
+		return createLayerWithAssignableResource(app.assignableResource), nil
 	}
 
 	if app.bytes != nil {

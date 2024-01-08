@@ -150,6 +150,86 @@ func NewAssignableWithBytesForTests(input Bytes) Assignable {
 	return ins
 }
 
+// NewEngineWithExecutionForTests creates a new engine with execution for tests
+func NewEngineWithExecutionForTests(input BytesReference) Engine {
+	ins, err := NewEngineBuilder().Create().WithExecution(input).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+// NewEngineWithResourceForTests creates a new engine with resource for tests
+func NewEngineWithResourceForTests(input AssignableResource) Engine {
+	ins, err := NewEngineBuilder().Create().WithResource(input).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+// NewAssignableResourceWithCompileForTests creates a new assignableResource with compile for tests
+func NewAssignableResourceWithCompileForTests(input BytesReference) AssignableResource {
+	ins, err := NewAssignableResourceBuilder().Create().WithCompile(input).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+// NewAssignableResourceWithDecompileForTests creates a new assignableResource with decompile for tests
+func NewAssignableResourceWithDecompileForTests(input string) AssignableResource {
+	ins, err := NewAssignableResourceBuilder().Create().WithDecompile(input).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+// NewAssignableResourceWithAmountByQueryForTests creates a new assignableResource with amountByQuery for tests
+func NewAssignableResourceWithAmountByQueryForTests(input BytesReference) AssignableResource {
+	ins, err := NewAssignableResourceBuilder().Create().WihAmountByQuery(input).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+// NewAssignableResourceWithRetrieveByQueryForTests creates a new assignableResource with retrieveByQuery for tests
+func NewAssignableResourceWithRetrieveByQueryForTests(input BytesReference) AssignableResource {
+	ins, err := NewAssignableResourceBuilder().Create().WithRetrieveByQuery(input).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+// NewAssignableResourceWithRetrieveByHashForTests creates a new assignableResource with retrieveByHash for tests
+func NewAssignableResourceWithRetrieveByHashForTests(input BytesReference) AssignableResource {
+	ins, err := NewAssignableResourceBuilder().Create().WithRetrieveByHash(input).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+// NewAssignableResourceWithAmountForTests creates a new assignableResource with amount for tests
+func NewAssignableResourceWithAmountForTests() AssignableResource {
+	ins, err := NewAssignableResourceBuilder().Create().IsAmount().Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
 // NewBytesWithHashBytesForTests creates a new bytes with hashBytes for tests
 func NewBytesWithHashBytesForTests(input BytesReference) Bytes {
 	ins, err := NewBytesBuilder().Create().WithHashBytes(input).Now()

@@ -19,6 +19,8 @@ type Builder interface {
 	WithInstruction(ins layers.Instruction) Builder
 	WithCondition(condition layers.Condition) Builder
 	WithAssignment(assignment layers.Assignment) Builder
+	WithEngine(engine layers.Engine) Builder
+	WithAssignableResource(assignableResource layers.AssignableResource) Builder
 	WithAssignable(assignable layers.Assignable) Builder
 	WithBytes(bytes layers.Bytes) Builder
 	WithIdentity(identity layers.Identity) Builder
@@ -48,6 +50,10 @@ type Layer interface {
 	Assignment() layers.Assignment
 	IsAssignable() bool
 	Assignable() layers.Assignable
+	IsEngine() bool
+	Engine() layers.Engine
+	IsAssignableResource() bool
+	AssignableResource() layers.AssignableResource
 	IsBytes() bool
 	Bytes() layers.Bytes
 	IsIdentity() bool
@@ -59,7 +65,7 @@ type Layer interface {
 	IsSignatureVerify() bool
 	SignatureVerify() layers.SignatureVerify
 	IsVoteVerify() bool
-	VoteVerfy() layers.VoteVerify
+	VoteVerify() layers.VoteVerify
 	IsVote() bool
 	Vote() layers.Vote
 	IsBytesReference() bool
