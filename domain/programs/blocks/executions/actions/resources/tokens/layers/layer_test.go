@@ -21,87 +21,87 @@ func TestLayer_withLayer_Success(t *testing.T) {
 	ins := NewLayerWithLayerForTests(layer)
 
 	if !ins.IsLayer() {
-		t.Errorf("the dashboard was expected to contain a layer")
+		t.Errorf("the layer was expected to contain a layer")
 		return
 	}
 
 	if ins.IsOutput() {
-		t.Errorf("the dashboard was expected to NOT contain an output")
+		t.Errorf("the layer was expected to NOT contain an output")
 		return
 	}
 
 	if ins.IsKind() {
-		t.Errorf("the dashboard was expected to NOT contain a kind")
+		t.Errorf("the layer was expected to NOT contain a kind")
 		return
 	}
 
 	if ins.IsInstruction() {
-		t.Errorf("the dashboard was expected to NOT contain an instruction")
+		t.Errorf("the layer was expected to NOT contain an instruction")
 		return
 	}
 
 	if ins.IsCondition() {
-		t.Errorf("the dashboard was expected to NOT contain a condition")
+		t.Errorf("the layer was expected to NOT contain a condition")
 		return
 	}
 
 	if ins.IsAssignment() {
-		t.Errorf("the dashboard was expected to NOT contain an assignment")
+		t.Errorf("the layer was expected to NOT contain an assignment")
 		return
 	}
 
 	if ins.IsAssignable() {
-		t.Errorf("the dashboard was expected to NOT contain an assignable")
+		t.Errorf("the layer was expected to NOT contain an assignable")
 		return
 	}
 
 	if ins.IsEngine() {
-		t.Errorf("the dashboard was expected to NOT contain an engine")
+		t.Errorf("the layer was expected to NOT contain an engine")
 		return
 	}
 
 	if ins.IsAssignableResource() {
-		t.Errorf("the dashboard was expected to NOT contain an assignableResource")
+		t.Errorf("the layer was expected to NOT contain an assignableResource")
 		return
 	}
 
 	if ins.IsBytes() {
-		t.Errorf("the dashboard was expected to NOT contain a bytes")
+		t.Errorf("the layer was expected to NOT contain a bytes")
 		return
 	}
 
 	if ins.IsIdentity() {
-		t.Errorf("the dashboard was expected to NOT contain an identity")
+		t.Errorf("the layer was expected to NOT contain an identity")
 		return
 	}
 
 	if ins.IsEncryptor() {
-		t.Errorf("the dashboard was expected to NOT contain an encryptor")
+		t.Errorf("the layer was expected to NOT contain an encryptor")
 		return
 	}
 
 	if ins.IsSigner() {
-		t.Errorf("the dashboard was expected to NOT contain a signer")
+		t.Errorf("the layer was expected to NOT contain a signer")
 		return
 	}
 
 	if ins.IsSignatureVerify() {
-		t.Errorf("the dashboard was expected to NOT contain a signatureVerify")
+		t.Errorf("the layer was expected to NOT contain a signatureVerify")
 		return
 	}
 
 	if ins.IsVoteVerify() {
-		t.Errorf("the dashboard was expected to NOT contain a voteVerify")
+		t.Errorf("the layer was expected to NOT contain a voteVerify")
 		return
 	}
 
 	if ins.IsVote() {
-		t.Errorf("the dashboard was expected to NOT contain a vote")
+		t.Errorf("the layer was expected to NOT contain a vote")
 		return
 	}
 
 	if ins.IsBytesReference() {
-		t.Errorf("the dashboard was expected to NOT contain a bytesReference")
+		t.Errorf("the layer was expected to NOT contain a bytesReference")
 		return
 	}
 
@@ -121,87 +121,87 @@ func TestLayer_withOutput_Success(t *testing.T) {
 	ins := NewLayerWithOutputForTests(output)
 
 	if ins.IsLayer() {
-		t.Errorf("the dashboard was expected to NOT contain a layer")
+		t.Errorf("the layer was expected to NOT contain a layer")
 		return
 	}
 
 	if !ins.IsOutput() {
-		t.Errorf("the dashboard was expected to contain an output")
+		t.Errorf("the layer was expected to contain an output")
 		return
 	}
 
 	if ins.IsKind() {
-		t.Errorf("the dashboard was expected to NOT contain a kind")
+		t.Errorf("the layer was expected to NOT contain a kind")
 		return
 	}
 
 	if ins.IsInstruction() {
-		t.Errorf("the dashboard was expected to NOT contain an instruction")
+		t.Errorf("the layer was expected to NOT contain an instruction")
 		return
 	}
 
 	if ins.IsCondition() {
-		t.Errorf("the dashboard was expected to NOT contain a condition")
+		t.Errorf("the layer was expected to NOT contain a condition")
 		return
 	}
 
 	if ins.IsAssignment() {
-		t.Errorf("the dashboard was expected to NOT contain an assignment")
+		t.Errorf("the layer was expected to NOT contain an assignment")
 		return
 	}
 
 	if ins.IsAssignable() {
-		t.Errorf("the dashboard was expected to NOT contain an assignable")
+		t.Errorf("the layer was expected to NOT contain an assignable")
 		return
 	}
 
 	if ins.IsEngine() {
-		t.Errorf("the dashboard was expected to NOT contain an engine")
+		t.Errorf("the layer was expected to NOT contain an engine")
 		return
 	}
 
 	if ins.IsAssignableResource() {
-		t.Errorf("the dashboard was expected to NOT contain an assignableResource")
+		t.Errorf("the layer was expected to NOT contain an assignableResource")
 		return
 	}
 
 	if ins.IsBytes() {
-		t.Errorf("the dashboard was expected to NOT contain a bytes")
+		t.Errorf("the layer was expected to NOT contain a bytes")
 		return
 	}
 
 	if ins.IsIdentity() {
-		t.Errorf("the dashboard was expected to NOT contain an identity")
+		t.Errorf("the layer was expected to NOT contain an identity")
 		return
 	}
 
 	if ins.IsEncryptor() {
-		t.Errorf("the dashboard was expected to NOT contain an encryptor")
+		t.Errorf("the layer was expected to NOT contain an encryptor")
 		return
 	}
 
 	if ins.IsSigner() {
-		t.Errorf("the dashboard was expected to NOT contain a signer")
+		t.Errorf("the layer was expected to NOT contain a signer")
 		return
 	}
 
 	if ins.IsSignatureVerify() {
-		t.Errorf("the dashboard was expected to NOT contain a signatureVerify")
+		t.Errorf("the layer was expected to NOT contain a signatureVerify")
 		return
 	}
 
 	if ins.IsVoteVerify() {
-		t.Errorf("the dashboard was expected to NOT contain a voteVerify")
+		t.Errorf("the layer was expected to NOT contain a voteVerify")
 		return
 	}
 
 	if ins.IsVote() {
-		t.Errorf("the dashboard was expected to NOT contain a vote")
+		t.Errorf("the layer was expected to NOT contain a vote")
 		return
 	}
 
 	if ins.IsBytesReference() {
-		t.Errorf("the dashboard was expected to NOT contain a bytesReference")
+		t.Errorf("the layer was expected to NOT contain a bytesReference")
 		return
 	}
 
@@ -218,87 +218,87 @@ func TestLayer_withKind_Success(t *testing.T) {
 	ins := NewLayerWithKindForTests(kind)
 
 	if ins.IsLayer() {
-		t.Errorf("the dashboard was expected to NOT contain a layer")
+		t.Errorf("the layer was expected to NOT contain a layer")
 		return
 	}
 
 	if ins.IsOutput() {
-		t.Errorf("the dashboard was expected to NOT contain an output")
+		t.Errorf("the layer was expected to NOT contain an output")
 		return
 	}
 
 	if !ins.IsKind() {
-		t.Errorf("the dashboard was expected to contain a kind")
+		t.Errorf("the layer was expected to contain a kind")
 		return
 	}
 
 	if ins.IsInstruction() {
-		t.Errorf("the dashboard was expected to NOT contain an instruction")
+		t.Errorf("the layer was expected to NOT contain an instruction")
 		return
 	}
 
 	if ins.IsCondition() {
-		t.Errorf("the dashboard was expected to NOT contain a condition")
+		t.Errorf("the layer was expected to NOT contain a condition")
 		return
 	}
 
 	if ins.IsAssignment() {
-		t.Errorf("the dashboard was expected to NOT contain an assignment")
+		t.Errorf("the layer was expected to NOT contain an assignment")
 		return
 	}
 
 	if ins.IsAssignable() {
-		t.Errorf("the dashboard was expected to NOT contain an assignable")
+		t.Errorf("the layer was expected to NOT contain an assignable")
 		return
 	}
 
 	if ins.IsEngine() {
-		t.Errorf("the dashboard was expected to NOT contain an engine")
+		t.Errorf("the layer was expected to NOT contain an engine")
 		return
 	}
 
 	if ins.IsAssignableResource() {
-		t.Errorf("the dashboard was expected to NOT contain an assignableResource")
+		t.Errorf("the layer was expected to NOT contain an assignableResource")
 		return
 	}
 
 	if ins.IsBytes() {
-		t.Errorf("the dashboard was expected to NOT contain a bytes")
+		t.Errorf("the layer was expected to NOT contain a bytes")
 		return
 	}
 
 	if ins.IsIdentity() {
-		t.Errorf("the dashboard was expected to NOT contain an identity")
+		t.Errorf("the layer was expected to NOT contain an identity")
 		return
 	}
 
 	if ins.IsEncryptor() {
-		t.Errorf("the dashboard was expected to NOT contain an encryptor")
+		t.Errorf("the layer was expected to NOT contain an encryptor")
 		return
 	}
 
 	if ins.IsSigner() {
-		t.Errorf("the dashboard was expected to NOT contain a signer")
+		t.Errorf("the layer was expected to NOT contain a signer")
 		return
 	}
 
 	if ins.IsSignatureVerify() {
-		t.Errorf("the dashboard was expected to NOT contain a signatureVerify")
+		t.Errorf("the layer was expected to NOT contain a signatureVerify")
 		return
 	}
 
 	if ins.IsVoteVerify() {
-		t.Errorf("the dashboard was expected to NOT contain a voteVerify")
+		t.Errorf("the layer was expected to NOT contain a voteVerify")
 		return
 	}
 
 	if ins.IsVote() {
-		t.Errorf("the dashboard was expected to NOT contain a vote")
+		t.Errorf("the layer was expected to NOT contain a vote")
 		return
 	}
 
 	if ins.IsBytesReference() {
-		t.Errorf("the dashboard was expected to NOT contain a bytesReference")
+		t.Errorf("the layer was expected to NOT contain a bytesReference")
 		return
 	}
 
@@ -315,87 +315,87 @@ func TestLayer_withInstruction_Success(t *testing.T) {
 	ins := NewLayerWithInstructionForTests(instruction)
 
 	if ins.IsLayer() {
-		t.Errorf("the dashboard was expected to NOT contain a layer")
+		t.Errorf("the layer was expected to NOT contain a layer")
 		return
 	}
 
 	if ins.IsOutput() {
-		t.Errorf("the dashboard was expected to NOT contain an output")
+		t.Errorf("the layer was expected to NOT contain an output")
 		return
 	}
 
 	if ins.IsKind() {
-		t.Errorf("the dashboard was expected to NOT contain a kind")
+		t.Errorf("the layer was expected to NOT contain a kind")
 		return
 	}
 
 	if !ins.IsInstruction() {
-		t.Errorf("the dashboard was expected to contain an instruction")
+		t.Errorf("the layer was expected to contain an instruction")
 		return
 	}
 
 	if ins.IsCondition() {
-		t.Errorf("the dashboard was expected to NOT contain a condition")
+		t.Errorf("the layer was expected to NOT contain a condition")
 		return
 	}
 
 	if ins.IsAssignment() {
-		t.Errorf("the dashboard was expected to NOT contain an assignment")
+		t.Errorf("the layer was expected to NOT contain an assignment")
 		return
 	}
 
 	if ins.IsAssignable() {
-		t.Errorf("the dashboard was expected to NOT contain an assignable")
+		t.Errorf("the layer was expected to NOT contain an assignable")
 		return
 	}
 
 	if ins.IsEngine() {
-		t.Errorf("the dashboard was expected to NOT contain an engine")
+		t.Errorf("the layer was expected to NOT contain an engine")
 		return
 	}
 
 	if ins.IsAssignableResource() {
-		t.Errorf("the dashboard was expected to NOT contain an assignableResource")
+		t.Errorf("the layer was expected to NOT contain an assignableResource")
 		return
 	}
 
 	if ins.IsBytes() {
-		t.Errorf("the dashboard was expected to NOT contain a bytes")
+		t.Errorf("the layer was expected to NOT contain a bytes")
 		return
 	}
 
 	if ins.IsIdentity() {
-		t.Errorf("the dashboard was expected to NOT contain an identity")
+		t.Errorf("the layer was expected to NOT contain an identity")
 		return
 	}
 
 	if ins.IsEncryptor() {
-		t.Errorf("the dashboard was expected to NOT contain an encryptor")
+		t.Errorf("the layer was expected to NOT contain an encryptor")
 		return
 	}
 
 	if ins.IsSigner() {
-		t.Errorf("the dashboard was expected to NOT contain a signer")
+		t.Errorf("the layer was expected to NOT contain a signer")
 		return
 	}
 
 	if ins.IsSignatureVerify() {
-		t.Errorf("the dashboard was expected to NOT contain a signatureVerify")
+		t.Errorf("the layer was expected to NOT contain a signatureVerify")
 		return
 	}
 
 	if ins.IsVoteVerify() {
-		t.Errorf("the dashboard was expected to NOT contain a voteVerify")
+		t.Errorf("the layer was expected to NOT contain a voteVerify")
 		return
 	}
 
 	if ins.IsVote() {
-		t.Errorf("the dashboard was expected to NOT contain a vote")
+		t.Errorf("the layer was expected to NOT contain a vote")
 		return
 	}
 
 	if ins.IsBytesReference() {
-		t.Errorf("the dashboard was expected to NOT contain a bytesReference")
+		t.Errorf("the layer was expected to NOT contain a bytesReference")
 		return
 	}
 
@@ -417,87 +417,87 @@ func TestLayer_withCondition_Success(t *testing.T) {
 	ins := NewLayerWithConditionForTests(condition)
 
 	if ins.IsLayer() {
-		t.Errorf("the dashboard was expected to NOT contain a layer")
+		t.Errorf("the layer was expected to NOT contain a layer")
 		return
 	}
 
 	if ins.IsOutput() {
-		t.Errorf("the dashboard was expected to NOT contain an output")
+		t.Errorf("the layer was expected to NOT contain an output")
 		return
 	}
 
 	if ins.IsKind() {
-		t.Errorf("the dashboard was expected to NOT contain a kind")
+		t.Errorf("the layer was expected to NOT contain a kind")
 		return
 	}
 
 	if ins.IsInstruction() {
-		t.Errorf("the dashboard was expected to NOT contain an instruction")
+		t.Errorf("the layer was expected to NOT contain an instruction")
 		return
 	}
 
 	if !ins.IsCondition() {
-		t.Errorf("the dashboard was expected to contain a condition")
+		t.Errorf("the layer was expected to contain a condition")
 		return
 	}
 
 	if ins.IsAssignment() {
-		t.Errorf("the dashboard was expected to NOT contain an assignment")
+		t.Errorf("the layer was expected to NOT contain an assignment")
 		return
 	}
 
 	if ins.IsAssignable() {
-		t.Errorf("the dashboard was expected to NOT contain an assignable")
+		t.Errorf("the layer was expected to NOT contain an assignable")
 		return
 	}
 
 	if ins.IsEngine() {
-		t.Errorf("the dashboard was expected to NOT contain an engine")
+		t.Errorf("the layer was expected to NOT contain an engine")
 		return
 	}
 
 	if ins.IsAssignableResource() {
-		t.Errorf("the dashboard was expected to NOT contain an assignableResource")
+		t.Errorf("the layer was expected to NOT contain an assignableResource")
 		return
 	}
 
 	if ins.IsBytes() {
-		t.Errorf("the dashboard was expected to NOT contain a bytes")
+		t.Errorf("the layer was expected to NOT contain a bytes")
 		return
 	}
 
 	if ins.IsIdentity() {
-		t.Errorf("the dashboard was expected to NOT contain an identity")
+		t.Errorf("the layer was expected to NOT contain an identity")
 		return
 	}
 
 	if ins.IsEncryptor() {
-		t.Errorf("the dashboard was expected to NOT contain an encryptor")
+		t.Errorf("the layer was expected to NOT contain an encryptor")
 		return
 	}
 
 	if ins.IsSigner() {
-		t.Errorf("the dashboard was expected to NOT contain a signer")
+		t.Errorf("the layer was expected to NOT contain a signer")
 		return
 	}
 
 	if ins.IsSignatureVerify() {
-		t.Errorf("the dashboard was expected to NOT contain a signatureVerify")
+		t.Errorf("the layer was expected to NOT contain a signatureVerify")
 		return
 	}
 
 	if ins.IsVoteVerify() {
-		t.Errorf("the dashboard was expected to NOT contain a voteVerify")
+		t.Errorf("the layer was expected to NOT contain a voteVerify")
 		return
 	}
 
 	if ins.IsVote() {
-		t.Errorf("the dashboard was expected to NOT contain a vote")
+		t.Errorf("the layer was expected to NOT contain a vote")
 		return
 	}
 
 	if ins.IsBytesReference() {
-		t.Errorf("the dashboard was expected to NOT contain a bytesReference")
+		t.Errorf("the layer was expected to NOT contain a bytesReference")
 		return
 	}
 
@@ -526,87 +526,87 @@ func TestLayer_withAssignment_Success(t *testing.T) {
 	ins := NewLayerWithAssignmentForTests(assignment)
 
 	if ins.IsLayer() {
-		t.Errorf("the dashboard was expected to NOT contain a layer")
+		t.Errorf("the layer was expected to NOT contain a layer")
 		return
 	}
 
 	if ins.IsOutput() {
-		t.Errorf("the dashboard was expected to NOT contain an output")
+		t.Errorf("the layer was expected to NOT contain an output")
 		return
 	}
 
 	if ins.IsKind() {
-		t.Errorf("the dashboard was expected to NOT contain a kind")
+		t.Errorf("the layer was expected to NOT contain a kind")
 		return
 	}
 
 	if ins.IsInstruction() {
-		t.Errorf("the dashboard was expected to NOT contain an instruction")
+		t.Errorf("the layer was expected to NOT contain an instruction")
 		return
 	}
 
 	if ins.IsCondition() {
-		t.Errorf("the dashboard was expected to NOT contain a condition")
+		t.Errorf("the layer was expected to NOT contain a condition")
 		return
 	}
 
 	if !ins.IsAssignment() {
-		t.Errorf("the dashboard was expected to contain an assignment")
+		t.Errorf("the layer was expected to contain an assignment")
 		return
 	}
 
 	if ins.IsAssignable() {
-		t.Errorf("the dashboard was expected to NOT contain an assignable")
+		t.Errorf("the layer was expected to NOT contain an assignable")
 		return
 	}
 
 	if ins.IsEngine() {
-		t.Errorf("the dashboard was expected to NOT contain an engine")
+		t.Errorf("the layer was expected to NOT contain an engine")
 		return
 	}
 
 	if ins.IsAssignableResource() {
-		t.Errorf("the dashboard was expected to NOT contain an assignableResource")
+		t.Errorf("the layer was expected to NOT contain an assignableResource")
 		return
 	}
 
 	if ins.IsBytes() {
-		t.Errorf("the dashboard was expected to NOT contain a bytes")
+		t.Errorf("the layer was expected to NOT contain a bytes")
 		return
 	}
 
 	if ins.IsIdentity() {
-		t.Errorf("the dashboard was expected to NOT contain an identity")
+		t.Errorf("the layer was expected to NOT contain an identity")
 		return
 	}
 
 	if ins.IsEncryptor() {
-		t.Errorf("the dashboard was expected to NOT contain an encryptor")
+		t.Errorf("the layer was expected to NOT contain an encryptor")
 		return
 	}
 
 	if ins.IsSigner() {
-		t.Errorf("the dashboard was expected to NOT contain a signer")
+		t.Errorf("the layer was expected to NOT contain a signer")
 		return
 	}
 
 	if ins.IsSignatureVerify() {
-		t.Errorf("the dashboard was expected to NOT contain a signatureVerify")
+		t.Errorf("the layer was expected to NOT contain a signatureVerify")
 		return
 	}
 
 	if ins.IsVoteVerify() {
-		t.Errorf("the dashboard was expected to NOT contain a voteVerify")
+		t.Errorf("the layer was expected to NOT contain a voteVerify")
 		return
 	}
 
 	if ins.IsVote() {
-		t.Errorf("the dashboard was expected to NOT contain a vote")
+		t.Errorf("the layer was expected to NOT contain a vote")
 		return
 	}
 
 	if ins.IsBytesReference() {
-		t.Errorf("the dashboard was expected to NOT contain a bytesReference")
+		t.Errorf("the layer was expected to NOT contain a bytesReference")
 		return
 	}
 
@@ -632,87 +632,87 @@ func TestLayer_withAssignable_Success(t *testing.T) {
 	ins := NewLayerWithAssignableForTests(assignable)
 
 	if ins.IsLayer() {
-		t.Errorf("the dashboard was expected to NOT contain a layer")
+		t.Errorf("the layer was expected to NOT contain a layer")
 		return
 	}
 
 	if ins.IsOutput() {
-		t.Errorf("the dashboard was expected to NOT contain an output")
+		t.Errorf("the layer was expected to NOT contain an output")
 		return
 	}
 
 	if ins.IsKind() {
-		t.Errorf("the dashboard was expected to NOT contain a kind")
+		t.Errorf("the layer was expected to NOT contain a kind")
 		return
 	}
 
 	if ins.IsInstruction() {
-		t.Errorf("the dashboard was expected to NOT contain an instruction")
+		t.Errorf("the layer was expected to NOT contain an instruction")
 		return
 	}
 
 	if ins.IsCondition() {
-		t.Errorf("the dashboard was expected to NOT contain a condition")
+		t.Errorf("the layer was expected to NOT contain a condition")
 		return
 	}
 
 	if ins.IsAssignment() {
-		t.Errorf("the dashboard was expected to NOT contain an assignment")
+		t.Errorf("the layer was expected to NOT contain an assignment")
 		return
 	}
 
 	if !ins.IsAssignable() {
-		t.Errorf("the dashboard was expected to contain an assignable")
+		t.Errorf("the layer was expected to contain an assignable")
 		return
 	}
 
 	if ins.IsEngine() {
-		t.Errorf("the dashboard was expected to NOT contain an engine")
+		t.Errorf("the layer was expected to NOT contain an engine")
 		return
 	}
 
 	if ins.IsAssignableResource() {
-		t.Errorf("the dashboard was expected to NOT contain an assignableResource")
+		t.Errorf("the layer was expected to NOT contain an assignableResource")
 		return
 	}
 
 	if ins.IsBytes() {
-		t.Errorf("the dashboard was expected to NOT contain a bytes")
+		t.Errorf("the layer was expected to NOT contain a bytes")
 		return
 	}
 
 	if ins.IsIdentity() {
-		t.Errorf("the dashboard was expected to NOT contain an identity")
+		t.Errorf("the layer was expected to NOT contain an identity")
 		return
 	}
 
 	if ins.IsEncryptor() {
-		t.Errorf("the dashboard was expected to NOT contain an encryptor")
+		t.Errorf("the layer was expected to NOT contain an encryptor")
 		return
 	}
 
 	if ins.IsSigner() {
-		t.Errorf("the dashboard was expected to NOT contain a signer")
+		t.Errorf("the layer was expected to NOT contain a signer")
 		return
 	}
 
 	if ins.IsSignatureVerify() {
-		t.Errorf("the dashboard was expected to NOT contain a signatureVerify")
+		t.Errorf("the layer was expected to NOT contain a signatureVerify")
 		return
 	}
 
 	if ins.IsVoteVerify() {
-		t.Errorf("the dashboard was expected to NOT contain a voteVerify")
+		t.Errorf("the layer was expected to NOT contain a voteVerify")
 		return
 	}
 
 	if ins.IsVote() {
-		t.Errorf("the dashboard was expected to NOT contain a vote")
+		t.Errorf("the layer was expected to NOT contain a vote")
 		return
 	}
 
 	if ins.IsBytesReference() {
-		t.Errorf("the dashboard was expected to NOT contain a bytesReference")
+		t.Errorf("the layer was expected to NOT contain a bytesReference")
 		return
 	}
 
@@ -731,87 +731,87 @@ func TestLayer_withEngine_Success(t *testing.T) {
 	ins := NewLayerWithEngineForTests(engine)
 
 	if ins.IsLayer() {
-		t.Errorf("the dashboard was expected to NOT contain a layer")
+		t.Errorf("the layer was expected to NOT contain a layer")
 		return
 	}
 
 	if ins.IsOutput() {
-		t.Errorf("the dashboard was expected to NOT contain an output")
+		t.Errorf("the layer was expected to NOT contain an output")
 		return
 	}
 
 	if ins.IsKind() {
-		t.Errorf("the dashboard was expected to NOT contain a kind")
+		t.Errorf("the layer was expected to NOT contain a kind")
 		return
 	}
 
 	if ins.IsInstruction() {
-		t.Errorf("the dashboard was expected to NOT contain an instruction")
+		t.Errorf("the layer was expected to NOT contain an instruction")
 		return
 	}
 
 	if ins.IsCondition() {
-		t.Errorf("the dashboard was expected to NOT contain a condition")
+		t.Errorf("the layer was expected to NOT contain a condition")
 		return
 	}
 
 	if ins.IsAssignment() {
-		t.Errorf("the dashboard was expected to NOT contain an assignment")
+		t.Errorf("the layer was expected to NOT contain an assignment")
 		return
 	}
 
 	if ins.IsAssignable() {
-		t.Errorf("the dashboard was expected to NOT contain an assignable")
+		t.Errorf("the layer was expected to NOT contain an assignable")
 		return
 	}
 
 	if !ins.IsEngine() {
-		t.Errorf("the dashboard was expected to contain an engine")
+		t.Errorf("the layer was expected to contain an engine")
 		return
 	}
 
 	if ins.IsAssignableResource() {
-		t.Errorf("the dashboard was expected to NOT contain an assignableResource")
+		t.Errorf("the layer was expected to NOT contain an assignableResource")
 		return
 	}
 
 	if ins.IsBytes() {
-		t.Errorf("the dashboard was expected to NOT contain a bytes")
+		t.Errorf("the layer was expected to NOT contain a bytes")
 		return
 	}
 
 	if ins.IsIdentity() {
-		t.Errorf("the dashboard was expected to NOT contain an identity")
+		t.Errorf("the layer was expected to NOT contain an identity")
 		return
 	}
 
 	if ins.IsEncryptor() {
-		t.Errorf("the dashboard was expected to NOT contain an encryptor")
+		t.Errorf("the layer was expected to NOT contain an encryptor")
 		return
 	}
 
 	if ins.IsSigner() {
-		t.Errorf("the dashboard was expected to NOT contain a signer")
+		t.Errorf("the layer was expected to NOT contain a signer")
 		return
 	}
 
 	if ins.IsSignatureVerify() {
-		t.Errorf("the dashboard was expected to NOT contain a signatureVerify")
+		t.Errorf("the layer was expected to NOT contain a signatureVerify")
 		return
 	}
 
 	if ins.IsVoteVerify() {
-		t.Errorf("the dashboard was expected to NOT contain a voteVerify")
+		t.Errorf("the layer was expected to NOT contain a voteVerify")
 		return
 	}
 
 	if ins.IsVote() {
-		t.Errorf("the dashboard was expected to NOT contain a vote")
+		t.Errorf("the layer was expected to NOT contain a vote")
 		return
 	}
 
 	if ins.IsBytesReference() {
-		t.Errorf("the dashboard was expected to NOT contain a bytesReference")
+		t.Errorf("the layer was expected to NOT contain a bytesReference")
 		return
 	}
 
@@ -830,87 +830,87 @@ func TestLayer_withAssignableResource_Success(t *testing.T) {
 	ins := NewLayerWithAssignableResourceForTests(assignableResource)
 
 	if ins.IsLayer() {
-		t.Errorf("the dashboard was expected to NOT contain a layer")
+		t.Errorf("the layer was expected to NOT contain a layer")
 		return
 	}
 
 	if ins.IsOutput() {
-		t.Errorf("the dashboard was expected to NOT contain an output")
+		t.Errorf("the layer was expected to NOT contain an output")
 		return
 	}
 
 	if ins.IsKind() {
-		t.Errorf("the dashboard was expected to NOT contain a kind")
+		t.Errorf("the layer was expected to NOT contain a kind")
 		return
 	}
 
 	if ins.IsInstruction() {
-		t.Errorf("the dashboard was expected to NOT contain an instruction")
+		t.Errorf("the layer was expected to NOT contain an instruction")
 		return
 	}
 
 	if ins.IsCondition() {
-		t.Errorf("the dashboard was expected to NOT contain a condition")
+		t.Errorf("the layer was expected to NOT contain a condition")
 		return
 	}
 
 	if ins.IsAssignment() {
-		t.Errorf("the dashboard was expected to NOT contain an assignment")
+		t.Errorf("the layer was expected to NOT contain an assignment")
 		return
 	}
 
 	if ins.IsAssignable() {
-		t.Errorf("the dashboard was expected to NOT contain an assignable")
+		t.Errorf("the layer was expected to NOT contain an assignable")
 		return
 	}
 
 	if ins.IsEngine() {
-		t.Errorf("the dashboard was expected to NOT contain an engine")
+		t.Errorf("the layer was expected to NOT contain an engine")
 		return
 	}
 
 	if !ins.IsAssignableResource() {
-		t.Errorf("the dashboard was expected to contain an assignableResource")
+		t.Errorf("the layer was expected to contain an assignableResource")
 		return
 	}
 
 	if ins.IsBytes() {
-		t.Errorf("the dashboard was expected to NOT contain a bytes")
+		t.Errorf("the layer was expected to NOT contain a bytes")
 		return
 	}
 
 	if ins.IsIdentity() {
-		t.Errorf("the dashboard was expected to NOT contain an identity")
+		t.Errorf("the layer was expected to NOT contain an identity")
 		return
 	}
 
 	if ins.IsEncryptor() {
-		t.Errorf("the dashboard was expected to NOT contain an encryptor")
+		t.Errorf("the layer was expected to NOT contain an encryptor")
 		return
 	}
 
 	if ins.IsSigner() {
-		t.Errorf("the dashboard was expected to NOT contain a signer")
+		t.Errorf("the layer was expected to NOT contain a signer")
 		return
 	}
 
 	if ins.IsSignatureVerify() {
-		t.Errorf("the dashboard was expected to NOT contain a signatureVerify")
+		t.Errorf("the layer was expected to NOT contain a signatureVerify")
 		return
 	}
 
 	if ins.IsVoteVerify() {
-		t.Errorf("the dashboard was expected to NOT contain a voteVerify")
+		t.Errorf("the layer was expected to NOT contain a voteVerify")
 		return
 	}
 
 	if ins.IsVote() {
-		t.Errorf("the dashboard was expected to NOT contain a vote")
+		t.Errorf("the layer was expected to NOT contain a vote")
 		return
 	}
 
 	if ins.IsBytesReference() {
-		t.Errorf("the dashboard was expected to NOT contain a bytesReference")
+		t.Errorf("the layer was expected to NOT contain a bytesReference")
 		return
 	}
 
@@ -934,87 +934,87 @@ func TestLayer_withBytes_Success(t *testing.T) {
 	ins := NewLayerWithBytesForTests(bytesIns)
 
 	if ins.IsLayer() {
-		t.Errorf("the dashboard was expected to NOT contain a layer")
+		t.Errorf("the layer was expected to NOT contain a layer")
 		return
 	}
 
 	if ins.IsOutput() {
-		t.Errorf("the dashboard was expected to NOT contain an output")
+		t.Errorf("the layer was expected to NOT contain an output")
 		return
 	}
 
 	if ins.IsKind() {
-		t.Errorf("the dashboard was expected to NOT contain a kind")
+		t.Errorf("the layer was expected to NOT contain a kind")
 		return
 	}
 
 	if ins.IsInstruction() {
-		t.Errorf("the dashboard was expected to NOT contain an instruction")
+		t.Errorf("the layer was expected to NOT contain an instruction")
 		return
 	}
 
 	if ins.IsCondition() {
-		t.Errorf("the dashboard was expected to NOT contain a condition")
+		t.Errorf("the layer was expected to NOT contain a condition")
 		return
 	}
 
 	if ins.IsAssignment() {
-		t.Errorf("the dashboard was expected to NOT contain an assignment")
+		t.Errorf("the layer was expected to NOT contain an assignment")
 		return
 	}
 
 	if ins.IsAssignable() {
-		t.Errorf("the dashboard was expected to NOT contain an assignable")
+		t.Errorf("the layer was expected to NOT contain an assignable")
 		return
 	}
 
 	if ins.IsEngine() {
-		t.Errorf("the dashboard was expected to NOT contain an engine")
+		t.Errorf("the layer was expected to NOT contain an engine")
 		return
 	}
 
 	if ins.IsAssignableResource() {
-		t.Errorf("the dashboard was expected to NOT contain an assignableResource")
+		t.Errorf("the layer was expected to NOT contain an assignableResource")
 		return
 	}
 
 	if !ins.IsBytes() {
-		t.Errorf("the dashboard was expected to contain a bytes")
+		t.Errorf("the layer was expected to contain a bytes")
 		return
 	}
 
 	if ins.IsIdentity() {
-		t.Errorf("the dashboard was expected to NOT contain an identity")
+		t.Errorf("the layer was expected to NOT contain an identity")
 		return
 	}
 
 	if ins.IsEncryptor() {
-		t.Errorf("the dashboard was expected to NOT contain an encryptor")
+		t.Errorf("the layer was expected to NOT contain an encryptor")
 		return
 	}
 
 	if ins.IsSigner() {
-		t.Errorf("the dashboard was expected to NOT contain a signer")
+		t.Errorf("the layer was expected to NOT contain a signer")
 		return
 	}
 
 	if ins.IsSignatureVerify() {
-		t.Errorf("the dashboard was expected to NOT contain a signatureVerify")
+		t.Errorf("the layer was expected to NOT contain a signatureVerify")
 		return
 	}
 
 	if ins.IsVoteVerify() {
-		t.Errorf("the dashboard was expected to NOT contain a voteVerify")
+		t.Errorf("the layer was expected to NOT contain a voteVerify")
 		return
 	}
 
 	if ins.IsVote() {
-		t.Errorf("the dashboard was expected to NOT contain a vote")
+		t.Errorf("the layer was expected to NOT contain a vote")
 		return
 	}
 
 	if ins.IsBytesReference() {
-		t.Errorf("the dashboard was expected to NOT contain a bytesReference")
+		t.Errorf("the layer was expected to NOT contain a bytesReference")
 		return
 	}
 
@@ -1035,87 +1035,87 @@ func TestLayer_withIdentity_Success(t *testing.T) {
 	ins := NewLayerWithIdentityForTests(identity)
 
 	if ins.IsLayer() {
-		t.Errorf("the dashboard was expected to NOT contain a layer")
+		t.Errorf("the layer was expected to NOT contain a layer")
 		return
 	}
 
 	if ins.IsOutput() {
-		t.Errorf("the dashboard was expected to NOT contain an output")
+		t.Errorf("the layer was expected to NOT contain an output")
 		return
 	}
 
 	if ins.IsKind() {
-		t.Errorf("the dashboard was expected to NOT contain a kind")
+		t.Errorf("the layer was expected to NOT contain a kind")
 		return
 	}
 
 	if ins.IsInstruction() {
-		t.Errorf("the dashboard was expected to NOT contain an instruction")
+		t.Errorf("the layer was expected to NOT contain an instruction")
 		return
 	}
 
 	if ins.IsCondition() {
-		t.Errorf("the dashboard was expected to NOT contain a condition")
+		t.Errorf("the layer was expected to NOT contain a condition")
 		return
 	}
 
 	if ins.IsAssignment() {
-		t.Errorf("the dashboard was expected to NOT contain an assignment")
+		t.Errorf("the layer was expected to NOT contain an assignment")
 		return
 	}
 
 	if ins.IsAssignable() {
-		t.Errorf("the dashboard was expected to NOT contain an assignable")
+		t.Errorf("the layer was expected to NOT contain an assignable")
 		return
 	}
 
 	if ins.IsEngine() {
-		t.Errorf("the dashboard was expected to NOT contain an engine")
+		t.Errorf("the layer was expected to NOT contain an engine")
 		return
 	}
 
 	if ins.IsAssignableResource() {
-		t.Errorf("the dashboard was expected to NOT contain an assignableResource")
+		t.Errorf("the layer was expected to NOT contain an assignableResource")
 		return
 	}
 
 	if ins.IsBytes() {
-		t.Errorf("the dashboard was expected to NOT contain a bytes")
+		t.Errorf("the layer was expected to NOT contain a bytes")
 		return
 	}
 
 	if !ins.IsIdentity() {
-		t.Errorf("the dashboard was expected to contain an identity")
+		t.Errorf("the layer was expected to contain an identity")
 		return
 	}
 
 	if ins.IsEncryptor() {
-		t.Errorf("the dashboard was expected to NOT contain an encryptor")
+		t.Errorf("the layer was expected to NOT contain an encryptor")
 		return
 	}
 
 	if ins.IsSigner() {
-		t.Errorf("the dashboard was expected to NOT contain a signer")
+		t.Errorf("the layer was expected to NOT contain a signer")
 		return
 	}
 
 	if ins.IsSignatureVerify() {
-		t.Errorf("the dashboard was expected to NOT contain a signatureVerify")
+		t.Errorf("the layer was expected to NOT contain a signatureVerify")
 		return
 	}
 
 	if ins.IsVoteVerify() {
-		t.Errorf("the dashboard was expected to NOT contain a voteVerify")
+		t.Errorf("the layer was expected to NOT contain a voteVerify")
 		return
 	}
 
 	if ins.IsVote() {
-		t.Errorf("the dashboard was expected to NOT contain a vote")
+		t.Errorf("the layer was expected to NOT contain a vote")
 		return
 	}
 
 	if ins.IsBytesReference() {
-		t.Errorf("the dashboard was expected to NOT contain a bytesReference")
+		t.Errorf("the layer was expected to NOT contain a bytesReference")
 		return
 	}
 
@@ -1134,87 +1134,87 @@ func TestLayer_withEncryptor_Success(t *testing.T) {
 	ins := NewLayerWithEncryptorForTests(encryptor)
 
 	if ins.IsLayer() {
-		t.Errorf("the dashboard was expected to NOT contain a layer")
+		t.Errorf("the layer was expected to NOT contain a layer")
 		return
 	}
 
 	if ins.IsOutput() {
-		t.Errorf("the dashboard was expected to NOT contain an output")
+		t.Errorf("the layer was expected to NOT contain an output")
 		return
 	}
 
 	if ins.IsKind() {
-		t.Errorf("the dashboard was expected to NOT contain a kind")
+		t.Errorf("the layer was expected to NOT contain a kind")
 		return
 	}
 
 	if ins.IsInstruction() {
-		t.Errorf("the dashboard was expected to NOT contain an instruction")
+		t.Errorf("the layer was expected to NOT contain an instruction")
 		return
 	}
 
 	if ins.IsCondition() {
-		t.Errorf("the dashboard was expected to NOT contain a condition")
+		t.Errorf("the layer was expected to NOT contain a condition")
 		return
 	}
 
 	if ins.IsAssignment() {
-		t.Errorf("the dashboard was expected to NOT contain an assignment")
+		t.Errorf("the layer was expected to NOT contain an assignment")
 		return
 	}
 
 	if ins.IsAssignable() {
-		t.Errorf("the dashboard was expected to NOT contain an assignable")
+		t.Errorf("the layer was expected to NOT contain an assignable")
 		return
 	}
 
 	if ins.IsEngine() {
-		t.Errorf("the dashboard was expected to NOT contain an engine")
+		t.Errorf("the layer was expected to NOT contain an engine")
 		return
 	}
 
 	if ins.IsAssignableResource() {
-		t.Errorf("the dashboard was expected to NOT contain an assignableResource")
+		t.Errorf("the layer was expected to NOT contain an assignableResource")
 		return
 	}
 
 	if ins.IsBytes() {
-		t.Errorf("the dashboard was expected to NOT contain a bytes")
+		t.Errorf("the layer was expected to NOT contain a bytes")
 		return
 	}
 
 	if ins.IsIdentity() {
-		t.Errorf("the dashboard was expected to NOT contain an identity")
+		t.Errorf("the layer was expected to NOT contain an identity")
 		return
 	}
 
 	if !ins.IsEncryptor() {
-		t.Errorf("the dashboard was expected to contain an encryptor")
+		t.Errorf("the layer was expected to contain an encryptor")
 		return
 	}
 
 	if ins.IsSigner() {
-		t.Errorf("the dashboard was expected to NOT contain a signer")
+		t.Errorf("the layer was expected to NOT contain a signer")
 		return
 	}
 
 	if ins.IsSignatureVerify() {
-		t.Errorf("the dashboard was expected to NOT contain a signatureVerify")
+		t.Errorf("the layer was expected to NOT contain a signatureVerify")
 		return
 	}
 
 	if ins.IsVoteVerify() {
-		t.Errorf("the dashboard was expected to NOT contain a voteVerify")
+		t.Errorf("the layer was expected to NOT contain a voteVerify")
 		return
 	}
 
 	if ins.IsVote() {
-		t.Errorf("the dashboard was expected to NOT contain a vote")
+		t.Errorf("the layer was expected to NOT contain a vote")
 		return
 	}
 
 	if ins.IsBytesReference() {
-		t.Errorf("the dashboard was expected to NOT contain a bytesReference")
+		t.Errorf("the layer was expected to NOT contain a bytesReference")
 		return
 	}
 
@@ -1233,87 +1233,87 @@ func TestLayer_withSigner_Success(t *testing.T) {
 	ins := NewLayerWithSignerForTests(signer)
 
 	if ins.IsLayer() {
-		t.Errorf("the dashboard was expected to NOT contain a layer")
+		t.Errorf("the layer was expected to NOT contain a layer")
 		return
 	}
 
 	if ins.IsOutput() {
-		t.Errorf("the dashboard was expected to NOT contain an output")
+		t.Errorf("the layer was expected to NOT contain an output")
 		return
 	}
 
 	if ins.IsKind() {
-		t.Errorf("the dashboard was expected to NOT contain a kind")
+		t.Errorf("the layer was expected to NOT contain a kind")
 		return
 	}
 
 	if ins.IsInstruction() {
-		t.Errorf("the dashboard was expected to NOT contain an instruction")
+		t.Errorf("the layer was expected to NOT contain an instruction")
 		return
 	}
 
 	if ins.IsCondition() {
-		t.Errorf("the dashboard was expected to NOT contain a condition")
+		t.Errorf("the layer was expected to NOT contain a condition")
 		return
 	}
 
 	if ins.IsAssignment() {
-		t.Errorf("the dashboard was expected to NOT contain an assignment")
+		t.Errorf("the layer was expected to NOT contain an assignment")
 		return
 	}
 
 	if ins.IsAssignable() {
-		t.Errorf("the dashboard was expected to NOT contain an assignable")
+		t.Errorf("the layer was expected to NOT contain an assignable")
 		return
 	}
 
 	if ins.IsEngine() {
-		t.Errorf("the dashboard was expected to NOT contain an engine")
+		t.Errorf("the layer was expected to NOT contain an engine")
 		return
 	}
 
 	if ins.IsAssignableResource() {
-		t.Errorf("the dashboard was expected to NOT contain an assignableResource")
+		t.Errorf("the layer was expected to NOT contain an assignableResource")
 		return
 	}
 
 	if ins.IsBytes() {
-		t.Errorf("the dashboard was expected to NOT contain a bytes")
+		t.Errorf("the layer was expected to NOT contain a bytes")
 		return
 	}
 
 	if ins.IsIdentity() {
-		t.Errorf("the dashboard was expected to NOT contain an identity")
+		t.Errorf("the layer was expected to NOT contain an identity")
 		return
 	}
 
 	if ins.IsEncryptor() {
-		t.Errorf("the dashboard was expected to NOT contain an encryptor")
+		t.Errorf("the layer was expected to NOT contain an encryptor")
 		return
 	}
 
 	if !ins.IsSigner() {
-		t.Errorf("the dashboard was expected to contain a signer")
+		t.Errorf("the layer was expected to contain a signer")
 		return
 	}
 
 	if ins.IsSignatureVerify() {
-		t.Errorf("the dashboard was expected to NOT contain a signatureVerify")
+		t.Errorf("the layer was expected to NOT contain a signatureVerify")
 		return
 	}
 
 	if ins.IsVoteVerify() {
-		t.Errorf("the dashboard was expected to NOT contain a voteVerify")
+		t.Errorf("the layer was expected to NOT contain a voteVerify")
 		return
 	}
 
 	if ins.IsVote() {
-		t.Errorf("the dashboard was expected to NOT contain a vote")
+		t.Errorf("the layer was expected to NOT contain a vote")
 		return
 	}
 
 	if ins.IsBytesReference() {
-		t.Errorf("the dashboard was expected to NOT contain a bytesReference")
+		t.Errorf("the layer was expected to NOT contain a bytesReference")
 		return
 	}
 
@@ -1332,87 +1332,87 @@ func TestLayer_withSignatureVerify_Success(t *testing.T) {
 	ins := NewLayerWithSignatureVerifyForTests(signatureVerify)
 
 	if ins.IsLayer() {
-		t.Errorf("the dashboard was expected to NOT contain a layer")
+		t.Errorf("the layer was expected to NOT contain a layer")
 		return
 	}
 
 	if ins.IsOutput() {
-		t.Errorf("the dashboard was expected to NOT contain an output")
+		t.Errorf("the layer was expected to NOT contain an output")
 		return
 	}
 
 	if ins.IsKind() {
-		t.Errorf("the dashboard was expected to NOT contain a kind")
+		t.Errorf("the layer was expected to NOT contain a kind")
 		return
 	}
 
 	if ins.IsInstruction() {
-		t.Errorf("the dashboard was expected to NOT contain an instruction")
+		t.Errorf("the layer was expected to NOT contain an instruction")
 		return
 	}
 
 	if ins.IsCondition() {
-		t.Errorf("the dashboard was expected to NOT contain a condition")
+		t.Errorf("the layer was expected to NOT contain a condition")
 		return
 	}
 
 	if ins.IsAssignment() {
-		t.Errorf("the dashboard was expected to NOT contain an assignment")
+		t.Errorf("the layer was expected to NOT contain an assignment")
 		return
 	}
 
 	if ins.IsAssignable() {
-		t.Errorf("the dashboard was expected to NOT contain an assignable")
+		t.Errorf("the layer was expected to NOT contain an assignable")
 		return
 	}
 
 	if ins.IsEngine() {
-		t.Errorf("the dashboard was expected to NOT contain an engine")
+		t.Errorf("the layer was expected to NOT contain an engine")
 		return
 	}
 
 	if ins.IsAssignableResource() {
-		t.Errorf("the dashboard was expected to NOT contain an assignableResource")
+		t.Errorf("the layer was expected to NOT contain an assignableResource")
 		return
 	}
 
 	if ins.IsBytes() {
-		t.Errorf("the dashboard was expected to NOT contain a bytes")
+		t.Errorf("the layer was expected to NOT contain a bytes")
 		return
 	}
 
 	if ins.IsIdentity() {
-		t.Errorf("the dashboard was expected to NOT contain an identity")
+		t.Errorf("the layer was expected to NOT contain an identity")
 		return
 	}
 
 	if ins.IsEncryptor() {
-		t.Errorf("the dashboard was expected to NOT contain an encryptor")
+		t.Errorf("the layer was expected to NOT contain an encryptor")
 		return
 	}
 
 	if ins.IsSigner() {
-		t.Errorf("the dashboard was expected to NOT contain a signer")
+		t.Errorf("the layer was expected to NOT contain a signer")
 		return
 	}
 
 	if !ins.IsSignatureVerify() {
-		t.Errorf("the dashboard was expected to contain a signatureVerify")
+		t.Errorf("the layer was expected to contain a signatureVerify")
 		return
 	}
 
 	if ins.IsVoteVerify() {
-		t.Errorf("the dashboard was expected to NOT contain a voteVerify")
+		t.Errorf("the layer was expected to NOT contain a voteVerify")
 		return
 	}
 
 	if ins.IsVote() {
-		t.Errorf("the dashboard was expected to NOT contain a vote")
+		t.Errorf("the layer was expected to NOT contain a vote")
 		return
 	}
 
 	if ins.IsBytesReference() {
-		t.Errorf("the dashboard was expected to NOT contain a bytesReference")
+		t.Errorf("the layer was expected to NOT contain a bytesReference")
 		return
 	}
 
@@ -1433,87 +1433,87 @@ func TestLayer_withVoteVerify_Success(t *testing.T) {
 	ins := NewLayerWithVoteVerifyForTests(voteVerify)
 
 	if ins.IsLayer() {
-		t.Errorf("the dashboard was expected to NOT contain a layer")
+		t.Errorf("the layer was expected to NOT contain a layer")
 		return
 	}
 
 	if ins.IsOutput() {
-		t.Errorf("the dashboard was expected to NOT contain an output")
+		t.Errorf("the layer was expected to NOT contain an output")
 		return
 	}
 
 	if ins.IsKind() {
-		t.Errorf("the dashboard was expected to NOT contain a kind")
+		t.Errorf("the layer was expected to NOT contain a kind")
 		return
 	}
 
 	if ins.IsInstruction() {
-		t.Errorf("the dashboard was expected to NOT contain an instruction")
+		t.Errorf("the layer was expected to NOT contain an instruction")
 		return
 	}
 
 	if ins.IsCondition() {
-		t.Errorf("the dashboard was expected to NOT contain a condition")
+		t.Errorf("the layer was expected to NOT contain a condition")
 		return
 	}
 
 	if ins.IsAssignment() {
-		t.Errorf("the dashboard was expected to NOT contain an assignment")
+		t.Errorf("the layer was expected to NOT contain an assignment")
 		return
 	}
 
 	if ins.IsAssignable() {
-		t.Errorf("the dashboard was expected to NOT contain an assignable")
+		t.Errorf("the layer was expected to NOT contain an assignable")
 		return
 	}
 
 	if ins.IsEngine() {
-		t.Errorf("the dashboard was expected to NOT contain an engine")
+		t.Errorf("the layer was expected to NOT contain an engine")
 		return
 	}
 
 	if ins.IsAssignableResource() {
-		t.Errorf("the dashboard was expected to NOT contain an assignableResource")
+		t.Errorf("the layer was expected to NOT contain an assignableResource")
 		return
 	}
 
 	if ins.IsBytes() {
-		t.Errorf("the dashboard was expected to NOT contain a bytes")
+		t.Errorf("the layer was expected to NOT contain a bytes")
 		return
 	}
 
 	if ins.IsIdentity() {
-		t.Errorf("the dashboard was expected to NOT contain an identity")
+		t.Errorf("the layer was expected to NOT contain an identity")
 		return
 	}
 
 	if ins.IsEncryptor() {
-		t.Errorf("the dashboard was expected to NOT contain an encryptor")
+		t.Errorf("the layer was expected to NOT contain an encryptor")
 		return
 	}
 
 	if ins.IsSigner() {
-		t.Errorf("the dashboard was expected to NOT contain a signer")
+		t.Errorf("the layer was expected to NOT contain a signer")
 		return
 	}
 
 	if ins.IsSignatureVerify() {
-		t.Errorf("the dashboard was expected to NOT contain a signatureVerify")
+		t.Errorf("the layer was expected to NOT contain a signatureVerify")
 		return
 	}
 
 	if !ins.IsVoteVerify() {
-		t.Errorf("the dashboard was expected to contain a voteVerify")
+		t.Errorf("the layer was expected to contain a voteVerify")
 		return
 	}
 
 	if ins.IsVote() {
-		t.Errorf("the dashboard was expected to NOT contain a vote")
+		t.Errorf("the layer was expected to NOT contain a vote")
 		return
 	}
 
 	if ins.IsBytesReference() {
-		t.Errorf("the dashboard was expected to NOT contain a bytesReference")
+		t.Errorf("the layer was expected to NOT contain a bytesReference")
 		return
 	}
 
@@ -1533,87 +1533,87 @@ func TestLayer_withVote_Success(t *testing.T) {
 	ins := NewLayerWithVoteForTests(vote)
 
 	if ins.IsLayer() {
-		t.Errorf("the dashboard was expected to NOT contain a layer")
+		t.Errorf("the layer was expected to NOT contain a layer")
 		return
 	}
 
 	if ins.IsOutput() {
-		t.Errorf("the dashboard was expected to NOT contain an output")
+		t.Errorf("the layer was expected to NOT contain an output")
 		return
 	}
 
 	if ins.IsKind() {
-		t.Errorf("the dashboard was expected to NOT contain a kind")
+		t.Errorf("the layer was expected to NOT contain a kind")
 		return
 	}
 
 	if ins.IsInstruction() {
-		t.Errorf("the dashboard was expected to NOT contain an instruction")
+		t.Errorf("the layer was expected to NOT contain an instruction")
 		return
 	}
 
 	if ins.IsCondition() {
-		t.Errorf("the dashboard was expected to NOT contain a condition")
+		t.Errorf("the layer was expected to NOT contain a condition")
 		return
 	}
 
 	if ins.IsAssignment() {
-		t.Errorf("the dashboard was expected to NOT contain an assignment")
+		t.Errorf("the layer was expected to NOT contain an assignment")
 		return
 	}
 
 	if ins.IsAssignable() {
-		t.Errorf("the dashboard was expected to NOT contain an assignable")
+		t.Errorf("the layer was expected to NOT contain an assignable")
 		return
 	}
 
 	if ins.IsEngine() {
-		t.Errorf("the dashboard was expected to NOT contain an engine")
+		t.Errorf("the layer was expected to NOT contain an engine")
 		return
 	}
 
 	if ins.IsAssignableResource() {
-		t.Errorf("the dashboard was expected to NOT contain an assignableResource")
+		t.Errorf("the layer was expected to NOT contain an assignableResource")
 		return
 	}
 
 	if ins.IsBytes() {
-		t.Errorf("the dashboard was expected to NOT contain a bytes")
+		t.Errorf("the layer was expected to NOT contain a bytes")
 		return
 	}
 
 	if ins.IsIdentity() {
-		t.Errorf("the dashboard was expected to NOT contain an identity")
+		t.Errorf("the layer was expected to NOT contain an identity")
 		return
 	}
 
 	if ins.IsEncryptor() {
-		t.Errorf("the dashboard was expected to NOT contain an encryptor")
+		t.Errorf("the layer was expected to NOT contain an encryptor")
 		return
 	}
 
 	if ins.IsSigner() {
-		t.Errorf("the dashboard was expected to NOT contain a signer")
+		t.Errorf("the layer was expected to NOT contain a signer")
 		return
 	}
 
 	if ins.IsSignatureVerify() {
-		t.Errorf("the dashboard was expected to NOT contain a signatureVerify")
+		t.Errorf("the layer was expected to NOT contain a signatureVerify")
 		return
 	}
 
 	if ins.IsVoteVerify() {
-		t.Errorf("the dashboard was expected to NOT contain a voteVerify")
+		t.Errorf("the layer was expected to NOT contain a voteVerify")
 		return
 	}
 
 	if !ins.IsVote() {
-		t.Errorf("the dashboard was expected to contain a vote")
+		t.Errorf("the layer was expected to contain a vote")
 		return
 	}
 
 	if ins.IsBytesReference() {
-		t.Errorf("the dashboard was expected to NOT contain a bytesReference")
+		t.Errorf("the layer was expected to NOT contain a bytesReference")
 		return
 	}
 
@@ -1629,93 +1629,101 @@ func TestLayer_withBytesReference_Success(t *testing.T) {
 	ins := NewLayerWithBytesReferenceForTests(bytesReference)
 
 	if ins.IsLayer() {
-		t.Errorf("the dashboard was expected to NOT contain a layer")
+		t.Errorf("the layer was expected to NOT contain a layer")
 		return
 	}
 
 	if ins.IsOutput() {
-		t.Errorf("the dashboard was expected to NOT contain an output")
+		t.Errorf("the layer was expected to NOT contain an output")
 		return
 	}
 
 	if ins.IsKind() {
-		t.Errorf("the dashboard was expected to NOT contain a kind")
+		t.Errorf("the layer was expected to NOT contain a kind")
 		return
 	}
 
 	if ins.IsInstruction() {
-		t.Errorf("the dashboard was expected to NOT contain an instruction")
+		t.Errorf("the layer was expected to NOT contain an instruction")
 		return
 	}
 
 	if ins.IsCondition() {
-		t.Errorf("the dashboard was expected to NOT contain a condition")
+		t.Errorf("the layer was expected to NOT contain a condition")
 		return
 	}
 
 	if ins.IsAssignment() {
-		t.Errorf("the dashboard was expected to NOT contain an assignment")
+		t.Errorf("the layer was expected to NOT contain an assignment")
 		return
 	}
 
 	if ins.IsAssignable() {
-		t.Errorf("the dashboard was expected to NOT contain an assignable")
+		t.Errorf("the layer was expected to NOT contain an assignable")
 		return
 	}
 
 	if ins.IsEngine() {
-		t.Errorf("the dashboard was expected to NOT contain an engine")
+		t.Errorf("the layer was expected to NOT contain an engine")
 		return
 	}
 
 	if ins.IsAssignableResource() {
-		t.Errorf("the dashboard was expected to NOT contain an assignableResource")
+		t.Errorf("the layer was expected to NOT contain an assignableResource")
 		return
 	}
 
 	if ins.IsBytes() {
-		t.Errorf("the dashboard was expected to NOT contain a bytes")
+		t.Errorf("the layer was expected to NOT contain a bytes")
 		return
 	}
 
 	if ins.IsIdentity() {
-		t.Errorf("the dashboard was expected to NOT contain an identity")
+		t.Errorf("the layer was expected to NOT contain an identity")
 		return
 	}
 
 	if ins.IsEncryptor() {
-		t.Errorf("the dashboard was expected to NOT contain an encryptor")
+		t.Errorf("the layer was expected to NOT contain an encryptor")
 		return
 	}
 
 	if ins.IsSigner() {
-		t.Errorf("the dashboard was expected to NOT contain a signer")
+		t.Errorf("the layer was expected to NOT contain a signer")
 		return
 	}
 
 	if ins.IsSignatureVerify() {
-		t.Errorf("the dashboard was expected to NOT contain a signatureVerify")
+		t.Errorf("the layer was expected to NOT contain a signatureVerify")
 		return
 	}
 
 	if ins.IsVoteVerify() {
-		t.Errorf("the dashboard was expected to NOT contain a voteVerify")
+		t.Errorf("the layer was expected to NOT contain a voteVerify")
 		return
 	}
 
 	if ins.IsVote() {
-		t.Errorf("the dashboard was expected to NOT contain a vote")
+		t.Errorf("the layer was expected to NOT contain a vote")
 		return
 	}
 
 	if !ins.IsBytesReference() {
-		t.Errorf("the dashboard was expected to contain a bytesReference")
+		t.Errorf("the layer was expected to contain a bytesReference")
 		return
 	}
 
 	retBytesReference := ins.BytesReference()
 	if !reflect.DeepEqual(bytesReference, retBytesReference) {
 		t.Errorf("the returned bytesReference is invalid")
+		return
+	}
+}
+
+func TestLayer_withoutParam_returnsError(t *testing.T) {
+	_, err := NewBuilder().Create().Now()
+	if err == nil {
+		t.Errorf("the error was expected to be valid, nil returned")
 		return
 	}
 }
