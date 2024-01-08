@@ -1,8 +1,9 @@
-package executions
+package logics
 
 import (
 	"steve.care/network/domain/credentials"
-	"steve.care/network/domain/programs"
+	"steve.care/network/domain/programs/logics/libraries"
+	"steve.care/network/domain/programs/logics/libraries/layers"
 	"steve.care/network/domain/receipts"
 )
 
@@ -13,7 +14,7 @@ type Builder interface {
 	Now() (Application, error)
 }
 
-// Application represents the program application
+// Application represents the logic application
 type Application interface {
-	Execute(input []byte, program programs.Program, context receipts.Receipt) (receipts.Receipt, error)
+	Execute(input []byte, layer layers.Layer, library libraries.Library, context receipts.Receipt) (receipts.Receipt, error)
 }
