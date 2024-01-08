@@ -354,7 +354,30 @@ func TestToken_withDashboard_Success(t *testing.T) {
 }
 
 func TestToken_withoutParam_returnsError(t *testing.T) {
-	_, err := NewBuilder().Create().Now()
+	createdOn := time.Now().UTC()
+	_, err := NewBuilder().Create().CreatedOn(createdOn).Now()
+	if err == nil {
+		t.Errorf("the error was expected to be valid, nil returned")
+		return
+	}
+}
+
+func TestToken_withoutCreationTime_returnsError(t *testing.T) {
+	pProgram, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes"))
+	dashboard := token_dashboards.NewDashboardWithDashboardForTests(
+		dashboards.NewDashboardForTests(
+			"this is a title",
+			widgets.NewWidgetsForTests([]widgets.Widget{
+				widgets.NewWidgetForTests(
+					"this is a title",
+					*pProgram,
+					[]byte("this is an input"),
+				),
+			}),
+		),
+	)
+
+	_, err := NewBuilder().Create().WithDashboard(dashboard).Now()
 	if err == nil {
 		t.Errorf("the error was expected to be valid, nil returned")
 		return

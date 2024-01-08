@@ -6,14 +6,8 @@ import (
 )
 
 // NewResourceForTests creates a new resource for tests
-func NewResourceForTests(input tokens.Token) Resource {
-	msg := input.Hash().Bytes()
-	signature, err := signers.NewFactory().Create().Sign(msg)
-	if err != nil {
-		panic(err)
-	}
-
-	ins, err := NewBuilder().Create().WithToken(input).WithSignature(signature).Now()
+func NewResourceForTests(token tokens.Token, signature signers.Signature) Resource {
+	ins, err := NewBuilder().Create().WithToken(token).WithSignature(signature).Now()
 	if err != nil {
 		panic(err)
 	}
