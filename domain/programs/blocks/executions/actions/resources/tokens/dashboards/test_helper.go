@@ -16,16 +16,6 @@ func NewDashboardWithDashboardForTests(dashboard dashboards.Dashboard) Dashboard
 	return ins
 }
 
-// NewDashboardWithWidgetsForTests creates a new dashboard with widgets for tests
-func NewDashboardWithWidgetsForTests(widgets widgets.Widgets) Dashboard {
-	ins, err := NewBuilder().Create().WithWidgets(widgets).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	return ins
-}
-
 // NewDashboardWithWidgetForTests creates a new dashboard with widget for tests
 func NewDashboardWithWidgetForTests(widget widgets.Widget) Dashboard {
 	ins, err := NewBuilder().Create().WithWidget(widget).Now()

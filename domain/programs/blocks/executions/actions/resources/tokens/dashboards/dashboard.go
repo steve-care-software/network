@@ -9,7 +9,6 @@ import (
 
 type dashboard struct {
 	dashboard dashboards.Dashboard
-	widgets   widgets.Widgets
 	widget    widgets.Widget
 	viewport  viewports.Viewport
 }
@@ -17,36 +16,28 @@ type dashboard struct {
 func createDashboardWithDashboard(
 	dashboardIns dashboards.Dashboard,
 ) Dashboard {
-	return createDashboardInternally(dashboardIns, nil, nil, nil)
-}
-
-func createDashboardWithWidgets(
-	widgets widgets.Widgets,
-) Dashboard {
-	return createDashboardInternally(nil, widgets, nil, nil)
+	return createDashboardInternally(dashboardIns, nil, nil)
 }
 
 func createDashboardWithWidget(
 	widget widgets.Widget,
 ) Dashboard {
-	return createDashboardInternally(nil, nil, widget, nil)
+	return createDashboardInternally(nil, widget, nil)
 }
 
 func createDashboardWithViewport(
 	viewport viewports.Viewport,
 ) Dashboard {
-	return createDashboardInternally(nil, nil, nil, viewport)
+	return createDashboardInternally(nil, nil, viewport)
 }
 
 func createDashboardInternally(
 	dashboardIns dashboards.Dashboard,
-	widgets widgets.Widgets,
 	widget widgets.Widget,
 	viewport viewports.Viewport,
 ) Dashboard {
 	out := dashboard{
 		dashboard: dashboardIns,
-		widgets:   widgets,
 		widget:    widget,
 		viewport:  viewport,
 	}
@@ -58,10 +49,6 @@ func createDashboardInternally(
 func (obj *dashboard) Hash() hash.Hash {
 	if obj.IsDashboard() {
 		return obj.dashboard.Hash()
-	}
-
-	if obj.IsWidgets() {
-		return obj.widgets.Hash()
 	}
 
 	if obj.IsWidget() {
@@ -79,16 +66,6 @@ func (obj *dashboard) IsDashboard() bool {
 // Dashboard returns the dashboard, if any
 func (obj *dashboard) Dashboard() dashboards.Dashboard {
 	return obj.dashboard
-}
-
-// IsWidgets returns true if there is a widgets, false otherwise
-func (obj *dashboard) IsWidgets() bool {
-	return obj.widgets != nil
-}
-
-// Widgets returns the dashboard, if any
-func (obj *dashboard) Widgets() widgets.Widgets {
-	return obj.widgets
 }
 
 // IsWidget returns true if there is a widget, false otherwise

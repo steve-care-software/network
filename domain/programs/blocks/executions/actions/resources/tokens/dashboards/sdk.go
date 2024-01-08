@@ -16,7 +16,6 @@ func NewBuilder() Builder {
 type Builder interface {
 	Create() Builder
 	WithDashboard(dashboard dashboards.Dashboard) Builder
-	WithWidgets(widgets widgets.Widgets) Builder
 	WithWidget(widget widgets.Widget) Builder
 	WithViewport(viewport viewports.Viewport) Builder
 	Now() (Dashboard, error)
@@ -27,8 +26,6 @@ type Dashboard interface {
 	Hash() hash.Hash
 	IsDashboard() bool
 	Dashboard() dashboards.Dashboard
-	IsWidgets() bool
-	Widgets() widgets.Widgets
 	IsWidget() bool
 	Widget() widgets.Widget
 	IsViewport() bool

@@ -30,11 +30,6 @@ func TestDashboard_withDashboard_Success(t *testing.T) {
 		return
 	}
 
-	if ins.IsWidgets() {
-		t.Errorf("the dashboard was expected to NOT contain a widgets")
-		return
-	}
-
 	if ins.IsWidget() {
 		t.Errorf("the dashboard was expected to NOT contain a widget")
 		return
@@ -52,45 +47,6 @@ func TestDashboard_withDashboard_Success(t *testing.T) {
 	}
 }
 
-func TestDashboard_withWidgets_Success(t *testing.T) {
-	pProgram, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes"))
-	widgets := widgets.NewWidgetsForTests([]widgets.Widget{
-		widgets.NewWidgetForTests(
-			"this is a title",
-			*pProgram,
-			[]byte("this is an input"),
-		),
-	})
-
-	ins := NewDashboardWithWidgetsForTests(widgets)
-
-	if ins.IsDashboard() {
-		t.Errorf("the dashboard was expected to NOT contain a dashboard")
-		return
-	}
-
-	if !ins.IsWidgets() {
-		t.Errorf("the dashboard was expected to contain a widgets")
-		return
-	}
-
-	if ins.IsWidget() {
-		t.Errorf("the dashboard was expected to NOT contain a widget")
-		return
-	}
-
-	if ins.IsViewport() {
-		t.Errorf("the dashboard was expected to NOT contain a viewport")
-		return
-	}
-
-	retWidgets := ins.Widgets()
-	if !reflect.DeepEqual(widgets, retWidgets) {
-		t.Errorf("the returned widgets is invalid")
-		return
-	}
-}
-
 func TestDashboard_withWidget_Success(t *testing.T) {
 	pProgram, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes"))
 	widget := widgets.NewWidgetForTests(
@@ -103,11 +59,6 @@ func TestDashboard_withWidget_Success(t *testing.T) {
 
 	if ins.IsDashboard() {
 		t.Errorf("the dashboard was expected to NOT contain a dashboard")
-		return
-	}
-
-	if ins.IsWidgets() {
-		t.Errorf("the dashboard was expected to NOT contain a widgets")
 		return
 	}
 
@@ -134,11 +85,6 @@ func TestDashboard_withViewport_Success(t *testing.T) {
 
 	if ins.IsDashboard() {
 		t.Errorf("the dashboard was expected to NOT contain a dashboard")
-		return
-	}
-
-	if ins.IsWidgets() {
-		t.Errorf("the dashboard was expected to NOT contain a widgets")
 		return
 	}
 
