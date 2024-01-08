@@ -2,7 +2,6 @@ package suites
 
 import (
 	"steve.care/network/domain/hash"
-	"steve.care/network/domain/programs/logics/libraries/layers"
 	"steve.care/network/domain/programs/logics/libraries/layers/links"
 	"steve.care/network/domain/programs/logics/suites/expectations"
 )
@@ -10,14 +9,14 @@ import (
 type suite struct {
 	hash        hash.Hash
 	origin      links.Origin
-	input       layers.Layer
+	input       []byte
 	expectation expectations.Expectation
 }
 
 func createSuite(
 	hash hash.Hash,
 	origin links.Origin,
-	input layers.Layer,
+	input []byte,
 	expectation expectations.Expectation,
 ) Suite {
 	out := suite{
@@ -41,7 +40,7 @@ func (obj *suite) Origin() links.Origin {
 }
 
 // Input returns the input
-func (obj *suite) Input() layers.Layer {
+func (obj *suite) Input() []byte {
 	return obj.input
 }
 

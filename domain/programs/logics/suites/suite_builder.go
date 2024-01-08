@@ -4,7 +4,6 @@ import (
 	"errors"
 
 	"steve.care/network/domain/hash"
-	"steve.care/network/domain/programs/logics/libraries/layers"
 	"steve.care/network/domain/programs/logics/libraries/layers/links"
 	"steve.care/network/domain/programs/logics/suites/expectations"
 )
@@ -12,7 +11,7 @@ import (
 type suiteBuilder struct {
 	hashAdapter hash.Adapter
 	origin      links.Origin
-	input       layers.Layer
+	input       []byte
 	expectation expectations.Expectation
 }
 
@@ -43,7 +42,7 @@ func (app *suiteBuilder) WithOrigin(origin links.Origin) SuiteBuilder {
 }
 
 // WithInput adds an input to the builder
-func (app *suiteBuilder) WithInput(input layers.Layer) SuiteBuilder {
+func (app *suiteBuilder) WithInput(input []byte) SuiteBuilder {
 	app.input = input
 	return app
 }
@@ -60,6 +59,10 @@ func (app *suiteBuilder) Now() (Suite, error) {
 		return nil, errors.New("the origin is mnadatory in order to build a Suite instance")
 	}
 
+	if app.input != nil && len(app.input) <= 0 {
+		app.input = nil
+	}
+
 	if app.input == nil {
 		return nil, errors.New("the input is mnadatory in order to build a Suite instance")
 	}
@@ -70,7 +73,7 @@ func (app *suiteBuilder) Now() (Suite, error) {
 
 	pHash, err := app.hashAdapter.FromMultiBytes([][]byte{
 		app.origin.Hash().Bytes(),
-		app.input.Hash().Bytes(),
+		app.input,
 		app.expectation.Hash().Bytes(),
 	})
 

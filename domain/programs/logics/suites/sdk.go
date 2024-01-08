@@ -2,7 +2,6 @@ package suites
 
 import (
 	"steve.care/network/domain/hash"
-	"steve.care/network/domain/programs/logics/libraries/layers"
 	"steve.care/network/domain/programs/logics/libraries/layers/links"
 	"steve.care/network/domain/programs/logics/suites/expectations"
 )
@@ -38,7 +37,7 @@ type Suites interface {
 type SuiteBuilder interface {
 	Create() SuiteBuilder
 	WithOrigin(origin links.Origin) SuiteBuilder
-	WithInput(input layers.Layer) SuiteBuilder
+	WithInput(input []byte) SuiteBuilder
 	WithExpectation(expectation expectations.Expectation) SuiteBuilder
 	Now() (Suite, error)
 }
@@ -47,6 +46,6 @@ type SuiteBuilder interface {
 type Suite interface {
 	Hash() hash.Hash
 	Origin() links.Origin
-	Input() layers.Layer
+	Input() []byte
 	Expectation() expectations.Expectation
 }
