@@ -20,7 +20,7 @@ type resourceRepository struct {
 	builder                       resources.Builder
 	tokenBuilder                  tokens.Builder
 	layerBuilder                  layers.Builder
-	cmdLayerBuilder               commands_layers.Builder
+	cmdLayerBuilder               commands_layers.LayerBuilder
 	cmdLayerBytesReferenceBuilder commands_layers.BytesReferenceBuilder
 	dbPtr                         *sql.DB
 }
@@ -31,7 +31,7 @@ func createResourceRepository(
 	builder resources.Builder,
 	tokenBuilder tokens.Builder,
 	layerBuilder layers.Builder,
-	cmdLayerBuilder commands_layers.Builder,
+	cmdLayerBuilder commands_layers.LayerBuilder,
 	cmdLayerBytesReferenceBuilder commands_layers.BytesReferenceBuilder,
 	dbPtr *sql.DB,
 ) resources.Repository {

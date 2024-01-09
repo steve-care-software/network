@@ -49,7 +49,7 @@ func TestLink_withoutElements_returnsError(t *testing.T) {
 		),
 	)
 
-	_, err := NewBuilder().Create().WithOrigin(origin).Now()
+	_, err := NewLinkBuilder().Create().WithOrigin(origin).Now()
 	if err == nil {
 		t.Errorf("the error was expected to be valid, nil returned")
 		return
@@ -62,7 +62,7 @@ func TestLink_withoutOrigin_returnsError(t *testing.T) {
 		NewElementForTests(*pLayer),
 	})
 
-	_, err := NewBuilder().Create().WithElements(elements).Now()
+	_, err := NewLinkBuilder().Create().WithElements(elements).Now()
 	if err == nil {
 		t.Errorf("the error was expected to be valid, nil returned")
 		return

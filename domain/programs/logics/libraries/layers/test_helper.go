@@ -1,8 +1,18 @@
 package layers
 
+// NewLayersForTests creates a new layers for tests
+func NewLayersForTests(list []Layer) Layers {
+	ins, err := NewBuilder().Create().WithList(list).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
 // NewLayerWithInputForTests creates a new layer with input for tests
 func NewLayerWithInputForTests(instructions Instructions, output Output, input string) Layer {
-	ins, err := NewBuilder().Create().WithInstructions(instructions).WithOutput(output).WithInput(input).Now()
+	ins, err := NewLayerBuilder().Create().WithInstructions(instructions).WithOutput(output).WithInput(input).Now()
 	if err != nil {
 		panic(err)
 	}
@@ -12,7 +22,7 @@ func NewLayerWithInputForTests(instructions Instructions, output Output, input s
 
 // NewLayerForTests creates a new layer for tests
 func NewLayerForTests(instructions Instructions, output Output) Layer {
-	ins, err := NewBuilder().Create().WithInstructions(instructions).WithOutput(output).Now()
+	ins, err := NewLayerBuilder().Create().WithInstructions(instructions).WithOutput(output).Now()
 	if err != nil {
 		panic(err)
 	}

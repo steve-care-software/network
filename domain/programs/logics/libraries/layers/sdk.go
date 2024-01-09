@@ -12,6 +12,14 @@ func NewBuilder() Builder {
 	)
 }
 
+// NewLayerBuilder creates a new layer builder instance
+func NewLayerBuilder() LayerBuilder {
+	hashAdapter := hash.NewAdapter()
+	return createLayerBuilder(
+		hashAdapter,
+	)
+}
+
 // NewOutputBuilder creates a new output builder
 func NewOutputBuilder() OutputBuilder {
 	hashAdapter := hash.NewAdapter()
@@ -164,18 +172,25 @@ func NewBytesReferenceBuilder() BytesReferenceBuilder {
 	)
 }
 
+// Builder represents the layers builder
+type Builder interface {
+	Create() Builder
+	WithList(list []Layer) Builder
+	Now() (Layers, error)
+}
+
 // Layers represents layers
 type Layers interface {
 	Hash() hash.Hash
 	List() []Layer
 }
 
-// Builder represents a layer builder
-type Builder interface {
-	Create() Builder
-	WithInstructions(instructions Instructions) Builder
-	WithOutput(output Output) Builder
-	WithInput(input string) Builder
+// LayerBuilder represents a layer builder
+type LayerBuilder interface {
+	Create() LayerBuilder
+	WithInstructions(instructions Instructions) LayerBuilder
+	WithOutput(output Output) LayerBuilder
+	WithInput(input string) LayerBuilder
 	Now() (Layer, error)
 }
 

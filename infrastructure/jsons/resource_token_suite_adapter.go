@@ -76,11 +76,10 @@ func (app *resourceTokenSuiteAdapter) suiteToStruct(
 	ins suites.Suite,
 ) structs_suites.Suite {
 	origin := app.linkAdapter.originToStruct(ins.Origin())
-	input := app.layerAdapter.layerToStruct(ins.Input())
 	expectation := app.expectationToStruct(ins.Expectation())
 	return structs_suites.Suite{
 		Origin:      origin,
-		Input:       input,
+		Input:       ins.Input(),
 		Expectation: expectation,
 	}
 }
@@ -93,11 +92,6 @@ func (app *resourceTokenSuiteAdapter) structToSuite(
 		return nil, err
 	}
 
-	input, err := app.layerAdapter.structToLayer(ins.Input)
-	if err != nil {
-		return nil, err
-	}
-
 	expectation, err := app.structToExpectation(ins.Expectation)
 	if err != nil {
 		return nil, err
@@ -105,7 +99,7 @@ func (app *resourceTokenSuiteAdapter) structToSuite(
 
 	return app.suiteBuilder.Create().
 		WithOrigin(origin).
-		WithInput(input).
+		WithInput(ins.Input).
 		WithExpectation(expectation).
 		Now()
 }

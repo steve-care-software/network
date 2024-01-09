@@ -12,7 +12,7 @@ type resourceTokenLayerAdapter struct {
 	hashAdapter            hash.Adapter
 	builder                resources_layers.Builder
 	linkAdapter            *resourceTokenLinkAdapter
-	layerBuilder           layers.Builder
+	layerBuilder           layers.LayerBuilder
 	outputBuilder          layers.OutputBuilder
 	kindBuilder            layers.KindBuilder
 	instructionsBuilder    layers.InstructionsBuilder
@@ -94,7 +94,7 @@ func (app *resourceTokenLayerAdapter) toStruct(ins resources_layers.Layer) struc
 	}
 
 	if ins.IsVoteVerify() {
-		voteVerify := app.voteVerifyToStruct(ins.VoteVerfy())
+		voteVerify := app.voteVerifyToStruct(ins.VoteVerify())
 		output.VoteVerify = &voteVerify
 	}
 

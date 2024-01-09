@@ -80,7 +80,7 @@ func NewResourceRepository(
 	builder := resources.NewBuilder()
 	tokenBuilder := tokens.NewBuilder()
 	layerBuilder := layers.NewBuilder()
-	cmdLayerBuilder := commands_layers.NewBuilder()
+	cmdLayerBuilder := commands_layers.NewLayerBuilder()
 	cmdLayerBytesReferenceBuilder := commands_layers.NewBytesReferenceBuilder()
 	return createResourceRepository(
 		hashAdapter,

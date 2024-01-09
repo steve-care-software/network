@@ -8,8 +8,7 @@ import (
 
 type builder struct {
 	hashAdapter hash.Adapter
-	origin      Origin
-	elements    Elements
+	list        []Link
 }
 
 func createBuilder(
@@ -17,50 +16,44 @@ func createBuilder(
 ) Builder {
 	out := builder{
 		hashAdapter: hashAdapter,
-		origin:      nil,
-		elements:    nil,
+		list:        nil,
 	}
 
 	return &out
 }
 
-// Builder initializes the builder
+// Create initializes the builder
 func (app *builder) Create() Builder {
 	return createBuilder(
 		app.hashAdapter,
 	)
 }
 
-// WithOrigin adds an origin to the builder
-func (app *builder) WithOrigin(origin Origin) Builder {
-	app.origin = origin
+// WithList adds a list to the builder
+func (app *builder) WithList(list []Link) Builder {
+	app.list = list
 	return app
 }
 
-// WithElements add elements to the builder
-func (app *builder) WithElements(elements Elements) Builder {
-	app.elements = elements
-	return app
-}
-
-// Now builds a new Link instance
-func (app *builder) Now() (Link, error) {
-	if app.origin == nil {
-		return nil, errors.New("the origin is mandatory in order to build a Link instance")
+// Now builds a new Links instance
+func (app *builder) Now() (Links, error) {
+	if app.list != nil && len(app.list) <= 0 {
+		app.list = nil
 	}
 
-	if app.elements == nil {
-		return nil, errors.New("the elements is mandatory in order to build a Link instance")
+	if app.list == nil {
+		return nil, errors.New("there must be at least 1 Link in order to build a Links instance")
 	}
 
-	pHash, err := app.hashAdapter.FromMultiBytes([][]byte{
-		app.origin.Hash().Bytes(),
-		app.elements.Hash().Bytes(),
-	})
+	data := [][]byte{}
+	for _, oneLink := range app.list {
+		data = append(data, oneLink.Hash().Bytes())
+	}
 
+	pHash, err := app.hashAdapter.FromMultiBytes(data)
 	if err != nil {
 		return nil, err
 	}
 
-	return createLink(*pHash, app.origin, app.elements), nil
+	return createLinks(*pHash, app.list), nil
 }

@@ -2,9 +2,19 @@ package links
 
 import "steve.care/network/domain/hash"
 
+// NewLinksForTests creates a new links for tests
+func NewLinksForTests(list []Link) Links {
+	ins, err := NewBuilder().Create().WithList(list).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
 // NewLinkForTests creates new link for tests
 func NewLinkForTests(origin Origin, elements Elements) Link {
-	ins, err := NewBuilder().Create().WithOrigin(origin).WithElements(elements).Now()
+	ins, err := NewLinkBuilder().Create().WithOrigin(origin).WithElements(elements).Now()
 	if err != nil {
 		panic(err)
 	}

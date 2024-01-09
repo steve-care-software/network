@@ -8,13 +8,15 @@ import (
 
 	"bytes"
 
+	"steve.care/network/domain/accounts/signers"
 	"steve.care/network/domain/credentials"
 	"steve.care/network/domain/programs/blocks/executions/actions/resources"
 	"steve.care/network/domain/programs/blocks/executions/actions/resources/tokens"
-	"steve.care/network/domain/programs/blocks/executions/actions/resources/tokens/layers"
-	commands_layers "steve.care/network/domain/programs/logics/libraries/layers"
 	"steve.care/network/infrastructure/edwards25519"
 	"steve.care/network/infrastructure/jsons"
+
+	token_layers "steve.care/network/domain/programs/blocks/executions/actions/resources/tokens/layers"
+	"steve.care/network/domain/programs/logics/libraries/layers"
 )
 
 type resourceExec struct {
@@ -134,30 +136,62 @@ func TestApplication_Resources_InsertThenRetrieve_Success(t *testing.T) {
 		return
 	}
 
+	firstToken := tokens.NewTokenWithLayerForTests(
+		token_layers.NewLayerWithLayerForTests(
+			layers.NewLayerForTests(
+				layers.NewInstructionsForTests([]layers.Instruction{
+					layers.NewInstructionWithStopForTests(),
+				}),
+				layers.NewOutputForTests(
+					"myVariable",
+					layers.NewKindWithPromptForTests(),
+				),
+			),
+		),
+	)
+
+	firstMsg := firstToken.Hash().Bytes()
+	firstSignature, err := signers.NewFactory().Create().Sign(firstMsg)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	secondToken := tokens.NewTokenWithLayerForTests(
+		token_layers.NewLayerWithLayerForTests(
+			layers.NewLayerForTests(
+				layers.NewInstructionsForTests([]layers.Instruction{
+					layers.NewInstructionWithStopForTests(),
+				}),
+				layers.NewOutputForTests(
+					"myVariable",
+					layers.NewKindWithPromptForTests(),
+				),
+			),
+		),
+	)
+
+	secondMsg := secondToken.Hash().Bytes()
+	secondSignature, err := signers.NewFactory().Create().Sign(secondMsg)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
 	// make the resources execution list:
 	execList := []resourceExec{
 		{
 			name: "layerBytesReferenceWithVariable",
 			resource: resources.NewResourceForTests(
-				tokens.NewTokenWithLayerForTests(
-					layers.NewLayerWithBytesReferenceForTests(
-						commands_layers.NewBytesReferenceWithVariableForTests(
-							"myVariable",
-						),
-					),
-				),
+				firstToken,
+				firstSignature,
 			),
 		},
 		{
 			name: "layerBytesReferenceWithBytes",
 			resource: resources.NewResourceForTests(
-				tokens.NewTokenWithLayerForTests(
-					layers.NewLayerWithBytesReferenceForTests(
-						commands_layers.NewBytesReferenceWithBytesForTests(
-							[]byte("this is some bytes"),
-						),
-					),
-				),
+				secondToken,
+				secondSignature,
 			),
 		},
 	}

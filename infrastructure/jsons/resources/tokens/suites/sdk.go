@@ -8,7 +8,7 @@ import (
 // Suite represents a suite
 type Suite struct {
 	Origin      links.Origin `json:"origin"`
-	Input       layers.Layer `json:"input"`
+	Input       []byte       `json:"input"`
 	Expectation Expectation  `json:"expectation"`
 }
 

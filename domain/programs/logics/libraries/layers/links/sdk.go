@@ -12,6 +12,14 @@ func NewBuilder() Builder {
 	)
 }
 
+// NewLinkBuilder creates a new link builder instance
+func NewLinkBuilder() LinkBuilder {
+	hashAdapter := hash.NewAdapter()
+	return createLinkBuilder(
+		hashAdapter,
+	)
+}
+
 // NewElementsBuilder creates a new elements builder
 func NewElementsBuilder() ElementsBuilder {
 	hashAdapter := hash.NewAdapter()
@@ -84,17 +92,24 @@ func NewOperatorBuilder() OperatorBuilder {
 	)
 }
 
+// Builder represents the links builder
+type Builder interface {
+	Create() Builder
+	WithList(list []Link) Builder
+	Now() (Links, error)
+}
+
 // Links represents links
 type Links interface {
 	Hash() hash.Hash
 	List() []Link
 }
 
-// Builder represents a link builder
-type Builder interface {
-	Create() Builder
-	WithOrigin(origin Origin) Builder
-	WithElements(elements Elements) Builder
+// LinkBuilder represents a link builder
+type LinkBuilder interface {
+	Create() LinkBuilder
+	WithOrigin(origin Origin) LinkBuilder
+	WithElements(elements Elements) LinkBuilder
 	Now() (Link, error)
 }
 
