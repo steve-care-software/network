@@ -22,6 +22,16 @@ func createApplication(
 	return &out
 }
 
+// Compile compiles data to a resource
+func (app *application) Compile(data []byte) (resources.Resource, error) {
+	return nil, nil
+}
+
+// Decompile decompiles a resource to data
+func (app *application) Decompile(resource resources.Resource) ([]byte, error) {
+	return nil, nil
+}
+
 // Amount returns the amount of resources
 func (app *application) Amount() (uint, error) {
 	return app.repository.Amount()

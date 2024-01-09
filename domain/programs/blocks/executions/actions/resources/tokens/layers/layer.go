@@ -14,6 +14,7 @@ type layer struct {
 	assignment         layers.Assignment
 	assignable         layers.Assignable
 	engine             layers.Engine
+	execution          layers.Execution
 	assignableResource layers.AssignableResource
 	bytes              layers.Bytes
 	identity           layers.Identity
@@ -22,7 +23,6 @@ type layer struct {
 	signatureVerify    layers.SignatureVerify
 	voteVerify         layers.VoteVerify
 	vote               layers.Vote
-	bytesReference     layers.BytesReference
 }
 
 func createLayerWithLayer(
@@ -217,6 +217,30 @@ func createLayerWithEngine(
 	)
 }
 
+func createLayerWithExecution(
+	execution layers.Execution,
+) Layer {
+	return createLayerInternally(
+		nil,
+		nil,
+		nil,
+		nil,
+		nil,
+		nil,
+		nil,
+		nil,
+		execution,
+		nil,
+		nil,
+		nil,
+		nil,
+		nil,
+		nil,
+		nil,
+		nil,
+	)
+}
+
 func createLayerWithAssignableResource(
 	assignableResource layers.AssignableResource,
 ) Layer {
@@ -229,8 +253,8 @@ func createLayerWithAssignableResource(
 		nil,
 		nil,
 		nil,
-		assignableResource,
 		nil,
+		assignableResource,
 		nil,
 		nil,
 		nil,
@@ -254,8 +278,8 @@ func createLayerWithBytes(
 		nil,
 		nil,
 		nil,
-		bytes,
 		nil,
+		bytes,
 		nil,
 		nil,
 		nil,
@@ -279,8 +303,8 @@ func createLayerWithIdentity(
 		nil,
 		nil,
 		nil,
-		identity,
 		nil,
+		identity,
 		nil,
 		nil,
 		nil,
@@ -304,8 +328,8 @@ func createLayerWithEncryptor(
 		nil,
 		nil,
 		nil,
-		encryptor,
 		nil,
+		encryptor,
 		nil,
 		nil,
 		nil,
@@ -329,8 +353,8 @@ func createLayerWithSigner(
 		nil,
 		nil,
 		nil,
-		signer,
 		nil,
+		signer,
 		nil,
 		nil,
 		nil,
@@ -354,8 +378,8 @@ func createLayerWithSignatureVerify(
 		nil,
 		nil,
 		nil,
-		signatureVerify,
 		nil,
+		signatureVerify,
 		nil,
 		nil,
 	)
@@ -379,8 +403,8 @@ func createLayerWithVoteVerify(
 		nil,
 		nil,
 		nil,
-		voteVerify,
 		nil,
+		voteVerify,
 		nil,
 	)
 }
@@ -404,32 +428,8 @@ func createLayerWithVote(
 		nil,
 		nil,
 		nil,
+		nil,
 		vote,
-		nil,
-	)
-}
-
-func createLayerWithBytesReference(
-	bytesReference layers.BytesReference,
-) Layer {
-	return createLayerInternally(
-		nil,
-		nil,
-		nil,
-		nil,
-		nil,
-		nil,
-		nil,
-		nil,
-		nil,
-		nil,
-		nil,
-		nil,
-		nil,
-		nil,
-		nil,
-		nil,
-		bytesReference,
 	)
 }
 
@@ -442,6 +442,7 @@ func createLayerInternally(
 	assignment layers.Assignment,
 	assignable layers.Assignable,
 	engine layers.Engine,
+	execution layers.Execution,
 	assignableResource layers.AssignableResource,
 	bytes layers.Bytes,
 	identity layers.Identity,
@@ -450,7 +451,6 @@ func createLayerInternally(
 	signatureVerify layers.SignatureVerify,
 	voteVerify layers.VoteVerify,
 	vote layers.Vote,
-	bytesReference layers.BytesReference,
 ) Layer {
 	out := layer{
 		layer:              layerIns,
@@ -461,6 +461,7 @@ func createLayerInternally(
 		assignment:         assignment,
 		assignable:         assignable,
 		engine:             engine,
+		execution:          execution,
 		assignableResource: assignableResource,
 		bytes:              bytes,
 		identity:           identity,
@@ -469,7 +470,6 @@ func createLayerInternally(
 		signatureVerify:    signatureVerify,
 		voteVerify:         voteVerify,
 		vote:               vote,
-		bytesReference:     bytesReference,
 	}
 
 	return &out
@@ -505,6 +505,10 @@ func (obj *layer) Hash() hash.Hash {
 		return obj.engine.Hash()
 	}
 
+	if obj.IsExecution() {
+		return obj.execution.Hash()
+	}
+
 	if obj.IsAssignableResource() {
 		return obj.assignableResource.Hash()
 	}
@@ -533,11 +537,7 @@ func (obj *layer) Hash() hash.Hash {
 		return obj.voteVerify.Hash()
 	}
 
-	if obj.IsVote() {
-		return obj.vote.Hash()
-	}
-
-	return obj.bytesReference.Hash()
+	return obj.vote.Hash()
 }
 
 // IsLayer returns true if there is a layer, false otherwise
@@ -620,6 +620,16 @@ func (obj *layer) Engine() layers.Engine {
 	return obj.engine
 }
 
+// IsExecution returns true if there is an execution, false otherwise
+func (obj *layer) IsExecution() bool {
+	return obj.execution != nil
+}
+
+// Execution returns the execution, if any
+func (obj *layer) Execution() layers.Execution {
+	return obj.execution
+}
+
 // IsAssignableResource returns true if there is an assignableResource, false otherwise
 func (obj *layer) IsAssignableResource() bool {
 	return obj.assignableResource != nil
@@ -698,14 +708,4 @@ func (obj *layer) IsVote() bool {
 // Vote returns the vote, if any
 func (obj *layer) Vote() layers.Vote {
 	return obj.vote
-}
-
-// IsBytesReference returns true if there is a bytesReference, false otherwise
-func (obj *layer) IsBytesReference() bool {
-	return obj.bytesReference != nil
-}
-
-// BytesReference returns the bytesReference, if any
-func (obj *layer) BytesReference() layers.BytesReference {
-	return obj.bytesReference
 }

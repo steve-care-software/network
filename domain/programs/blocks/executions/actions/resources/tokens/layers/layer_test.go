@@ -16,6 +16,7 @@ func TestLayer_withLayer_Success(t *testing.T) {
 			"myVariable",
 			layers.NewKindWithPromptForTests(),
 		),
+		"myInput",
 	)
 
 	ins := NewLayerWithLayerForTests(layer)
@@ -97,11 +98,6 @@ func TestLayer_withLayer_Success(t *testing.T) {
 
 	if ins.IsVote() {
 		t.Errorf("the layer was expected to NOT contain a vote")
-		return
-	}
-
-	if ins.IsBytesReference() {
-		t.Errorf("the layer was expected to NOT contain a bytesReference")
 		return
 	}
 
@@ -200,11 +196,6 @@ func TestLayer_withOutput_Success(t *testing.T) {
 		return
 	}
 
-	if ins.IsBytesReference() {
-		t.Errorf("the layer was expected to NOT contain a bytesReference")
-		return
-	}
-
 	retOutput := ins.Output()
 	if !reflect.DeepEqual(output, retOutput) {
 		t.Errorf("the returned output is invalid")
@@ -297,11 +288,6 @@ func TestLayer_withKind_Success(t *testing.T) {
 		return
 	}
 
-	if ins.IsBytesReference() {
-		t.Errorf("the layer was expected to NOT contain a bytesReference")
-		return
-	}
-
 	retKind := ins.Kind()
 	if !reflect.DeepEqual(kind, retKind) {
 		t.Errorf("the returned kind is invalid")
@@ -391,11 +377,6 @@ func TestLayer_withInstruction_Success(t *testing.T) {
 
 	if ins.IsVote() {
 		t.Errorf("the layer was expected to NOT contain a vote")
-		return
-	}
-
-	if ins.IsBytesReference() {
-		t.Errorf("the layer was expected to NOT contain a bytesReference")
 		return
 	}
 
@@ -496,11 +477,6 @@ func TestLayer_withCondition_Success(t *testing.T) {
 		return
 	}
 
-	if ins.IsBytesReference() {
-		t.Errorf("the layer was expected to NOT contain a bytesReference")
-		return
-	}
-
 	retCondition := ins.Condition()
 	if !reflect.DeepEqual(condition, retCondition) {
 		t.Errorf("the returned condition is invalid")
@@ -512,14 +488,10 @@ func TestLayer_withAssignment_Success(t *testing.T) {
 	assignment := layers.NewAssignmentForTests(
 		"myName",
 		layers.NewAssignableWithBytesForTests(
-			layers.NewBytesWithJoinForTests(
-				layers.NewBytesReferencesForTests(
-					[]layers.BytesReference{
-						layers.NewBytesReferenceWithVariableForTests("myVariable"),
-						layers.NewBytesReferenceWithBytesForTests([]byte("this is some bytes")),
-					},
-				),
-			),
+			layers.NewBytesWithJoinForTests([]string{
+				"first",
+				"second",
+			}),
 		),
 	)
 
@@ -605,11 +577,6 @@ func TestLayer_withAssignment_Success(t *testing.T) {
 		return
 	}
 
-	if ins.IsBytesReference() {
-		t.Errorf("the layer was expected to NOT contain a bytesReference")
-		return
-	}
-
 	retAssignment := ins.Assignment()
 	if !reflect.DeepEqual(assignment, retAssignment) {
 		t.Errorf("the returned assignment is invalid")
@@ -619,14 +586,10 @@ func TestLayer_withAssignment_Success(t *testing.T) {
 
 func TestLayer_withAssignable_Success(t *testing.T) {
 	assignable := layers.NewAssignableWithBytesForTests(
-		layers.NewBytesWithJoinForTests(
-			layers.NewBytesReferencesForTests(
-				[]layers.BytesReference{
-					layers.NewBytesReferenceWithVariableForTests("myVariable"),
-					layers.NewBytesReferenceWithBytesForTests([]byte("this is some bytes")),
-				},
-			),
-		),
+		layers.NewBytesWithJoinForTests([]string{
+			"first",
+			"second",
+		}),
 	)
 
 	ins := NewLayerWithAssignableForTests(assignable)
@@ -711,11 +674,6 @@ func TestLayer_withAssignable_Success(t *testing.T) {
 		return
 	}
 
-	if ins.IsBytesReference() {
-		t.Errorf("the layer was expected to NOT contain a bytesReference")
-		return
-	}
-
 	retAssignable := ins.Assignable()
 	if !reflect.DeepEqual(assignable, retAssignable) {
 		t.Errorf("the returned assignable is invalid")
@@ -725,7 +683,7 @@ func TestLayer_withAssignable_Success(t *testing.T) {
 
 func TestLayer_withEngine_Success(t *testing.T) {
 	engine := layers.NewEngineWithExecutionForTests(
-		layers.NewBytesReferenceWithVariableForTests("myVariable"),
+		layers.NewExecutionForTests("myInput"),
 	)
 
 	ins := NewLayerWithEngineForTests(engine)
@@ -810,11 +768,6 @@ func TestLayer_withEngine_Success(t *testing.T) {
 		return
 	}
 
-	if ins.IsBytesReference() {
-		t.Errorf("the layer was expected to NOT contain a bytesReference")
-		return
-	}
-
 	retEngine := ins.Engine()
 	if !reflect.DeepEqual(engine, retEngine) {
 		t.Errorf("the returned engine is invalid")
@@ -822,9 +775,106 @@ func TestLayer_withEngine_Success(t *testing.T) {
 	}
 }
 
+func TestLayer_withExecution_Success(t *testing.T) {
+	execution := layers.NewExecutionForTests("myInput")
+
+	ins := NewLayerWithExecutionForTests(execution)
+
+	if ins.IsLayer() {
+		t.Errorf("the layer was expected to NOT contain a layer")
+		return
+	}
+
+	if ins.IsOutput() {
+		t.Errorf("the layer was expected to NOT contain an output")
+		return
+	}
+
+	if ins.IsKind() {
+		t.Errorf("the layer was expected to NOT contain a kind")
+		return
+	}
+
+	if ins.IsInstruction() {
+		t.Errorf("the layer was expected to NOT contain an instruction")
+		return
+	}
+
+	if ins.IsCondition() {
+		t.Errorf("the layer was expected to NOT contain a condition")
+		return
+	}
+
+	if ins.IsAssignment() {
+		t.Errorf("the layer was expected to NOT contain an assignment")
+		return
+	}
+
+	if ins.IsAssignable() {
+		t.Errorf("the layer was expected to NOT contain an assignable")
+		return
+	}
+
+	if ins.IsEngine() {
+		t.Errorf("the layer was expected to NOT contain an engine")
+		return
+	}
+
+	if !ins.IsExecution() {
+		t.Errorf("the layer was expected to contain an execution")
+		return
+	}
+
+	if ins.IsAssignableResource() {
+		t.Errorf("the layer was expected to NOT contain an assignableResource")
+		return
+	}
+
+	if ins.IsBytes() {
+		t.Errorf("the layer was expected to NOT contain a bytes")
+		return
+	}
+
+	if ins.IsIdentity() {
+		t.Errorf("the layer was expected to NOT contain an identity")
+		return
+	}
+
+	if ins.IsEncryptor() {
+		t.Errorf("the layer was expected to NOT contain an encryptor")
+		return
+	}
+
+	if ins.IsSigner() {
+		t.Errorf("the layer was expected to NOT contain a signer")
+		return
+	}
+
+	if ins.IsSignatureVerify() {
+		t.Errorf("the layer was expected to NOT contain a signatureVerify")
+		return
+	}
+
+	if ins.IsVoteVerify() {
+		t.Errorf("the layer was expected to NOT contain a voteVerify")
+		return
+	}
+
+	if ins.IsVote() {
+		t.Errorf("the layer was expected to NOT contain a vote")
+		return
+	}
+
+	retExecution := ins.Execution()
+	if !reflect.DeepEqual(execution, retExecution) {
+		t.Errorf("the returned execution is invalid")
+		return
+	}
+}
+
 func TestLayer_withAssignableResource_Success(t *testing.T) {
 	assignableResource := layers.NewAssignableResourceWithCompileForTests(
-		layers.NewBytesReferenceWithVariableForTests("myVariable"),
+		"myVariable",
 	)
 
 	ins := NewLayerWithAssignableResourceForTests(assignableResource)
@@ -909,11 +959,6 @@ func TestLayer_withAssignableResource_Success(t *testing.T) {
 		return
 	}
 
-	if ins.IsBytesReference() {
-		t.Errorf("the layer was expected to NOT contain a bytesReference")
-		return
-	}
-
 	retAssignableResource := ins.AssignableResource()
 	if !reflect.DeepEqual(assignableResource, retAssignableResource) {
 		t.Errorf("the returned assignableResource is invalid")
@@ -922,14 +967,10 @@ func TestLayer_withAssignableResource_Success(t *testing.T) {
 }
 
 func TestLayer_withBytes_Success(t *testing.T) {
-	bytesIns := layers.NewBytesWithJoinForTests(
-		layers.NewBytesReferencesForTests(
-			[]layers.BytesReference{
-				layers.NewBytesReferenceWithVariableForTests("myVariable"),
-				layers.NewBytesReferenceWithBytesForTests([]byte("this is some bytes")),
-			},
-		),
-	)
+	bytesIns := layers.NewBytesWithJoinForTests([]string{
+		"first",
+		"second",
+	})
 
 	ins := NewLayerWithBytesForTests(bytesIns)
 
@@ -1013,11 +1054,6 @@ func TestLayer_withBytes_Success(t *testing.T) {
 		return
 	}
 
-	if ins.IsBytesReference() {
-		t.Errorf("the layer was expected to NOT contain a bytesReference")
-		return
-	}
-
 	retBytes := ins.Bytes()
 	if !reflect.DeepEqual(bytesIns, retBytes) {
 		t.Errorf("the returned bytes is invalid")
@@ -1027,9 +1063,7 @@ func TestLayer_withBytes_Success(t *testing.T) {
 
 func TestLayer_withIdentity_Success(t *testing.T) {
 	identity := layers.NewIdentityWithSignerForTests(
-		layers.NewSignerWithSignForTests(
-			layers.NewBytesReferenceWithVariableForTests("mySign"),
-		),
+		layers.NewSignerWithSignForTests("mySign"),
 	)
 
 	ins := NewLayerWithIdentityForTests(identity)
@@ -1114,11 +1148,6 @@ func TestLayer_withIdentity_Success(t *testing.T) {
 		return
 	}
 
-	if ins.IsBytesReference() {
-		t.Errorf("the layer was expected to NOT contain a bytesReference")
-		return
-	}
-
 	retIdentity := ins.Identity()
 	if !reflect.DeepEqual(identity, retIdentity) {
 		t.Errorf("the returned identity is invalid")
@@ -1127,10 +1156,7 @@ func TestLayer_withIdentity_Success(t *testing.T) {
 }
 
 func TestLayer_withEncryptor_Success(t *testing.T) {
-	encryptor := layers.NewEncryptorWithDecryptForTests(
-		layers.NewBytesReferenceWithVariableForTests("myVariable"),
-	)
-
+	encryptor := layers.NewEncryptorWithDecryptForTests("myVariable")
 	ins := NewLayerWithEncryptorForTests(encryptor)
 
 	if ins.IsLayer() {
@@ -1213,11 +1239,6 @@ func TestLayer_withEncryptor_Success(t *testing.T) {
 		return
 	}
 
-	if ins.IsBytesReference() {
-		t.Errorf("the layer was expected to NOT contain a bytesReference")
-		return
-	}
-
 	retEncryptor := ins.Encryptor()
 	if !reflect.DeepEqual(encryptor, retEncryptor) {
 		t.Errorf("the returned encryptor is invalid")
@@ -1226,10 +1247,7 @@ func TestLayer_withEncryptor_Success(t *testing.T) {
 }
 
 func TestLayer_withSigner_Success(t *testing.T) {
-	signer := layers.NewSignerWithSignForTests(
-		layers.NewBytesReferenceWithVariableForTests("mySign"),
-	)
-
+	signer := layers.NewSignerWithSignForTests("mySign")
 	ins := NewLayerWithSignerForTests(signer)
 
 	if ins.IsLayer() {
@@ -1312,11 +1330,6 @@ func TestLayer_withSigner_Success(t *testing.T) {
 		return
 	}
 
-	if ins.IsBytesReference() {
-		t.Errorf("the layer was expected to NOT contain a bytesReference")
-		return
-	}
-
 	retSigner := ins.Signer()
 	if !reflect.DeepEqual(signer, retSigner) {
 		t.Errorf("the returned signer is invalid")
@@ -1326,7 +1339,8 @@ func TestLayer_withSigner_Success(t *testing.T) {
 
 func TestLayer_withSignatureVerify_Success(t *testing.T) {
 	signatureVerify := layers.NewSignatureVerifyForTests(
-		"mySignature", layers.NewBytesReferenceWithVariableForTests("myMessage"),
+		"mySignature",
+		"myMessage",
 	)
 
 	ins := NewLayerWithSignatureVerifyForTests(signatureVerify)
@@ -1411,11 +1425,6 @@ func TestLayer_withSignatureVerify_Success(t *testing.T) {
 		return
 	}
 
-	if ins.IsBytesReference() {
-		t.Errorf("the layer was expected to NOT contain a bytesReference")
-		return
-	}
-
 	retSignatureVerify := ins.SignatureVerify()
 	if !reflect.DeepEqual(signatureVerify, retSignatureVerify) {
 		t.Errorf("the returned signatureVerify is invalid")
@@ -1426,7 +1435,7 @@ func TestLayer_withSignatureVerify_Success(t *testing.T) {
 func TestLayer_withVoteVerify_Success(t *testing.T) {
 	voteVerify := layers.NewVoteVerifyForTests(
 		"myVote",
-		layers.NewBytesReferenceWithVariableForTests("myMessage"),
+		"myMessage",
 		"myHashedRingVariable",
 	)
 
@@ -1512,11 +1521,6 @@ func TestLayer_withVoteVerify_Success(t *testing.T) {
 		return
 	}
 
-	if ins.IsBytesReference() {
-		t.Errorf("the layer was expected to NOT contain a bytesReference")
-		return
-	}
-
 	retVoteVerify := ins.VoteVerify()
 	if !reflect.DeepEqual(voteVerify, retVoteVerify) {
 		t.Errorf("the returned voteVerify is invalid")
@@ -1527,7 +1531,7 @@ func TestLayer_withVoteVerify_Success(t *testing.T) {
 func TestLayer_withVote_Success(t *testing.T) {
 	vote := layers.NewVoteForTests(
 		"myRingVariable",
-		layers.NewBytesReferenceWithVariableForTests("myMessage"),
+		"myMessage",
 	)
 
 	ins := NewLayerWithVoteForTests(vote)
@@ -1612,110 +1616,9 @@ func TestLayer_withVote_Success(t *testing.T) {
 		return
 	}
 
-	if ins.IsBytesReference() {
-		t.Errorf("the layer was expected to NOT contain a bytesReference")
-		return
-	}
-
 	retVote := ins.Vote()
 	if !reflect.DeepEqual(vote, retVote) {
 		t.Errorf("the returned vote is invalid")
-		return
-	}
-}
-
-func TestLayer_withBytesReference_Success(t *testing.T) {
-	bytesReference := layers.NewBytesReferenceWithVariableForTests("myVariable")
-	ins := NewLayerWithBytesReferenceForTests(bytesReference)
-
-	if ins.IsLayer() {
-		t.Errorf("the layer was expected to NOT contain a layer")
-		return
-	}
-
-	if ins.IsOutput() {
-		t.Errorf("the layer was expected to NOT contain an output")
-		return
-	}
-
-	if ins.IsKind() {
-		t.Errorf("the layer was expected to NOT contain a kind")
-		return
-	}
-
-	if ins.IsInstruction() {
-		t.Errorf("the layer was expected to NOT contain an instruction")
-		return
-	}
-
-	if ins.IsCondition() {
-		t.Errorf("the layer was expected to NOT contain a condition")
-		return
-	}
-
-	if ins.IsAssignment() {
-		t.Errorf("the layer was expected to NOT contain an assignment")
-		return
-	}
-
-	if ins.IsAssignable() {
-		t.Errorf("the layer was expected to NOT contain an assignable")
-		return
-	}
-
-	if ins.IsEngine() {
-		t.Errorf("the layer was expected to NOT contain an engine")
-		return
-	}
-
-	if ins.IsAssignableResource() {
-		t.Errorf("the layer was expected to NOT contain an assignableResource")
-		return
-	}
-
-	if ins.IsBytes() {
-		t.Errorf("the layer was expected to NOT contain a bytes")
-		return
-	}
-
-	if ins.IsIdentity() {
-		t.Errorf("the layer was expected to NOT contain an identity")
-		return
-	}
-
-	if ins.IsEncryptor() {
-		t.Errorf("the layer was expected to NOT contain an encryptor")
-		return
-	}
-
-	if ins.IsSigner() {
-		t.Errorf("the layer was expected to NOT contain a signer")
-		return
-	}
-
-	if ins.IsSignatureVerify() {
-		t.Errorf("the layer was expected to NOT contain a signatureVerify")
-		return
-	}
-
-	if ins.IsVoteVerify() {
-		t.Errorf("the layer was expected to NOT contain a voteVerify")
-		return
-	}
-
-	if ins.IsVote() {
-		t.Errorf("the layer was expected to NOT contain a vote")
-		return
-	}
-
-	if !ins.IsBytesReference() {
-		t.Errorf("the layer was expected to contain a bytesReference")
-		return
-	}
-
-	retBytesReference := ins.BytesReference()
-	if !reflect.DeepEqual(bytesReference, retBytesReference) {
-		t.Errorf("the returned bytesReference is invalid")
 		return
 	}
 }

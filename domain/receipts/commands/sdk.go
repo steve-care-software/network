@@ -42,6 +42,7 @@ type Builder interface {
 type Commands interface {
 	Hash() hash.Hash
 	List() []Command
+	Last() Command
 }
 
 // CommandBuilder represents a command builder

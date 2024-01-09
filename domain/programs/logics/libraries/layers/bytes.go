@@ -4,37 +4,37 @@ import "steve.care/network/domain/hash"
 
 type bytesIns struct {
 	hash      hash.Hash
-	join      BytesReferences
-	compare   BytesReferences
-	hashBytes BytesReference
+	join      []string
+	compare   []string
+	hashBytes string
 }
 
 func createBytesWithJoin(
 	hash hash.Hash,
-	join BytesReferences,
+	join []string,
 ) Bytes {
-	return createBytesInternally(hash, join, nil, nil)
+	return createBytesInternally(hash, join, nil, "")
 }
 
 func createBytesWithCompare(
 	hash hash.Hash,
-	compare BytesReferences,
+	compare []string,
 ) Bytes {
-	return createBytesInternally(hash, nil, compare, nil)
+	return createBytesInternally(hash, nil, compare, "")
 }
 
 func createBytesWithHashBytes(
 	hash hash.Hash,
-	hashBytes BytesReference,
+	hashBytes string,
 ) Bytes {
 	return createBytesInternally(hash, nil, nil, hashBytes)
 }
 
 func createBytesInternally(
 	hash hash.Hash,
-	join BytesReferences,
-	compare BytesReferences,
-	hashBytes BytesReference,
+	join []string,
+	compare []string,
+	hashBytes string,
 ) Bytes {
 	out := bytesIns{
 		hash:      hash,
@@ -57,7 +57,7 @@ func (obj *bytesIns) IsJoin() bool {
 }
 
 // Join returns the join, if any
-func (obj *bytesIns) Join() BytesReferences {
+func (obj *bytesIns) Join() []string {
 	return obj.join
 }
 
@@ -67,16 +67,16 @@ func (obj *bytesIns) IsCompare() bool {
 }
 
 // Compare returns the compare, if any
-func (obj *bytesIns) Compare() BytesReferences {
+func (obj *bytesIns) Compare() []string {
 	return obj.compare
 }
 
 // IsHashBytes returns true if there is a hashBytes, false otherwise
 func (obj *bytesIns) IsHashBytes() bool {
-	return obj.hashBytes != nil
+	return obj.hashBytes != ""
 }
 
 // HashBytes returns the hashBytes, if any
-func (obj *bytesIns) HashBytes() BytesReference {
+func (obj *bytesIns) HashBytes() string {
 	return obj.hashBytes
 }

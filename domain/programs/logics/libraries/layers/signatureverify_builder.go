@@ -9,7 +9,7 @@ import (
 type signatureVerifyBuilder struct {
 	hashAdapter hash.Adapter
 	signature   string
-	message     BytesReference
+	message     string
 }
 
 func createSignatureVerifyBuilder(
@@ -18,7 +18,7 @@ func createSignatureVerifyBuilder(
 	out := signatureVerifyBuilder{
 		hashAdapter: hashAdapter,
 		signature:   "",
-		message:     nil,
+		message:     "",
 	}
 
 	return &out
@@ -38,7 +38,7 @@ func (app *signatureVerifyBuilder) WithSignature(signature string) SignatureVeri
 }
 
 // WithMessage adds a message to the builder
-func (app *signatureVerifyBuilder) WithMessage(message BytesReference) SignatureVerifyBuilder {
+func (app *signatureVerifyBuilder) WithMessage(message string) SignatureVerifyBuilder {
 	app.message = message
 	return app
 }
@@ -49,13 +49,13 @@ func (app *signatureVerifyBuilder) Now() (SignatureVerify, error) {
 		return nil, errors.New("the signature variable is mandatory in order to build a SignatureVerify instance")
 	}
 
-	if app.message == nil {
+	if app.message == "" {
 		return nil, errors.New("the message is mandatory in order to build a SignatureVerify instance")
 	}
 
 	pHash, err := app.hashAdapter.FromMultiBytes([][]byte{
 		[]byte(app.signature),
-		app.message.Hash().Bytes(),
+		[]byte(app.message),
 	})
 
 	if err != nil {

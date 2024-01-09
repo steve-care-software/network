@@ -4,13 +4,13 @@ import "steve.care/network/domain/hash"
 
 type engine struct {
 	hash      hash.Hash
-	execution BytesReference
+	execution Execution
 	resource  AssignableResource
 }
 
 func createEngineWithExecution(
 	hash hash.Hash,
-	execution BytesReference,
+	execution Execution,
 ) Engine {
 	return createEngineInternally(hash, execution, nil)
 }
@@ -24,7 +24,7 @@ func createEngineWithResource(
 
 func createEngineInternally(
 	hash hash.Hash,
-	execution BytesReference,
+	execution Execution,
 	resource AssignableResource,
 ) Engine {
 	out := engine{
@@ -47,7 +47,7 @@ func (obj *engine) IsExecution() bool {
 }
 
 // Execution returns the execution, if any
-func (obj *engine) Execution() BytesReference {
+func (obj *engine) Execution() Execution {
 	return obj.execution
 }
 

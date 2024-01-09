@@ -6,7 +6,7 @@ import (
 )
 
 func TestEncryptor_withDecrypt_Success(t *testing.T) {
-	variable := NewBytesReferenceWithVariableForTests("myVariable")
+	variable := "myVariable"
 	encryptor := NewEncryptorWithDecryptForTests(variable)
 
 	if !encryptor.IsDecrypt() {
@@ -32,7 +32,7 @@ func TestEncryptor_withDecrypt_Success(t *testing.T) {
 }
 
 func TestEncryptor_withEncrypt_Success(t *testing.T) {
-	variable := NewBytesReferenceWithVariableForTests("myVariable")
+	variable := "myVariable"
 	encryptor := NewEncryptorWithEncryptForTests(variable)
 
 	if encryptor.IsDecrypt() {

@@ -15,6 +15,7 @@ type builder struct {
 	assignment         layers.Assignment
 	assignable         layers.Assignable
 	engine             layers.Engine
+	execution          layers.Execution
 	assignableResource layers.AssignableResource
 	bytes              layers.Bytes
 	identity           layers.Identity
@@ -23,7 +24,6 @@ type builder struct {
 	signatureVerify    layers.SignatureVerify
 	voteVerify         layers.VoteVerify
 	vote               layers.Vote
-	bytesReference     layers.BytesReference
 }
 
 func createBuilder() Builder {
@@ -36,6 +36,7 @@ func createBuilder() Builder {
 		assignment:         nil,
 		assignable:         nil,
 		engine:             nil,
+		execution:          nil,
 		assignableResource: nil,
 		bytes:              nil,
 		identity:           nil,
@@ -44,7 +45,6 @@ func createBuilder() Builder {
 		signatureVerify:    nil,
 		voteVerify:         nil,
 		vote:               nil,
-		bytesReference:     nil,
 	}
 
 	return &out
@@ -103,6 +103,12 @@ func (app *builder) WithEngine(engine layers.Engine) Builder {
 	return app
 }
 
+// WithExecution adds an execution to the builder
+func (app *builder) WithExecution(execution layers.Execution) Builder {
+	app.execution = execution
+	return app
+}
+
 // WithAssignableResource adds an assignableResource to the builder
 func (app *builder) WithAssignableResource(assignableResource layers.AssignableResource) Builder {
 	app.assignableResource = assignableResource
@@ -151,12 +157,6 @@ func (app *builder) WithVote(vote layers.Vote) Builder {
 	return app
 }
 
-// WithBytesReference adds bytesReference to the builder
-func (app *builder) WithBytesReference(bytesReference layers.BytesReference) Builder {
-	app.bytesReference = bytesReference
-	return app
-}
-
 // Now builds a new Layer instance
 func (app *builder) Now() (Layer, error) {
 	if app.layer != nil {
@@ -191,6 +191,10 @@ func (app *builder) Now() (Layer, error) {
 		return createLayerWithEngine(app.engine), nil
 	}
 
+	if app.execution != nil {
+		return createLayerWithExecution(app.execution), nil
+	}
+
 	if app.assignableResource != nil {
 		return createLayerWithAssignableResource(app.assignableResource), nil
 	}
@@ -221,10 +225,6 @@ func (app *builder) Now() (Layer, error) {
 
 	if app.vote != nil {
 		return createLayerWithVote(app.vote), nil
-	}
-
-	if app.bytesReference != nil {
-		return createLayerWithBytesReference(app.bytesReference), nil
 	}
 
 	return nil, errors.New("the Layer resource is invalid")

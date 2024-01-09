@@ -6,19 +6,19 @@ import (
 	"steve.care/network/domain/receipts/commands"
 )
 
-// NewBuilder creates a new builder instance
-func NewBuilder() Builder {
+// NewReceiptBuilder creates a new builder instance
+func NewReceiptBuilder() ReceiptBuilder {
 	hashAdapter := hash.NewAdapter()
-	return createBuilder(
+	return createReceiptBuilder(
 		hashAdapter,
 	)
 }
 
-// Builder represents a receipt builder
-type Builder interface {
-	Create() Builder
-	WithCommands(commands commands.Commands) Builder
-	WithSignature(signature signers.Signature) Builder
+// ReceiptBuilder represents a receipt builder
+type ReceiptBuilder interface {
+	Create() ReceiptBuilder
+	WithCommands(commands commands.Commands) ReceiptBuilder
+	WithSignature(signature signers.Signature) ReceiptBuilder
 	Now() (Receipt, error)
 }
 

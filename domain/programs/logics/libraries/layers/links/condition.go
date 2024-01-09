@@ -5,20 +5,32 @@ import "steve.care/network/domain/hash"
 type condition struct {
 	hash     hash.Hash
 	resource ConditionResource
-	operator Operator
 	next     ConditionValue
 }
 
 func createCondition(
 	hash hash.Hash,
 	resource ConditionResource,
-	operator Operator,
+) Condition {
+	return createConditionInternally(hash, resource, nil)
+}
+
+func createConditionWithNext(
+	hash hash.Hash,
+	resource ConditionResource,
+	next ConditionValue,
+) Condition {
+	return createConditionInternally(hash, resource, next)
+}
+
+func createConditionInternally(
+	hash hash.Hash,
+	resource ConditionResource,
 	next ConditionValue,
 ) Condition {
 	out := condition{
 		hash:     hash,
 		resource: resource,
-		operator: operator,
 		next:     next,
 	}
 
@@ -35,9 +47,9 @@ func (obj *condition) Resource() ConditionResource {
 	return obj.resource
 }
 
-// Operator returns the operator
-func (obj *condition) Operator() Operator {
-	return obj.operator
+// HasNext returns true if there is a next, false otherwise
+func (obj *condition) HasNext() bool {
+	return obj.next != nil
 }
 
 // Next returns the next value

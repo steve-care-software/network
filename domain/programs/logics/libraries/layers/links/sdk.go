@@ -103,6 +103,8 @@ type Builder interface {
 type Links interface {
 	Hash() hash.Hash
 	List() []Link
+	Fetch(hash hash.Hash) (Link, error)
+	FetchByExecutedLayers(layerHashes []hash.Hash) (Link, error)
 }
 
 // LinkBuilder represents a link builder
@@ -153,7 +155,6 @@ type Element interface {
 type ConditionBuilder interface {
 	Create() ConditionBuilder
 	WithResource(resource ConditionResource) ConditionBuilder
-	WithOperator(operator Operator) ConditionBuilder
 	WithNext(next ConditionValue) ConditionBuilder
 	Now() (Condition, error)
 }
@@ -162,7 +163,7 @@ type ConditionBuilder interface {
 type Condition interface {
 	Hash() hash.Hash
 	Resource() ConditionResource
-	Operator() Operator
+	HasNext() bool
 	Next() ConditionValue
 }
 

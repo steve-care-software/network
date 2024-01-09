@@ -16,5 +16,10 @@ type Builder interface {
 
 // Application represents the logic application
 type Application interface {
-	Execute(input []byte, layer layers.Layer, library libraries.Library, context receipts.Receipt) (receipts.Receipt, error)
+	Execute(
+		input []byte,
+		layer layers.Layer,
+		library libraries.Library,
+		context receipts.Receipt,
+	) (receipts.Receipt, error)
 }

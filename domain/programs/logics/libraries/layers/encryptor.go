@@ -4,35 +4,35 @@ import "steve.care/network/domain/hash"
 
 type encryptor struct {
 	hash        hash.Hash
-	decrypt     BytesReference
-	encrypt     BytesReference
+	decrypt     string
+	encrypt     string
 	isPublicKey bool
 }
 
 func createEncryptorWithDecrypt(
 	hash hash.Hash,
-	decrypt BytesReference,
+	decrypt string,
 ) Encryptor {
-	return createEncryptorInternally(hash, decrypt, nil, false)
+	return createEncryptorInternally(hash, decrypt, "", false)
 }
 
 func createEncryptorWithEncrypt(
 	hash hash.Hash,
-	encrypt BytesReference,
+	encrypt string,
 ) Encryptor {
-	return createEncryptorInternally(hash, nil, encrypt, false)
+	return createEncryptorInternally(hash, "", encrypt, false)
 }
 
 func createEncryptorWithIsPublicKey(
 	hash hash.Hash,
 ) Encryptor {
-	return createEncryptorInternally(hash, nil, nil, true)
+	return createEncryptorInternally(hash, "", "", true)
 }
 
 func createEncryptorInternally(
 	hash hash.Hash,
-	decrypt BytesReference,
-	encrypt BytesReference,
+	decrypt string,
+	encrypt string,
 	isPublicKey bool,
 ) Encryptor {
 	out := encryptor{
@@ -52,21 +52,21 @@ func (obj *encryptor) Hash() hash.Hash {
 
 // IsDecrypt returns true if there is a decrypt, false otherwise
 func (obj *encryptor) IsDecrypt() bool {
-	return obj.decrypt != nil
+	return obj.decrypt != ""
 }
 
 // Decrypt returns the decrypt, if any
-func (obj *encryptor) Decrypt() BytesReference {
+func (obj *encryptor) Decrypt() string {
 	return obj.decrypt
 }
 
 // IsEncrypt returns true if there is an encrypt, false otherwise
 func (obj *encryptor) IsEncrypt() bool {
-	return obj.encrypt != nil
+	return obj.encrypt != ""
 }
 
 // Encrypt returns the encrypt, if any
-func (obj *encryptor) Encrypt() BytesReference {
+func (obj *encryptor) Encrypt() string {
 	return obj.encrypt
 }
 

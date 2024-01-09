@@ -15,7 +15,7 @@ type resourceTokenReceiptAdapter struct {
 	linkAdapter      *resourceTokenLinkAdapter
 	signatureAdapter signers.SignatureAdapter
 	builder          resources_receipts.Builder
-	receiptBuilder   receipts.Builder
+	receiptBuilder   receipts.ReceiptBuilder
 	commandsBuilder  commands.Builder
 	commandBuilder   commands.CommandBuilder
 	resultBuilder    results.Builder
@@ -29,7 +29,7 @@ func createResourceTokenReceiptAdapter(
 	linkAdapter *resourceTokenLinkAdapter,
 	signatureAdapter signers.SignatureAdapter,
 	builder resources_receipts.Builder,
-	receiptBuilder receipts.Builder,
+	receiptBuilder receipts.ReceiptBuilder,
 	commandsBuilder commands.Builder,
 	commandBuilder commands.CommandBuilder,
 	resultBuilder results.Builder,

@@ -5,13 +5,13 @@ import "steve.care/network/domain/hash"
 type vote struct {
 	hash    hash.Hash
 	ring    string
-	message BytesReference
+	message string
 }
 
 func createVote(
 	hash hash.Hash,
 	ring string,
-	message BytesReference,
+	message string,
 ) Vote {
 	out := vote{
 		hash:    hash,
@@ -33,6 +33,6 @@ func (obj *vote) Ring() string {
 }
 
 // Message returns the message
-func (obj *vote) Message() BytesReference {
+func (obj *vote) Message() string {
 	return obj.message
 }

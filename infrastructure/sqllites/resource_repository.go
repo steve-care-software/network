@@ -15,14 +15,13 @@ import (
 )
 
 type resourceRepository struct {
-	hashAdapter                   hash.Adapter
-	signatureAdapter              signers.SignatureAdapter
-	builder                       resources.Builder
-	tokenBuilder                  tokens.Builder
-	layerBuilder                  layers.Builder
-	cmdLayerBuilder               commands_layers.LayerBuilder
-	cmdLayerBytesReferenceBuilder commands_layers.BytesReferenceBuilder
-	dbPtr                         *sql.DB
+	hashAdapter      hash.Adapter
+	signatureAdapter signers.SignatureAdapter
+	builder          resources.Builder
+	tokenBuilder     tokens.Builder
+	layerBuilder     layers.Builder
+	cmdLayerBuilder  commands_layers.LayerBuilder
+	dbPtr            *sql.DB
 }
 
 func createResourceRepository(
@@ -32,18 +31,16 @@ func createResourceRepository(
 	tokenBuilder tokens.Builder,
 	layerBuilder layers.Builder,
 	cmdLayerBuilder commands_layers.LayerBuilder,
-	cmdLayerBytesReferenceBuilder commands_layers.BytesReferenceBuilder,
 	dbPtr *sql.DB,
 ) resources.Repository {
 	out := resourceRepository{
-		hashAdapter:                   hashAdapter,
-		signatureAdapter:              signatureAdapter,
-		builder:                       builder,
-		tokenBuilder:                  tokenBuilder,
-		layerBuilder:                  layerBuilder,
-		cmdLayerBuilder:               cmdLayerBuilder,
-		cmdLayerBytesReferenceBuilder: cmdLayerBytesReferenceBuilder,
-		dbPtr:                         dbPtr,
+		hashAdapter:      hashAdapter,
+		signatureAdapter: signatureAdapter,
+		builder:          builder,
+		tokenBuilder:     tokenBuilder,
+		layerBuilder:     layerBuilder,
+		cmdLayerBuilder:  cmdLayerBuilder,
+		dbPtr:            dbPtr,
 	}
 
 	return &out
@@ -201,6 +198,7 @@ func (app *resourceRepository) retrieveLayerByHash(hash hash.Hash) (layers.Layer
 	return builder.Now()
 }
 
+/*
 func (app *resourceRepository) retrieveLayerBytesReferenceByHash(hash hash.Hash) (commands_layers.BytesReference, error) {
 	rows, err := app.dbPtr.Query("SELECT variable, bytes FROM layer_bytes_reference WHERE hash = ?", hash.Bytes())
 	if err != nil {
@@ -236,3 +234,4 @@ func (app *resourceRepository) retrieveLayerBytesReferenceByHash(hash hash.Hash)
 
 	return builder.Now()
 }
+*/

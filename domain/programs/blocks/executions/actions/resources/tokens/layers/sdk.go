@@ -20,6 +20,7 @@ type Builder interface {
 	WithCondition(condition layers.Condition) Builder
 	WithAssignment(assignment layers.Assignment) Builder
 	WithEngine(engine layers.Engine) Builder
+	WithExecution(execution layers.Execution) Builder
 	WithAssignableResource(assignableResource layers.AssignableResource) Builder
 	WithAssignable(assignable layers.Assignable) Builder
 	WithBytes(bytes layers.Bytes) Builder
@@ -29,7 +30,6 @@ type Builder interface {
 	WithSignatureVerify(sigVerify layers.SignatureVerify) Builder
 	WithVoteVerify(voteVerify layers.VoteVerify) Builder
 	WithVote(vote layers.Vote) Builder
-	WithBytesReference(bytesReference layers.BytesReference) Builder
 	Now() (Layer, error)
 }
 
@@ -52,6 +52,8 @@ type Layer interface {
 	Assignable() layers.Assignable
 	IsEngine() bool
 	Engine() layers.Engine
+	IsExecution() bool
+	Execution() layers.Execution
 	IsAssignableResource() bool
 	AssignableResource() layers.AssignableResource
 	IsBytes() bool
@@ -68,6 +70,4 @@ type Layer interface {
 	VoteVerify() layers.VoteVerify
 	IsVote() bool
 	Vote() layers.Vote
-	IsBytesReference() bool
-	BytesReference() layers.BytesReference
 }

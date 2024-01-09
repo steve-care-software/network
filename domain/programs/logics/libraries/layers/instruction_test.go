@@ -97,14 +97,10 @@ func TestInstruction_withCondition_Success(t *testing.T) {
 func TestInstruction_withAssignment_Success(t *testing.T) {
 	assignment := NewAssignmentForTests(
 		"myName",
-		NewAssignableWithBytesForTests(NewBytesWithJoinForTests(
-			NewBytesReferencesForTests(
-				[]BytesReference{
-					NewBytesReferenceWithVariableForTests("myVariable"),
-					NewBytesReferenceWithBytesForTests([]byte("this is some bytes")),
-				},
-			),
-		)),
+		NewAssignableWithBytesForTests(NewBytesWithJoinForTests([]string{
+			"first",
+			"second",
+		})),
 	)
 
 	instruction := NewInstructionWithAssignmentForTests(assignment)

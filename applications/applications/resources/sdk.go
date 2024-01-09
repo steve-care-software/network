@@ -18,6 +18,12 @@ func NewApplication(
 
 // Application represents the resources application
 type Application interface {
+	// Compile compiles data to a resource
+	Compile(data []byte) (resources.Resource, error)
+
+	// Decompile decompiles a resource to data
+	Decompile(resource resources.Resource) ([]byte, error)
+
 	// Amount returns the amount of resources
 	Amount() (uint, error)
 

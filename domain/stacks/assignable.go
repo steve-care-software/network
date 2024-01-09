@@ -1,19 +1,23 @@
 package stacks
 
 import (
+	"steve.care/network/domain/accounts/encryptors"
 	"steve.care/network/domain/accounts/signers"
 	"steve.care/network/domain/hash"
+	"steve.care/network/domain/programs/blocks/executions/actions/resources"
 )
 
 type assignable struct {
-	pBool         *bool
-	bytes         []byte
-	signerPubKey  signers.PublicKey
-	signerPubKeys []signers.PublicKey
-	signature     signers.Signature
-	vote          signers.Vote
-	hashList      []hash.Hash
-	hash          hash.Hash
+	pBool              *bool
+	bytes              []byte
+	encryptorPublicKey encryptors.PublicKey
+	signerPubKey       signers.PublicKey
+	signerPubKeys      []signers.PublicKey
+	signature          signers.Signature
+	vote               signers.Vote
+	hashList           []hash.Hash
+	hash               hash.Hash
+	resource           resources.Resource
 }
 
 func createAssignableWithBool(
@@ -21,6 +25,8 @@ func createAssignableWithBool(
 ) Assignable {
 	return createAssignableInternally(
 		pBool,
+		nil,
+		nil,
 		nil,
 		nil,
 		nil,
@@ -43,6 +49,25 @@ func createAssignableWithBytes(
 		nil,
 		nil,
 		nil,
+		nil,
+		nil,
+	)
+}
+
+func createAssignableWithEncryptorPublicKey(
+	encryptorPublicKey encryptors.PublicKey,
+) Assignable {
+	return createAssignableInternally(
+		nil,
+		nil,
+		encryptorPublicKey,
+		nil,
+		nil,
+		nil,
+		nil,
+		nil,
+		nil,
+		nil,
 	)
 }
 
@@ -52,7 +77,9 @@ func createAssignableWithSignerPublicKey(
 	return createAssignableInternally(
 		nil,
 		nil,
+		nil,
 		signerPubKey,
+		nil,
 		nil,
 		nil,
 		nil,
@@ -68,7 +95,9 @@ func createAssignableWithSignerPublicKeys(
 		nil,
 		nil,
 		nil,
+		nil,
 		signerPubKeys,
+		nil,
 		nil,
 		nil,
 		nil,
@@ -84,7 +113,9 @@ func createAssignableWithSignature(
 		nil,
 		nil,
 		nil,
+		nil,
 		signature,
+		nil,
 		nil,
 		nil,
 		nil,
@@ -100,7 +131,9 @@ func createAssignableWithVote(
 		nil,
 		nil,
 		nil,
+		nil,
 		vote,
+		nil,
 		nil,
 		nil,
 	)
@@ -116,7 +149,9 @@ func createAssignableWithHashList(
 		nil,
 		nil,
 		nil,
+		nil,
 		hashList,
+		nil,
 		nil,
 	)
 }
@@ -132,29 +167,52 @@ func createAssignableWithHash(
 		nil,
 		nil,
 		nil,
+		nil,
 		hash,
+		nil,
+	)
+}
+
+func createAssignableWithResource(
+	resource resources.Resource,
+) Assignable {
+	return createAssignableInternally(
+		nil,
+		nil,
+		nil,
+		nil,
+		nil,
+		nil,
+		nil,
+		nil,
+		nil,
+		resource,
 	)
 }
 
 func createAssignableInternally(
 	pBool *bool,
 	bytes []byte,
+	encryptorPublicKey encryptors.PublicKey,
 	signerPubKey signers.PublicKey,
 	signerPubKeys []signers.PublicKey,
 	signature signers.Signature,
 	vote signers.Vote,
 	hashList []hash.Hash,
 	hash hash.Hash,
+	resource resources.Resource,
 ) Assignable {
 	out := assignable{
-		pBool:         pBool,
-		bytes:         bytes,
-		signerPubKey:  signerPubKey,
-		signerPubKeys: signerPubKeys,
-		signature:     signature,
-		vote:          vote,
-		hashList:      hashList,
-		hash:          hash,
+		pBool:              pBool,
+		bytes:              bytes,
+		encryptorPublicKey: encryptorPublicKey,
+		signerPubKey:       signerPubKey,
+		signerPubKeys:      signerPubKeys,
+		signature:          signature,
+		vote:               vote,
+		hashList:           hashList,
+		hash:               hash,
+		resource:           resource,
 	}
 
 	return &out
@@ -178,6 +236,16 @@ func (obj *assignable) IsBytes() bool {
 // Bytes returns bytes, if any
 func (obj *assignable) Bytes() []byte {
 	return obj.bytes
+}
+
+// IsEncryptorPublicKey returns true if encryptor public key, false otherwise
+func (obj *assignable) IsEncryptorPublicKey() bool {
+	return obj.encryptorPublicKey != nil
+}
+
+// EncryptorPublicKey returns encryptor public key, if any
+func (obj *assignable) EncryptorPublicKey() encryptors.PublicKey {
+	return obj.encryptorPublicKey
 }
 
 // IsSignerPublicKey returns true if signer public key, false otherwise
@@ -238,4 +306,14 @@ func (obj *assignable) IsHash() bool {
 // Hash returns hash, if any
 func (obj *assignable) Hash() hash.Hash {
 	return obj.hash
+}
+
+// IsResource returns true if resource, false otherwise
+func (obj *assignable) IsResource() bool {
+	return obj.resource != nil
+}
+
+// Resource returns resource, if any
+func (obj *assignable) Resource() resources.Resource {
+	return obj.resource
 }

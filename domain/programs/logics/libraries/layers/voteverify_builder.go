@@ -9,7 +9,7 @@ import (
 type voteVerifyBuilder struct {
 	hashAdapter hash.Adapter
 	vote        string
-	message     BytesReference
+	message     string
 	hashedRing  string
 }
 
@@ -19,7 +19,7 @@ func createVoteVerifyBuilder(
 	out := voteVerifyBuilder{
 		hashAdapter: hashAdapter,
 		vote:        "",
-		message:     nil,
+		message:     "",
 		hashedRing:  "",
 	}
 
@@ -40,7 +40,7 @@ func (app *voteVerifyBuilder) WithVote(vote string) VoteVerifyBuilder {
 }
 
 // WithMessage adds a message to the builder
-func (app *voteVerifyBuilder) WithMessage(msg BytesReference) VoteVerifyBuilder {
+func (app *voteVerifyBuilder) WithMessage(msg string) VoteVerifyBuilder {
 	app.message = msg
 	return app
 }
@@ -57,7 +57,7 @@ func (app *voteVerifyBuilder) Now() (VoteVerify, error) {
 		return nil, errors.New("the vote variable is mandatory in order to build a VoteVerify instance")
 	}
 
-	if app.message == nil {
+	if app.message == "" {
 		return nil, errors.New("the message is mandatory in order to build a VoteVerify instance")
 	}
 
@@ -67,7 +67,7 @@ func (app *voteVerifyBuilder) Now() (VoteVerify, error) {
 
 	pHash, err := app.hashAdapter.FromMultiBytes([][]byte{
 		[]byte(app.vote),
-		app.message.Hash().Bytes(),
+		[]byte(app.message),
 		[]byte(app.hashedRing),
 	})
 

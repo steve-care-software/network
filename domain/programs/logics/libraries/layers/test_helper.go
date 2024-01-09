@@ -10,19 +10,9 @@ func NewLayersForTests(list []Layer) Layers {
 	return ins
 }
 
-// NewLayerWithInputForTests creates a new layer with input for tests
-func NewLayerWithInputForTests(instructions Instructions, output Output, input string) Layer {
-	ins, err := NewLayerBuilder().Create().WithInstructions(instructions).WithOutput(output).WithInput(input).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	return ins
-}
-
 // NewLayerForTests creates a new layer for tests
-func NewLayerForTests(instructions Instructions, output Output) Layer {
-	ins, err := NewLayerBuilder().Create().WithInstructions(instructions).WithOutput(output).Now()
+func NewLayerForTests(instructions Instructions, output Output, input string) Layer {
+	ins, err := NewLayerBuilder().Create().WithInstructions(instructions).WithOutput(output).WithInput(input).Now()
 	if err != nil {
 		panic(err)
 	}
@@ -161,7 +151,7 @@ func NewAssignableWithBytesForTests(input Bytes) Assignable {
 }
 
 // NewEngineWithExecutionForTests creates a new engine with execution for tests
-func NewEngineWithExecutionForTests(input BytesReference) Engine {
+func NewEngineWithExecutionForTests(input Execution) Engine {
 	ins, err := NewEngineBuilder().Create().WithExecution(input).Now()
 	if err != nil {
 		panic(err)
@@ -180,8 +170,28 @@ func NewEngineWithResourceForTests(input AssignableResource) Engine {
 	return ins
 }
 
+// NewExecutionWithLayerForTests creates a new execution with layer for tests
+func NewExecutionWithLayerForTests(input string, layer string) Execution {
+	ins, err := NewExecutionBuilder().Create().WithInput(input).WithLayer(layer).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+// NewExecutionForTests creates a new execution for tests
+func NewExecutionForTests(input string) Execution {
+	ins, err := NewExecutionBuilder().Create().WithInput(input).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
 // NewAssignableResourceWithCompileForTests creates a new assignableResource with compile for tests
-func NewAssignableResourceWithCompileForTests(input BytesReference) AssignableResource {
+func NewAssignableResourceWithCompileForTests(input string) AssignableResource {
 	ins, err := NewAssignableResourceBuilder().Create().WithCompile(input).Now()
 	if err != nil {
 		panic(err)
@@ -201,7 +211,7 @@ func NewAssignableResourceWithDecompileForTests(input string) AssignableResource
 }
 
 // NewAssignableResourceWithAmountByQueryForTests creates a new assignableResource with amountByQuery for tests
-func NewAssignableResourceWithAmountByQueryForTests(input BytesReference) AssignableResource {
+func NewAssignableResourceWithAmountByQueryForTests(input string) AssignableResource {
 	ins, err := NewAssignableResourceBuilder().Create().WihAmountByQuery(input).Now()
 	if err != nil {
 		panic(err)
@@ -210,8 +220,18 @@ func NewAssignableResourceWithAmountByQueryForTests(input BytesReference) Assign
 	return ins
 }
 
+// NewAssignableResourceWithListByQueryForTests creates a new assignableResource with listByQuery for tests
+func NewAssignableResourceWithListByQueryForTests(input string) AssignableResource {
+	ins, err := NewAssignableResourceBuilder().Create().WithListByQuery(input).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
 // NewAssignableResourceWithRetrieveByQueryForTests creates a new assignableResource with retrieveByQuery for tests
-func NewAssignableResourceWithRetrieveByQueryForTests(input BytesReference) AssignableResource {
+func NewAssignableResourceWithRetrieveByQueryForTests(input string) AssignableResource {
 	ins, err := NewAssignableResourceBuilder().Create().WithRetrieveByQuery(input).Now()
 	if err != nil {
 		panic(err)
@@ -221,7 +241,7 @@ func NewAssignableResourceWithRetrieveByQueryForTests(input BytesReference) Assi
 }
 
 // NewAssignableResourceWithRetrieveByHashForTests creates a new assignableResource with retrieveByHash for tests
-func NewAssignableResourceWithRetrieveByHashForTests(input BytesReference) AssignableResource {
+func NewAssignableResourceWithRetrieveByHashForTests(input string) AssignableResource {
 	ins, err := NewAssignableResourceBuilder().Create().WithRetrieveByHash(input).Now()
 	if err != nil {
 		panic(err)
@@ -241,7 +261,7 @@ func NewAssignableResourceWithAmountForTests() AssignableResource {
 }
 
 // NewBytesWithHashBytesForTests creates a new bytes with hashBytes for tests
-func NewBytesWithHashBytesForTests(input BytesReference) Bytes {
+func NewBytesWithHashBytesForTests(input string) Bytes {
 	ins, err := NewBytesBuilder().Create().WithHashBytes(input).Now()
 	if err != nil {
 		panic(err)
@@ -251,7 +271,7 @@ func NewBytesWithHashBytesForTests(input BytesReference) Bytes {
 }
 
 // NewBytesWithCompareForTests creates a new bytes with compare for tests
-func NewBytesWithCompareForTests(input BytesReferences) Bytes {
+func NewBytesWithCompareForTests(input []string) Bytes {
 	ins, err := NewBytesBuilder().Create().WithCompare(input).Now()
 	if err != nil {
 		panic(err)
@@ -261,7 +281,7 @@ func NewBytesWithCompareForTests(input BytesReferences) Bytes {
 }
 
 // NewBytesWithJoinForTests creates a new bytes with join for tests
-func NewBytesWithJoinForTests(join BytesReferences) Bytes {
+func NewBytesWithJoinForTests(join []string) Bytes {
 	ins, err := NewBytesBuilder().Create().WithJoin(join).Now()
 	if err != nil {
 		panic(err)
@@ -301,7 +321,7 @@ func NewEncryptorWithPublicKeyForTests() Encryptor {
 }
 
 // NewEncryptorWithEncryptForTests creates a new encryptor with encrypt with tests
-func NewEncryptorWithEncryptForTests(input BytesReference) Encryptor {
+func NewEncryptorWithEncryptForTests(input string) Encryptor {
 	ins, err := NewEncryptorBuilder().Create().WithEncrypt(input).Now()
 	if err != nil {
 		panic(err)
@@ -311,7 +331,7 @@ func NewEncryptorWithEncryptForTests(input BytesReference) Encryptor {
 }
 
 // NewEncryptorWithDecryptForTests creates a new encryptor with decrypt with tests
-func NewEncryptorWithDecryptForTests(input BytesReference) Encryptor {
+func NewEncryptorWithDecryptForTests(input string) Encryptor {
 	ins, err := NewEncryptorBuilder().Create().WithDecrypt(input).Now()
 	if err != nil {
 		panic(err)
@@ -391,7 +411,7 @@ func NewSignerWithVoteForTests(input Vote) Signer {
 }
 
 // NewSignerWithSignForTests creates a new signer with sign for tests
-func NewSignerWithSignForTests(input BytesReference) Signer {
+func NewSignerWithSignForTests(input string) Signer {
 	ins, err := NewSignerBuilder().Create().WithSign(input).Now()
 	if err != nil {
 		panic(err)
@@ -401,7 +421,7 @@ func NewSignerWithSignForTests(input BytesReference) Signer {
 }
 
 // NewSignatureVerifyForTests creates a new signature verify for tests
-func NewSignatureVerifyForTests(signature string, message BytesReference) SignatureVerify {
+func NewSignatureVerifyForTests(signature string, message string) SignatureVerify {
 	ins, err := NewSignatureVerifyBuilder().Create().
 		WithSignature(signature).
 		WithMessage(message).
@@ -415,7 +435,7 @@ func NewSignatureVerifyForTests(signature string, message BytesReference) Signat
 }
 
 // NewVoteVerifyForTests creates a new vote verify for tests
-func NewVoteVerifyForTests(vote string, message BytesReference, hashedRing string) VoteVerify {
+func NewVoteVerifyForTests(vote string, message string, hashedRing string) VoteVerify {
 	ins, err := NewVoteVerifyBuilder().Create().
 		WithVote(vote).
 		WithMessage(message).
@@ -430,52 +450,10 @@ func NewVoteVerifyForTests(vote string, message BytesReference, hashedRing strin
 }
 
 // NewVoteForTests creates a new vote for tests
-func NewVoteForTests(ring string, message BytesReference) Vote {
+func NewVoteForTests(ring string, message string) Vote {
 	ins, err := NewVoteBuilder().Create().
 		WithRing(ring).
 		WithMessage(message).
-		Now()
-
-	if err != nil {
-		panic(err)
-	}
-
-	return ins
-}
-
-// NewBytesReferencesForTests creates a new bytes references for tests
-func NewBytesReferencesForTests(list []BytesReference) BytesReferences {
-	ins, err := NewBytesReferencesBuilder().
-		Create().
-		WithList(list).
-		Now()
-
-	if err != nil {
-		panic(err)
-	}
-
-	return ins
-}
-
-// NewBytesReferenceWithBytesForTests creates a new bytes reference with bytes for tests
-func NewBytesReferenceWithBytesForTests(bytes []byte) BytesReference {
-	ins, err := NewBytesReferenceBuilder().
-		Create().
-		WithBytes(bytes).
-		Now()
-
-	if err != nil {
-		panic(err)
-	}
-
-	return ins
-}
-
-// NewBytesReferenceWithVariableForTests creates a new bytes reference with variable for tests
-func NewBytesReferenceWithVariableForTests(variable string) BytesReference {
-	ins, err := NewBytesReferenceBuilder().
-		Create().
-		WithVariable(variable).
 		Now()
 
 	if err != nil {

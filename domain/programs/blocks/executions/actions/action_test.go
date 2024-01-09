@@ -23,6 +23,7 @@ func TestAction_withCreate_Success(t *testing.T) {
 					"myVariable",
 					layers.NewKindWithPromptForTests(),
 				),
+				"myInput",
 			),
 		),
 	)

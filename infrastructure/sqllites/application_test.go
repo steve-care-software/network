@@ -146,6 +146,7 @@ func TestApplication_Resources_InsertThenRetrieve_Success(t *testing.T) {
 					"myVariable",
 					layers.NewKindWithPromptForTests(),
 				),
+				"myInput",
 			),
 		),
 	)
@@ -167,6 +168,7 @@ func TestApplication_Resources_InsertThenRetrieve_Success(t *testing.T) {
 					"myVariable",
 					layers.NewKindWithPromptForTests(),
 				),
+				"myInput",
 			),
 		),
 	)

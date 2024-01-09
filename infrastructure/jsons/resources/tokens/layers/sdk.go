@@ -64,9 +64,9 @@ type Assignable struct {
 
 // Bytes represents the bytes
 type Bytes struct {
-	Join    []BytesReference `json:"join"`
-	Compare []BytesReference `json:"compare"`
-	Hash    *BytesReference  `json:"hash"`
+	Join    []string `json:"join"`
+	Compare []string `json:"compare"`
+	Hash    string   `json:"hash"`
 }
 
 // Identity represents the identity
@@ -77,14 +77,14 @@ type Identity struct {
 
 // Encryptor represents the encryptor
 type Encryptor struct {
-	Decrypt     *BytesReference `json:"decrypt"`
-	Encrypt     *BytesReference `json:"encrypt"`
-	IsPublicKey *bool           `json:"is_public_key"`
+	Decrypt     string `json:"decrypt"`
+	Encrypt     string `json:"encrypt"`
+	IsPublicKey *bool  `json:"is_public_key"`
 }
 
 // Signer represents a signer
 type Signer struct {
-	Sign             *BytesReference  `json:"sign"`
+	Sign             string           `json:"sign"`
 	Vote             *Vote            `json:"vote"`
 	GenSignerPubKeys uint             `json:"generate_signer_public_keys"`
 	HashPublicKeys   string           `json:"hash_public_keys"`
@@ -96,25 +96,19 @@ type Signer struct {
 
 // SignatureVerify represents a signature verify
 type SignatureVerify struct {
-	Signature string         `json:"signature"`
-	Message   BytesReference `json:"message"`
+	Signature string `json:"signature"`
+	Message   string `json:"message"`
 }
 
 // VoteVerify represents a vote verify
 type VoteVerify struct {
-	Vote       string         `json:"vote"`
-	Message    BytesReference `json:"message"`
-	HashedRing string         `json:"hashed_ring"`
+	Vote       string `json:"vote"`
+	Message    string `json:"message"`
+	HashedRing string `json:"hashed_ring"`
 }
 
 // Vote represents a vote
 type Vote struct {
-	Ring    string         `json:"ring"`
-	Message BytesReference `json:"message"`
-}
-
-// BytesReference represents a bytes reference
-type BytesReference struct {
-	Variable string `json:"variable"`
-	Bytes    []byte `json:"bytes"`
+	Ring    string `json:"ring"`
+	Message string `json:"message"`
 }

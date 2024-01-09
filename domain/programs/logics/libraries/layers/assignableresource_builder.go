@@ -8,11 +8,12 @@ import (
 
 type assignableResourceBuilder struct {
 	hashAdapter     hash.Adapter
-	compile         BytesReference
+	compile         string
 	decompile       string
-	amountByQuery   BytesReference
-	retrieveByQuery BytesReference
-	retrieveByHash  BytesReference
+	amountByQuery   string
+	listByQuery     string
+	retrieveByQuery string
+	retrieveByHash  string
 	isAmount        bool
 }
 
@@ -21,11 +22,12 @@ func createAssignableResourceBuilder(
 ) AssignableResourceBuilder {
 	out := assignableResourceBuilder{
 		hashAdapter:     hashAdapter,
-		compile:         nil,
+		compile:         "",
 		decompile:       "",
-		amountByQuery:   nil,
-		retrieveByQuery: nil,
-		retrieveByHash:  nil,
+		amountByQuery:   "",
+		listByQuery:     "",
+		retrieveByQuery: "",
+		retrieveByHash:  "",
 		isAmount:        false,
 	}
 
@@ -40,7 +42,7 @@ func (app *assignableResourceBuilder) Create() AssignableResourceBuilder {
 }
 
 // WithCompile adds a compile to the builder
-func (app *assignableResourceBuilder) WithCompile(compile BytesReference) AssignableResourceBuilder {
+func (app *assignableResourceBuilder) WithCompile(compile string) AssignableResourceBuilder {
 	app.compile = compile
 	return app
 }
@@ -52,19 +54,25 @@ func (app *assignableResourceBuilder) WithDecompile(decompile string) Assignable
 }
 
 // WihAmountByQuery adds an amountByQuery to the builder
-func (app *assignableResourceBuilder) WihAmountByQuery(amountByQuery BytesReference) AssignableResourceBuilder {
+func (app *assignableResourceBuilder) WihAmountByQuery(amountByQuery string) AssignableResourceBuilder {
 	app.amountByQuery = amountByQuery
 	return app
 }
 
+// WithListByQuery adds a listByQuery to the builder
+func (app *assignableResourceBuilder) WithListByQuery(listByQuery string) AssignableResourceBuilder {
+	app.listByQuery = listByQuery
+	return app
+}
+
 // WithRetrieveByQuery adds a retrieveByQuery to the builder
-func (app *assignableResourceBuilder) WithRetrieveByQuery(retrieveByQuery BytesReference) AssignableResourceBuilder {
+func (app *assignableResourceBuilder) WithRetrieveByQuery(retrieveByQuery string) AssignableResourceBuilder {
 	app.retrieveByQuery = retrieveByQuery
 	return app
 }
 
 // WithRetrieveByHash adds a retrieveByHash to the builder
-func (app *assignableResourceBuilder) WithRetrieveByHash(retrieveByHash BytesReference) AssignableResourceBuilder {
+func (app *assignableResourceBuilder) WithRetrieveByHash(retrieveByHash string) AssignableResourceBuilder {
 	app.retrieveByHash = retrieveByHash
 	return app
 }
@@ -78,9 +86,9 @@ func (app *assignableResourceBuilder) IsAmount() AssignableResourceBuilder {
 // Now builds a new AssignableResource instance
 func (app *assignableResourceBuilder) Now() (AssignableResource, error) {
 	data := [][]byte{}
-	if app.compile != nil {
+	if app.compile != "" {
 		data = append(data, []byte("compile"))
-		data = append(data, app.compile.Hash().Bytes())
+		data = append(data, []byte(app.compile))
 	}
 
 	if app.decompile != "" {
@@ -88,19 +96,24 @@ func (app *assignableResourceBuilder) Now() (AssignableResource, error) {
 		data = append(data, []byte(app.decompile))
 	}
 
-	if app.amountByQuery != nil {
+	if app.amountByQuery != "" {
 		data = append(data, []byte("amountByQuery"))
-		data = append(data, app.amountByQuery.Hash().Bytes())
+		data = append(data, []byte(app.amountByQuery))
 	}
 
-	if app.retrieveByQuery != nil {
+	if app.listByQuery != "" {
+		data = append(data, []byte("listByQuery"))
+		data = append(data, []byte(app.listByQuery))
+	}
+
+	if app.retrieveByQuery != "" {
 		data = append(data, []byte("retrieveByQuery"))
-		data = append(data, app.retrieveByQuery.Hash().Bytes())
+		data = append(data, []byte(app.retrieveByQuery))
 	}
 
-	if app.retrieveByHash != nil {
+	if app.retrieveByHash != "" {
 		data = append(data, []byte("retrieveByHash"))
-		data = append(data, app.retrieveByHash.Hash().Bytes())
+		data = append(data, []byte(app.retrieveByHash))
 	}
 
 	if app.isAmount {
@@ -116,7 +129,7 @@ func (app *assignableResourceBuilder) Now() (AssignableResource, error) {
 		return nil, err
 	}
 
-	if app.compile != nil {
+	if app.compile != "" {
 		return createAssignableResourceWithCompile(*pHash, app.compile), nil
 	}
 
@@ -124,15 +137,19 @@ func (app *assignableResourceBuilder) Now() (AssignableResource, error) {
 		return createAssignableResourceWithDecompile(*pHash, app.decompile), nil
 	}
 
-	if app.amountByQuery != nil {
+	if app.amountByQuery != "" {
 		return createAssignableResourceWithAmountByQuery(*pHash, app.amountByQuery), nil
 	}
 
-	if app.retrieveByQuery != nil {
+	if app.listByQuery != "" {
+		return createAssignableResourceWithListByQuery(*pHash, app.listByQuery), nil
+	}
+
+	if app.retrieveByQuery != "" {
 		return createAssignableResourceWithRetrieveByQuery(*pHash, app.retrieveByQuery), nil
 	}
 
-	if app.retrieveByHash != nil {
+	if app.retrieveByHash != "" {
 		return createAssignableResourceWithRetrieveByHash(*pHash, app.retrieveByHash), nil
 	}
 

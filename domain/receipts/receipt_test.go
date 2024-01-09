@@ -22,6 +22,7 @@ func TestReceipt_Success(t *testing.T) {
 					"myVariable",
 					layers.NewKindWithContinueForTests(),
 				),
+				"myInput",
 			),
 			results.NewResultWithSuccessForTests(
 				results.NewSuccessForTests(
@@ -62,7 +63,7 @@ func TestReceipt_withoutCommands_returnsError(t *testing.T) {
 		return
 	}
 
-	_, err = NewBuilder().Create().WithSignature(signature).Now()
+	_, err = NewReceiptBuilder().Create().WithSignature(signature).Now()
 	if err == nil {
 		t.Errorf("the error was expected to be valid, nil returned")
 		return
@@ -81,6 +82,7 @@ func TestReceipt_withoutSignature_returnsError(t *testing.T) {
 					"myVariable",
 					layers.NewKindWithContinueForTests(),
 				),
+				"myInput",
 			),
 			results.NewResultWithSuccessForTests(
 				results.NewSuccessForTests(
@@ -91,7 +93,7 @@ func TestReceipt_withoutSignature_returnsError(t *testing.T) {
 		),
 	})
 
-	_, err := NewBuilder().Create().WithCommands(commands).Now()
+	_, err := NewReceiptBuilder().Create().WithCommands(commands).Now()
 	if err == nil {
 		t.Errorf("the error was expected to be valid, nil returned")
 		return

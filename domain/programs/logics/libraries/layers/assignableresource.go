@@ -4,25 +4,27 @@ import "steve.care/network/domain/hash"
 
 type assignableResource struct {
 	hash            hash.Hash
-	compile         BytesReference
+	compile         string
 	decompile       string
-	amountByQuery   BytesReference
-	retrieveByQuery BytesReference
-	retrieveByHash  BytesReference
+	amountByQuery   string
+	listByQuery     string
+	retrieveByQuery string
+	retrieveByHash  string
 	isAmount        bool
 }
 
 func createAssignableResourceWithCompile(
 	hash hash.Hash,
-	compile BytesReference,
+	compile string,
 ) AssignableResource {
 	return createAssignableResourceInternally(
 		hash,
 		compile,
 		"",
-		nil,
-		nil,
-		nil,
+		"",
+		"",
+		"",
+		"",
 		false,
 	)
 }
@@ -33,55 +35,75 @@ func createAssignableResourceWithDecompile(
 ) AssignableResource {
 	return createAssignableResourceInternally(
 		hash,
-		nil,
+		"",
 		decompile,
-		nil,
-		nil,
-		nil,
+		"",
+		"",
+		"",
+		"",
 		false,
 	)
 }
 
 func createAssignableResourceWithAmountByQuery(
 	hash hash.Hash,
-	amountByQuery BytesReference,
+	amountByQuery string,
 ) AssignableResource {
 	return createAssignableResourceInternally(
 		hash,
-		nil,
+		"",
 		"",
 		amountByQuery,
-		nil,
-		nil,
+		"",
+		"",
+		"",
+		false,
+	)
+}
+
+func createAssignableResourceWithListByQuery(
+	hash hash.Hash,
+	listByQuery string,
+) AssignableResource {
+	return createAssignableResourceInternally(
+		hash,
+		"",
+		"",
+		"",
+		listByQuery,
+		"",
+		"",
 		false,
 	)
 }
 
 func createAssignableResourceWithRetrieveByQuery(
 	hash hash.Hash,
-	retrieveByQuery BytesReference,
+	retrieveByQuery string,
 ) AssignableResource {
 	return createAssignableResourceInternally(
 		hash,
-		nil,
 		"",
-		nil,
+		"",
+		"",
+		"",
 		retrieveByQuery,
-		nil,
+		"",
 		false,
 	)
 }
 
 func createAssignableResourceWithRetrieveByHash(
 	hash hash.Hash,
-	retrieveByHash BytesReference,
+	retrieveByHash string,
 ) AssignableResource {
 	return createAssignableResourceInternally(
 		hash,
-		nil,
 		"",
-		nil,
-		nil,
+		"",
+		"",
+		"",
+		"",
 		retrieveByHash,
 		false,
 	)
@@ -92,22 +114,24 @@ func createAssignableResourceWithAmount(
 ) AssignableResource {
 	return createAssignableResourceInternally(
 		hash,
-		nil,
 		"",
-		nil,
-		nil,
-		nil,
+		"",
+		"",
+		"",
+		"",
+		"",
 		true,
 	)
 }
 
 func createAssignableResourceInternally(
 	hash hash.Hash,
-	compile BytesReference,
+	compile string,
 	decompile string,
-	amountByQuery BytesReference,
-	retrieveByQuery BytesReference,
-	retrieveByHash BytesReference,
+	amountByQuery string,
+	listByQuery string,
+	retrieveByQuery string,
+	retrieveByHash string,
 	isAmount bool,
 ) AssignableResource {
 	out := assignableResource{
@@ -115,6 +139,7 @@ func createAssignableResourceInternally(
 		compile:         compile,
 		decompile:       decompile,
 		amountByQuery:   amountByQuery,
+		listByQuery:     listByQuery,
 		retrieveByQuery: retrieveByQuery,
 		retrieveByHash:  retrieveByHash,
 		isAmount:        isAmount,
@@ -130,11 +155,11 @@ func (obj *assignableResource) Hash() hash.Hash {
 
 // IsCompile returns true if compile, false otherwise
 func (obj *assignableResource) IsCompile() bool {
-	return obj.compile != nil
+	return obj.compile != ""
 }
 
 // Compile returns the compile, if any
-func (obj *assignableResource) Compile() BytesReference {
+func (obj *assignableResource) Compile() string {
 	return obj.compile
 }
 
@@ -150,31 +175,41 @@ func (obj *assignableResource) Decompile() string {
 
 // IsAmountByQuery returns true if amountByQuery, false otherwise
 func (obj *assignableResource) IsAmountByQuery() bool {
-	return obj.amountByQuery != nil
+	return obj.amountByQuery != ""
 }
 
 // AmountByQuery returns the amountByQuery, if any
-func (obj *assignableResource) AmountByQuery() BytesReference {
+func (obj *assignableResource) AmountByQuery() string {
 	return obj.amountByQuery
+}
+
+// IsListByQuery returns true if listByQuery, false otherwise
+func (obj *assignableResource) IsListByQuery() bool {
+	return obj.listByQuery != ""
+}
+
+// ListByQuery returns the listByQuery, if any
+func (obj *assignableResource) ListByQuery() string {
+	return obj.listByQuery
 }
 
 // IsRetrieveByQuery returns true if retrieveByQuery, false otherwise
 func (obj *assignableResource) IsRetrieveByQuery() bool {
-	return obj.retrieveByQuery != nil
+	return obj.retrieveByQuery != ""
 }
 
 // RetrieveByQuery returns the retrieveByQuery, if any
-func (obj *assignableResource) RetrieveByQuery() BytesReference {
+func (obj *assignableResource) RetrieveByQuery() string {
 	return obj.retrieveByQuery
 }
 
 // IsRetrieveByHash returns true if retrieveByHash, false otherwise
 func (obj *assignableResource) IsRetrieveByHash() bool {
-	return obj.retrieveByHash != nil
+	return obj.retrieveByHash != ""
 }
 
 // RetrieveByHash returns the retrieveByHash, if any
-func (obj *assignableResource) RetrieveByHash() BytesReference {
+func (obj *assignableResource) RetrieveByHash() string {
 	return obj.retrieveByHash
 }
 

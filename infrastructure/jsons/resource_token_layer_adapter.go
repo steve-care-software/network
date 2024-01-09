@@ -27,8 +27,6 @@ type resourceTokenLayerAdapter struct {
 	signatureVerifyBuilder layers.SignatureVerifyBuilder
 	voteVerifyBuilder      layers.VoteVerifyBuilder
 	voteBuilder            layers.VoteBuilder
-	bytesReferencesBuilder layers.BytesReferencesBuilder
-	bytesReferenceBuilder  layers.BytesReferenceBuilder
 }
 
 func (app *resourceTokenLayerAdapter) toStruct(ins resources_layers.Layer) structs_tokens.Layer {
@@ -101,11 +99,6 @@ func (app *resourceTokenLayerAdapter) toStruct(ins resources_layers.Layer) struc
 	if ins.IsVote() {
 		vote := app.voteToStruct(ins.Vote())
 		output.Vote = &vote
-	}
-
-	if ins.IsBytesReference() {
-		ref := app.bytesReferenceToStruct(ins.BytesReference())
-		output.BytesReference = &ref
 	}
 
 	return output
@@ -239,15 +232,6 @@ func (app *resourceTokenLayerAdapter) toInstance(ins structs_tokens.Layer) (reso
 		builder.WithVote(vote)
 	}
 
-	if ins.BytesReference != nil {
-		bytesReference, err := app.structToBytesReference(*ins.BytesReference)
-		if err != nil {
-			return nil, err
-		}
-
-		builder.WithBytesReference(bytesReference)
-	}
-
 	return builder.Now()
 }
 
@@ -259,10 +243,7 @@ func (app *resourceTokenLayerAdapter) layerToStruct(
 	outputLayer := structs_layers.Layer{
 		Instructions: instructions,
 		Output:       output,
-	}
-
-	if ins.HasInput() {
-		outputLayer.Input = ins.Input()
+		Input:        ins.Input(),
 	}
 
 	return outputLayer
@@ -535,18 +516,16 @@ func (app *resourceTokenLayerAdapter) bytesToStruct(
 ) structs_layers.Bytes {
 	output := structs_layers.Bytes{}
 	if ins.IsJoin() {
-		join := app.bytesReferencesToStructs(ins.Join())
-		output.Join = join
+		output.Join = ins.Join()
 	}
 
 	if ins.IsCompare() {
-		compare := app.bytesReferencesToStructs(ins.Compare())
+		compare := ins.Compare()
 		output.Compare = compare
 	}
 
 	if ins.IsHashBytes() {
-		hash := app.bytesReferenceToStruct(ins.HashBytes())
-		output.Hash = &hash
+		output.Hash = ins.HashBytes()
 	}
 
 	return output
@@ -557,30 +536,15 @@ func (app *resourceTokenLayerAdapter) structToBytes(
 ) (layers.Bytes, error) {
 	builder := app.bytesBuilder.Create()
 	if ins.Join != nil && len(ins.Join) > 0 {
-		join, err := app.structsToBytesReferences(ins.Join)
-		if err != nil {
-			return nil, err
-		}
-
-		builder.WithJoin(join)
+		builder.WithJoin(ins.Join)
 	}
 
 	if ins.Compare != nil && len(ins.Compare) > 0 {
-		compare, err := app.structsToBytesReferences(ins.Compare)
-		if err != nil {
-			return nil, err
-		}
-
-		builder.WithCompare(compare)
+		builder.WithCompare(ins.Compare)
 	}
 
-	if ins.Hash != nil {
-		hash, err := app.structToBytesReference(*ins.Hash)
-		if err != nil {
-			return nil, err
-		}
-
-		builder.WithHashBytes(hash)
+	if ins.Hash != "" {
+		builder.WithHashBytes(ins.Hash)
 	}
 
 	return builder.Now()
@@ -633,13 +597,11 @@ func (app *resourceTokenLayerAdapter) encryptorToStruct(
 ) structs_layers.Encryptor {
 	output := structs_layers.Encryptor{}
 	if ins.IsEncrypt() {
-		encrypt := app.bytesReferenceToStruct(ins.Encrypt())
-		output.Encrypt = &encrypt
+		output.Encrypt = ins.Encrypt()
 	}
 
 	if ins.IsDecrypt() {
-		decrypt := app.bytesReferenceToStruct(ins.Decrypt())
-		output.Decrypt = &decrypt
+		output.Decrypt = ins.Decrypt()
 	}
 
 	return output
@@ -649,22 +611,12 @@ func (app *resourceTokenLayerAdapter) structToEncryptor(
 	ins structs_layers.Encryptor,
 ) (layers.Encryptor, error) {
 	builder := app.encryptorBuilder.Create()
-	if ins.Encrypt != nil {
-		encrypt, err := app.structToBytesReference(*ins.Encrypt)
-		if err != nil {
-			return nil, err
-		}
-
-		builder.WithEncrypt(encrypt)
+	if ins.Encrypt != "" {
+		builder.WithEncrypt(ins.Encrypt)
 	}
 
-	if ins.Decrypt != nil {
-		decrypt, err := app.structToBytesReference(*ins.Decrypt)
-		if err != nil {
-			return nil, err
-		}
-
-		builder.WithDecrypt(decrypt)
+	if ins.Decrypt != "" {
+		builder.WithDecrypt(ins.Decrypt)
 	}
 
 	return builder.Now()
@@ -675,8 +627,7 @@ func (app *resourceTokenLayerAdapter) signerToStruct(
 ) structs_layers.Signer {
 	output := structs_layers.Signer{}
 	if ins.IsSign() {
-		sign := app.bytesReferenceToStruct(ins.Sign())
-		output.Sign = &sign
+		output.Sign = ins.Sign()
 	}
 
 	if ins.IsVote() {
@@ -717,13 +668,8 @@ func (app *resourceTokenLayerAdapter) structToSigner(
 	ins structs_layers.Signer,
 ) (layers.Signer, error) {
 	builder := app.signerBuilder.Create()
-	if ins.Sign != nil {
-		sign, err := app.structToBytesReference(*ins.Sign)
-		if err != nil {
-			return nil, err
-		}
-
-		builder.WithSign(sign)
+	if ins.Sign != "" {
+		builder.WithSign(ins.Sign)
 	}
 
 	if ins.Vote != nil {
@@ -775,23 +721,17 @@ func (app *resourceTokenLayerAdapter) structToSigner(
 func (app *resourceTokenLayerAdapter) signatureVerifyToStruct(
 	ins layers.SignatureVerify,
 ) structs_layers.SignatureVerify {
-	message := app.bytesReferenceToStruct(ins.Message())
 	return structs_layers.SignatureVerify{
 		Signature: ins.Signature(),
-		Message:   message,
+		Message:   ins.Message(),
 	}
 }
 
 func (app *resourceTokenLayerAdapter) structToSignatureVerify(
 	ins structs_layers.SignatureVerify,
 ) (layers.SignatureVerify, error) {
-	message, err := app.structToBytesReference(ins.Message)
-	if err != nil {
-		return nil, err
-	}
-
 	return app.signatureVerifyBuilder.Create().
-		WithMessage(message).
+		WithMessage(ins.Message).
 		WithSignature(ins.Signature).
 		Now()
 }
@@ -799,10 +739,9 @@ func (app *resourceTokenLayerAdapter) structToSignatureVerify(
 func (app *resourceTokenLayerAdapter) voteVerifyToStruct(
 	ins layers.VoteVerify,
 ) structs_layers.VoteVerify {
-	message := app.bytesReferenceToStruct(ins.Message())
 	return structs_layers.VoteVerify{
 		Vote:       ins.Vote(),
-		Message:    message,
+		Message:    ins.Message(),
 		HashedRing: ins.HashedRing(),
 	}
 }
@@ -810,98 +749,27 @@ func (app *resourceTokenLayerAdapter) voteVerifyToStruct(
 func (app *resourceTokenLayerAdapter) structToVoteVerify(
 	ins structs_layers.VoteVerify,
 ) (layers.VoteVerify, error) {
-	message, err := app.structToBytesReference(ins.Message)
-	if err != nil {
-		return nil, err
-	}
-
 	return app.voteVerifyBuilder.Create().
 		WithVote(ins.Vote).
 		WithHashedRing(ins.HashedRing).
-		WithMessage(message).
+		WithMessage(ins.Message).
 		Now()
 }
 
 func (app *resourceTokenLayerAdapter) voteToStruct(
 	ins layers.Vote,
 ) structs_layers.Vote {
-	message := app.bytesReferenceToStruct(ins.Message())
 	return structs_layers.Vote{
 		Ring:    ins.Ring(),
-		Message: message,
+		Message: ins.Message(),
 	}
 }
 
 func (app *resourceTokenLayerAdapter) structToVote(
 	ins structs_layers.Vote,
 ) (layers.Vote, error) {
-	message, err := app.structToBytesReference(ins.Message)
-	if err != nil {
-		return nil, err
-	}
-
 	return app.voteBuilder.Create().
-		WithMessage(message).
+		WithMessage(ins.Message).
 		WithRing(ins.Ring).
 		Now()
-}
-
-func (app *resourceTokenLayerAdapter) bytesReferencesToStructs(
-	ins layers.BytesReferences,
-) []structs_layers.BytesReference {
-	list := ins.List()
-	output := []structs_layers.BytesReference{}
-	for _, oneIns := range list {
-		str := app.bytesReferenceToStruct(oneIns)
-		output = append(output, str)
-	}
-
-	return output
-}
-
-func (app *resourceTokenLayerAdapter) structsToBytesReferences(
-	list []structs_layers.BytesReference,
-) (layers.BytesReferences, error) {
-	output := []layers.BytesReference{}
-	for _, oneIns := range list {
-		ins, err := app.structToBytesReference(oneIns)
-		if err != nil {
-			return nil, err
-		}
-
-		output = append(output, ins)
-	}
-	return app.bytesReferencesBuilder.Create().
-		WithList(output).
-		Now()
-}
-
-func (app *resourceTokenLayerAdapter) bytesReferenceToStruct(
-	ins layers.BytesReference,
-) structs_layers.BytesReference {
-	output := structs_layers.BytesReference{}
-	if ins.IsVariable() {
-		output.Variable = ins.Variable()
-	}
-
-	if ins.IsBytes() {
-		output.Bytes = ins.Bytes()
-	}
-
-	return output
-}
-
-func (app *resourceTokenLayerAdapter) structToBytesReference(
-	ins structs_layers.BytesReference,
-) (layers.BytesReference, error) {
-	builder := app.bytesReferenceBuilder.Create()
-	if ins.Variable != "" {
-		builder.WithVariable(ins.Variable)
-	}
-
-	if ins.Bytes != nil && len(ins.Bytes) > 0 {
-		builder.WithBytes(ins.Bytes)
-	}
-
-	return builder.Now()
 }

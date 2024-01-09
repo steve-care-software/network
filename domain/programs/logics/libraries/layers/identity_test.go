@@ -6,8 +6,7 @@ import (
 )
 
 func TestIdentity_withSigner_Success(t *testing.T) {
-	sign := NewBytesReferenceWithVariableForTests("mySign")
-	signer := NewSignerWithSignForTests(sign)
+	signer := NewSignerWithSignForTests("mySign")
 	identity := NewIdentityWithSignerForTests(signer)
 
 	if !identity.IsSigner() {
@@ -28,7 +27,7 @@ func TestIdentity_withSigner_Success(t *testing.T) {
 }
 
 func TestIdentity_withEncryptor_Success(t *testing.T) {
-	variable := NewBytesReferenceWithVariableForTests("myVariable")
+	variable := "myVariable"
 	encryptor := NewEncryptorWithEncryptForTests(variable)
 	identity := NewIdentityWithEncryptorForTests(encryptor)
 

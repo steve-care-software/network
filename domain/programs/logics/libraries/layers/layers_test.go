@@ -12,6 +12,7 @@ func TestLayers_withList_Success(t *testing.T) {
 				"myVariable",
 				NewKindWithContinueForTests(),
 			),
+			"myInput",
 		),
 	}
 

@@ -8,16 +8,16 @@ import (
 	"steve.care/network/domain/receipts/commands"
 )
 
-type builder struct {
+type receiptBuilder struct {
 	hashAdapter hash.Adapter
 	commands    commands.Commands
 	signature   signers.Signature
 }
 
-func createBuilder(
+func createReceiptBuilder(
 	hashAdapter hash.Adapter,
-) Builder {
-	out := builder{
+) ReceiptBuilder {
+	out := receiptBuilder{
 		hashAdapter: hashAdapter,
 		commands:    nil,
 		signature:   nil,
@@ -27,26 +27,26 @@ func createBuilder(
 }
 
 // Create initializes the builder
-func (app *builder) Create() Builder {
-	return createBuilder(
+func (app *receiptBuilder) Create() ReceiptBuilder {
+	return createReceiptBuilder(
 		app.hashAdapter,
 	)
 }
 
 // WithCommands add commands to the builder
-func (app *builder) WithCommands(commands commands.Commands) Builder {
+func (app *receiptBuilder) WithCommands(commands commands.Commands) ReceiptBuilder {
 	app.commands = commands
 	return app
 }
 
 // WithSignature add signature to the builder
-func (app *builder) WithSignature(signature signers.Signature) Builder {
+func (app *receiptBuilder) WithSignature(signature signers.Signature) ReceiptBuilder {
 	app.signature = signature
 	return app
 }
 
 // Now builds a new Receipt instance
-func (app *builder) Now() (Receipt, error) {
+func (app *receiptBuilder) Now() (Receipt, error) {
 	if app.commands == nil {
 		return nil, errors.New("the commands is mandatory in order to build a Receipt instance")
 	}

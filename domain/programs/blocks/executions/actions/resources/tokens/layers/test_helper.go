@@ -82,6 +82,16 @@ func NewLayerWithEngineForTests(input layers.Engine) Layer {
 	return ins
 }
 
+// NewLayerWithExecutionForTests creates a new layer with execution for tests
+func NewLayerWithExecutionForTests(input layers.Execution) Layer {
+	ins, err := NewBuilder().Create().WithExecution(input).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
 // NewLayerWithAssignableResourceForTests creates a new layer with assignableResource for tests
 func NewLayerWithAssignableResourceForTests(input layers.AssignableResource) Layer {
 	ins, err := NewBuilder().Create().WithAssignableResource(input).Now()
@@ -155,16 +165,6 @@ func NewLayerWithVoteVerifyForTests(input layers.VoteVerify) Layer {
 // NewLayerWithVoteForTests creates a new layer with vote for tests
 func NewLayerWithVoteForTests(input layers.Vote) Layer {
 	ins, err := NewBuilder().Create().WithVote(input).Now()
-	if err != nil {
-		panic(err)
-	}
-
-	return ins
-}
-
-// NewLayerWithBytesReferenceForTests creates a new layer with bytes reference for tests
-func NewLayerWithBytesReferenceForTests(input layers.BytesReference) Layer {
-	ins, err := NewBuilder().Create().WithBytesReference(input).Now()
 	if err != nil {
 		panic(err)
 	}

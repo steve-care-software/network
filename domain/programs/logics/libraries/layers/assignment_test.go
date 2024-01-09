@@ -7,14 +7,10 @@ import (
 
 func TestAssignment_Success(t *testing.T) {
 	name := "myName"
-	assignable := NewAssignableWithBytesForTests(NewBytesWithJoinForTests(
-		NewBytesReferencesForTests(
-			[]BytesReference{
-				NewBytesReferenceWithVariableForTests("myVariable"),
-				NewBytesReferenceWithBytesForTests([]byte("this is some bytes")),
-			},
-		),
-	))
+	assignable := NewAssignableWithBytesForTests(NewBytesWithJoinForTests([]string{
+		"first",
+		"second",
+	}))
 
 	assignment := NewAssignmentForTests(name, assignable)
 	retName := assignment.Name()
@@ -31,14 +27,10 @@ func TestAssignment_Success(t *testing.T) {
 }
 
 func TestAssignment_withoutName_returnsError(t *testing.T) {
-	assignable := NewAssignableWithBytesForTests(NewBytesWithJoinForTests(
-		NewBytesReferencesForTests(
-			[]BytesReference{
-				NewBytesReferenceWithVariableForTests("myVariable"),
-				NewBytesReferenceWithBytesForTests([]byte("this is some bytes")),
-			},
-		),
-	))
+	assignable := NewAssignableWithBytesForTests(NewBytesWithJoinForTests([]string{
+		"first",
+		"second",
+	}))
 
 	_, err := NewAssignmentBuilder().Create().WithAssignable(assignable).Now()
 	if err == nil {

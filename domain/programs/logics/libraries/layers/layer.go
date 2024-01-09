@@ -13,19 +13,6 @@ func createLayer(
 	hash hash.Hash,
 	instructions Instructions,
 	output Output,
-) Layer {
-	return createLayerInternally(
-		hash,
-		instructions,
-		output,
-		"",
-	)
-}
-
-func createLayerWithInput(
-	hash hash.Hash,
-	instructions Instructions,
-	output Output,
 	input string,
 ) Layer {
 	return createLayerInternally(
@@ -65,11 +52,6 @@ func (obj *layer) Instructions() Instructions {
 // Output returns the output
 func (obj *layer) Output() Output {
 	return obj.output
-}
-
-// HasInput returns true if there is an input, false otherwise
-func (obj *layer) HasInput() bool {
-	return obj.input != ""
 }
 
 // Input returns the input

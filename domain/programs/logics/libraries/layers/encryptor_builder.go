@@ -8,8 +8,8 @@ import (
 
 type encryptorBuilder struct {
 	hashAdapter hash.Adapter
-	decrypt     BytesReference
-	encrypt     BytesReference
+	decrypt     string
+	encrypt     string
 	isPublicKey bool
 }
 
@@ -18,8 +18,8 @@ func createEncryptorBuilder(
 ) EncryptorBuilder {
 	out := encryptorBuilder{
 		hashAdapter: hashAdapter,
-		decrypt:     nil,
-		encrypt:     nil,
+		decrypt:     "",
+		encrypt:     "",
 		isPublicKey: false,
 	}
 
@@ -34,13 +34,13 @@ func (app *encryptorBuilder) Create() EncryptorBuilder {
 }
 
 // WithDecrypt adds a decrypt to the builder
-func (app *encryptorBuilder) WithDecrypt(decrypt BytesReference) EncryptorBuilder {
+func (app *encryptorBuilder) WithDecrypt(decrypt string) EncryptorBuilder {
 	app.decrypt = decrypt
 	return app
 }
 
 // WithEncrypt adds an encrypt to the builder
-func (app *encryptorBuilder) WithEncrypt(encrypt BytesReference) EncryptorBuilder {
+func (app *encryptorBuilder) WithEncrypt(encrypt string) EncryptorBuilder {
 	app.encrypt = encrypt
 	return app
 }
@@ -54,14 +54,14 @@ func (app *encryptorBuilder) IsPublicKey() EncryptorBuilder {
 // Now builds a new Encryptor instance
 func (app *encryptorBuilder) Now() (Encryptor, error) {
 	data := [][]byte{}
-	if app.decrypt != nil {
+	if app.decrypt != "" {
 		data = append(data, []byte("decrypt"))
-		data = append(data, app.decrypt.Hash().Bytes())
+		data = append(data, []byte(app.decrypt))
 	}
 
-	if app.encrypt != nil {
+	if app.encrypt != "" {
 		data = append(data, []byte("encrypt"))
-		data = append(data, app.encrypt.Hash().Bytes())
+		data = append(data, []byte(app.encrypt))
 	}
 
 	if app.isPublicKey {
@@ -77,11 +77,11 @@ func (app *encryptorBuilder) Now() (Encryptor, error) {
 		return nil, err
 	}
 
-	if app.decrypt != nil {
+	if app.decrypt != "" {
 		return createEncryptorWithDecrypt(*pHash, app.decrypt), nil
 	}
 
-	if app.encrypt != nil {
+	if app.encrypt != "" {
 		return createEncryptorWithEncrypt(*pHash, app.encrypt), nil
 	}
 

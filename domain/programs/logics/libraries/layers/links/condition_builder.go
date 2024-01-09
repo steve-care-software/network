@@ -9,7 +9,6 @@ import (
 type conditionBuilder struct {
 	hashAdapter hash.Adapter
 	resource    ConditionResource
-	operator    Operator
 	next        ConditionValue
 }
 
@@ -19,7 +18,6 @@ func createConditionBuilder(
 	out := conditionBuilder{
 		hashAdapter: hashAdapter,
 		resource:    nil,
-		operator:    nil,
 		next:        nil,
 	}
 
@@ -39,12 +37,6 @@ func (app *conditionBuilder) WithResource(resource ConditionResource) ConditionB
 	return app
 }
 
-// WithOperator adds an operator builder
-func (app *conditionBuilder) WithOperator(operator Operator) ConditionBuilder {
-	app.operator = operator
-	return app
-}
-
 // WithNext adds a next value to the builder builder
 func (app *conditionBuilder) WithNext(next ConditionValue) ConditionBuilder {
 	app.next = next
@@ -57,23 +49,21 @@ func (app *conditionBuilder) Now() (Condition, error) {
 		return nil, errors.New("the resource is mandatory in order to build an Condition instance")
 	}
 
-	if app.operator == nil {
-		return nil, errors.New("the operator is mandatory in order to build an Condition instance")
-	}
-
-	if app.next == nil {
-		return nil, errors.New("the next value is mandatory in order to build an Condition instance")
-	}
-
-	pHash, err := app.hashAdapter.FromMultiBytes([][]byte{
+	data := [][]byte{
 		app.resource.Hash().Bytes(),
-		app.operator.Hash().Bytes(),
-		app.next.Hash().Bytes(),
-	})
+	}
+	if app.next != nil {
+		data = append(data, app.next.Hash().Bytes())
+	}
 
+	pHash, err := app.hashAdapter.FromMultiBytes(data)
 	if err != nil {
 		return nil, err
 	}
 
-	return createCondition(*pHash, app.resource, app.operator, app.next), nil
+	if app.next != nil {
+		return createConditionWithNext(*pHash, app.resource, app.next), nil
+	}
+
+	return createCondition(*pHash, app.resource), nil
 }

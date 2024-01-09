@@ -52,9 +52,19 @@ func NewElementForTests(layer hash.Hash) Element {
 	return ins
 }
 
+// NewConditionWithNextForTests creates a new condition with next for tests
+func NewConditionWithNextForTests(resource ConditionResource, next ConditionValue) Condition {
+	ins, err := NewConditionBuilder().Create().WithResource(resource).WithNext(next).Now()
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
 // NewConditionForTests creates a new condition for tests
-func NewConditionForTests(resource ConditionResource, operator Operator, next ConditionValue) Condition {
-	ins, err := NewConditionBuilder().Create().WithResource(resource).WithOperator(operator).WithNext(next).Now()
+func NewConditionForTests(resource ConditionResource) Condition {
+	ins, err := NewConditionBuilder().Create().WithResource(resource).Now()
 	if err != nil {
 		panic(err)
 	}

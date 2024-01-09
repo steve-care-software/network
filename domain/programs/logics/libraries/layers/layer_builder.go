@@ -61,24 +61,20 @@ func (app *layerBuilder) Now() (Layer, error) {
 		return nil, errors.New("the output is mandatory in order to build a Layer instance")
 	}
 
-	data := [][]byte{
+	if app.input == "" {
+		return nil, errors.New("the input is mandatory in order to build a Layer instance")
+	}
+
+	pHash, err := app.hashAdapter.FromMultiBytes([][]byte{
 		app.instructions.Hash().Bytes(),
 		app.output.Hash().Bytes(),
-	}
+		[]byte(app.input),
+	})
 
-	if app.input != "" {
-		data = append(data, []byte(app.input))
-	}
-
-	pHash, err := app.hashAdapter.FromMultiBytes(data)
 	if err != nil {
 		return nil, err
 	}
 
-	if app.input != "" {
-		return createLayerWithInput(*pHash, app.instructions, app.output, app.input), nil
-	}
-
-	return createLayer(*pHash, app.instructions, app.output), nil
+	return createLayer(*pHash, app.instructions, app.output, app.input), nil
 
 }

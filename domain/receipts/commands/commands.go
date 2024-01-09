@@ -30,3 +30,8 @@ func (obj *commands) Hash() hash.Hash {
 func (obj *commands) List() []Command {
 	return obj.list
 }
+
+// Last returns the last command
+func (obj *commands) Last() Command {
+	return obj.list[len(obj.list)-1]
+}

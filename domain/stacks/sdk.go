@@ -1,8 +1,10 @@
 package stacks
 
 import (
+	"steve.care/network/domain/accounts/encryptors"
 	"steve.care/network/domain/accounts/signers"
 	"steve.care/network/domain/hash"
+	"steve.care/network/domain/programs/blocks/executions/actions/resources"
 )
 
 // NewBuilder creates a new builder
@@ -85,6 +87,9 @@ type Frame interface {
 	FetchVote(name string) (signers.Vote, error)
 	FetchSignature(name string) (signers.Signature, error)
 	FetchHashList(name string) ([]hash.Hash, error)
+	FetchHash(name string) (hash.Hash, error)
+	FetchResource(name string) (resources.Resource, error)
+	FetchBytes(name string) ([]byte, error)
 	HasAssignments() bool
 	Assignments() Assignments
 }
@@ -121,12 +126,14 @@ type AssignableBuilder interface {
 	Create() AssignableBuilder
 	WithBool(boolValue bool) AssignableBuilder
 	WithBytes(bytes []byte) AssignableBuilder
+	WithEncryptorPublicKey(encryptorPublicKey encryptors.PublicKey) AssignableBuilder
 	WithSignerPublicKey(signerPublicKey signers.PublicKey) AssignableBuilder
 	WithSignerPublicKeys(signerPubKeys []signers.PublicKey) AssignableBuilder
 	WithSignature(signature signers.Signature) AssignableBuilder
 	WithVote(vote signers.Vote) AssignableBuilder
 	WithHashList(hashList []hash.Hash) AssignableBuilder
 	WithHash(hash hash.Hash) AssignableBuilder
+	WithResource(resource resources.Resource) AssignableBuilder
 	Now() (Assignable, error)
 }
 
@@ -136,6 +143,8 @@ type Assignable interface {
 	Bool() *bool
 	IsBytes() bool
 	Bytes() []byte
+	IsEncryptorPublicKey() bool
+	EncryptorPublicKey() encryptors.PublicKey
 	IsSignerPublicKey() bool
 	SignerPublicKey() signers.PublicKey
 	IsSignerPublicKeys() bool
@@ -148,4 +157,6 @@ type Assignable interface {
 	HashList() []hash.Hash
 	IsHash() bool
 	Hash() hash.Hash
+	IsResource() bool
+	Resource() resources.Resource
 }

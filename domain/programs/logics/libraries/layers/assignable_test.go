@@ -6,14 +6,10 @@ import (
 )
 
 func TestAssignable_withBytes_Success(t *testing.T) {
-	bytes := NewBytesWithJoinForTests(
-		NewBytesReferencesForTests(
-			[]BytesReference{
-				NewBytesReferenceWithVariableForTests("myVariable"),
-				NewBytesReferenceWithBytesForTests([]byte("this is some bytes")),
-			},
-		),
-	)
+	bytes := NewBytesWithJoinForTests([]string{
+		"first",
+		"second",
+	})
 
 	ins := NewAssignableWithBytesForTests(bytes)
 
@@ -35,8 +31,7 @@ func TestAssignable_withBytes_Success(t *testing.T) {
 }
 
 func TestAssignable_withIdentity_Success(t *testing.T) {
-	sign := NewBytesReferenceWithVariableForTests("mySign")
-	signer := NewSignerWithSignForTests(sign)
+	signer := NewSignerWithSignForTests("mySign")
 	identity := NewIdentityWithSignerForTests(signer)
 
 	ins := NewAssignableWithIdentityForTests(identity)

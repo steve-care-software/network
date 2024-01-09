@@ -5,14 +5,14 @@ import "steve.care/network/domain/hash"
 type voteVerify struct {
 	hash       hash.Hash
 	vote       string
-	message    BytesReference
+	message    string
 	hashedRing string
 }
 
 func createVoteVerify(
 	hash hash.Hash,
 	vote string,
-	message BytesReference,
+	message string,
 	hashedRing string,
 ) VoteVerify {
 	out := voteVerify{
@@ -36,7 +36,7 @@ func (obj *voteVerify) Vote() string {
 }
 
 // Message returns the message
-func (obj *voteVerify) Message() BytesReference {
+func (obj *voteVerify) Message() string {
 	return obj.message
 }
 

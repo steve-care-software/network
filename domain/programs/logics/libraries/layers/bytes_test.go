@@ -6,12 +6,10 @@ import (
 )
 
 func TestBytes_withJoin_Success(t *testing.T) {
-	join := NewBytesReferencesForTests(
-		[]BytesReference{
-			NewBytesReferenceWithVariableForTests("myVariable"),
-			NewBytesReferenceWithBytesForTests([]byte("this is some bytes")),
-		},
-	)
+	join := []string{
+		"first",
+		"second",
+	}
 
 	ins := NewBytesWithJoinForTests(join)
 
@@ -38,12 +36,10 @@ func TestBytes_withJoin_Success(t *testing.T) {
 }
 
 func TestBytes_withCompare_Success(t *testing.T) {
-	compare := NewBytesReferencesForTests(
-		[]BytesReference{
-			NewBytesReferenceWithVariableForTests("myVariable"),
-			NewBytesReferenceWithBytesForTests([]byte("this is some bytes")),
-		},
-	)
+	compare := []string{
+		"first",
+		"second",
+	}
 
 	ins := NewBytesWithCompareForTests(compare)
 
@@ -70,7 +66,7 @@ func TestBytes_withCompare_Success(t *testing.T) {
 }
 
 func TestBytes_withHashBytes_Success(t *testing.T) {
-	hashBytes := NewBytesReferenceWithVariableForTests("myVariable")
+	hashBytes := "myVariable"
 	ins := NewBytesWithHashBytesForTests(hashBytes)
 
 	if ins.IsJoin() {

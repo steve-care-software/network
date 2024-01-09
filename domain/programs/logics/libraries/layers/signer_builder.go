@@ -9,7 +9,7 @@ import (
 
 type signerBuilder struct {
 	hashAdapter      hash.Adapter
-	sign             BytesReference
+	sign             string
 	vote             Vote
 	genSignerPubKeys uint
 	hashPublicKeys   string
@@ -24,7 +24,7 @@ func createSignerBuilder(
 ) SignerBuilder {
 	out := signerBuilder{
 		hashAdapter:      hashAdapter,
-		sign:             nil,
+		sign:             "",
 		vote:             nil,
 		genSignerPubKeys: 0,
 		hashPublicKeys:   "",
@@ -45,7 +45,7 @@ func (app *signerBuilder) Create() SignerBuilder {
 }
 
 // WithSign adds a sign to the builder
-func (app *signerBuilder) WithSign(sign BytesReference) SignerBuilder {
+func (app *signerBuilder) WithSign(sign string) SignerBuilder {
 	app.sign = sign
 	return app
 }
@@ -95,9 +95,9 @@ func (app *signerBuilder) IsPublicKey() SignerBuilder {
 // Now builds a new Signer instance
 func (app *signerBuilder) Now() (Signer, error) {
 	data := [][]byte{}
-	if app.sign != nil {
+	if app.sign != "" {
 		data = append(data, []byte("signer"))
-		data = append(data, app.sign.Hash().Bytes())
+		data = append(data, []byte(app.sign))
 	}
 
 	if app.vote != nil {
@@ -143,7 +143,7 @@ func (app *signerBuilder) Now() (Signer, error) {
 		return nil, err
 	}
 
-	if app.sign != nil {
+	if app.sign != "" {
 		return createSignerWithSign(*pHash, app.sign), nil
 	}
 

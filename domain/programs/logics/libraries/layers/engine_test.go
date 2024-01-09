@@ -6,7 +6,7 @@ import (
 )
 
 func TestEngine_withExecution_Success(t *testing.T) {
-	execution := NewBytesReferenceWithVariableForTests("myVariable")
+	execution := NewExecutionForTests("myInput")
 	ins := NewEngineWithExecutionForTests(execution)
 
 	if !ins.IsExecution() {
@@ -28,7 +28,7 @@ func TestEngine_withExecution_Success(t *testing.T) {
 
 func TestEngine_withResource_Success(t *testing.T) {
 	resource := NewAssignableResourceWithCompileForTests(
-		NewBytesReferenceWithVariableForTests("myVariable"),
+		"myVariable",
 	)
 
 	ins := NewEngineWithResourceForTests(resource)

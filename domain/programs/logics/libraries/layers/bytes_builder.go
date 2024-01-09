@@ -8,9 +8,9 @@ import (
 
 type bytesBuilder struct {
 	hashAdapter hash.Adapter
-	join        BytesReferences
-	compare     BytesReferences
-	hashBytes   BytesReference
+	join        []string
+	compare     []string
+	hashBytes   string
 }
 
 func createBytesBuilder(
@@ -20,7 +20,7 @@ func createBytesBuilder(
 		hashAdapter: hashAdapter,
 		join:        nil,
 		compare:     nil,
-		hashBytes:   nil,
+		hashBytes:   "",
 	}
 
 	return &out
@@ -34,19 +34,19 @@ func (app *bytesBuilder) Create() BytesBuilder {
 }
 
 // WithJoin adds a join to the builder
-func (app *bytesBuilder) WithJoin(join BytesReferences) BytesBuilder {
+func (app *bytesBuilder) WithJoin(join []string) BytesBuilder {
 	app.join = join
 	return app
 }
 
 // WithCompare adds a compare to the builder
-func (app *bytesBuilder) WithCompare(compare BytesReferences) BytesBuilder {
+func (app *bytesBuilder) WithCompare(compare []string) BytesBuilder {
 	app.compare = compare
 	return app
 }
 
 // WithHashBytes adds an hashBytes to the builder
-func (app *bytesBuilder) WithHashBytes(hashBytes BytesReference) BytesBuilder {
+func (app *bytesBuilder) WithHashBytes(hashBytes string) BytesBuilder {
 	app.hashBytes = hashBytes
 	return app
 }
@@ -54,19 +54,31 @@ func (app *bytesBuilder) WithHashBytes(hashBytes BytesReference) BytesBuilder {
 // Now builds a new Bytes instance
 func (app *bytesBuilder) Now() (Bytes, error) {
 	data := [][]byte{}
+	if app.join != nil && len(app.join) <= 0 {
+		app.join = nil
+	}
+
 	if app.join != nil {
 		data = append(data, []byte("join"))
-		data = append(data, app.join.Hash().Bytes())
+		for _, oneVariable := range app.join {
+			data = append(data, []byte(oneVariable))
+		}
+	}
+
+	if app.compare != nil && len(app.compare) <= 0 {
+		app.compare = nil
 	}
 
 	if app.compare != nil {
 		data = append(data, []byte("compare"))
-		data = append(data, app.compare.Hash().Bytes())
+		for _, oneVariable := range app.compare {
+			data = append(data, []byte(oneVariable))
+		}
 	}
 
-	if app.hashBytes != nil {
+	if app.hashBytes != "" {
 		data = append(data, []byte("hash"))
-		data = append(data, app.hashBytes.Hash().Bytes())
+		data = append(data, []byte(app.hashBytes))
 	}
 
 	if len(data) <= 0 {
@@ -82,7 +94,7 @@ func (app *bytesBuilder) Now() (Bytes, error) {
 		return createBytesWithJoin(*pHash, app.join), nil
 	}
 
-	if app.hashBytes != nil {
+	if app.hashBytes != "" {
 		return createBytesWithHashBytes(*pHash, app.hashBytes), nil
 	}
 

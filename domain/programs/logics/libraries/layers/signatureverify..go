@@ -5,13 +5,13 @@ import "steve.care/network/domain/hash"
 type signatureVerify struct {
 	hash      hash.Hash
 	signature string
-	message   BytesReference
+	message   string
 }
 
 func createSignatureVerify(
 	hash hash.Hash,
 	signature string,
-	message BytesReference,
+	message string,
 ) SignatureVerify {
 	out := signatureVerify{
 		hash:      hash,
@@ -33,6 +33,6 @@ func (obj *signatureVerify) Signature() string {
 }
 
 // Message returns the message
-func (obj *signatureVerify) Message() BytesReference {
+func (obj *signatureVerify) Message() string {
 	return obj.message
 }

@@ -8,7 +8,7 @@ import (
 
 type engineBuilder struct {
 	hashAdapter hash.Adapter
-	execution   BytesReference
+	execution   Execution
 	resource    AssignableResource
 }
 
@@ -32,7 +32,7 @@ func (app *engineBuilder) Create() EngineBuilder {
 }
 
 // WithExecution adds an execution to the builder
-func (app *engineBuilder) WithExecution(execution BytesReference) EngineBuilder {
+func (app *engineBuilder) WithExecution(execution Execution) EngineBuilder {
 	app.execution = execution
 	return app
 }

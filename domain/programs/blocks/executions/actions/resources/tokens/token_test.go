@@ -33,6 +33,7 @@ func TestToken_withLayer_Success(t *testing.T) {
 				"myVariable",
 				layers.NewKindWithPromptForTests(),
 			),
+			"myInput",
 		),
 	)
 
@@ -162,6 +163,7 @@ func TestToken_withReceipt_Success(t *testing.T) {
 					"myVariable",
 					layers.NewKindWithContinueForTests(),
 				),
+				"myInput",
 			),
 			results.NewResultWithSuccessForTests(
 				results.NewSuccessForTests(

@@ -7,7 +7,7 @@ import (
 
 // NewReceiptForTests creates a new receipt for tests
 func NewReceiptForTests(commands commands.Commands, sig signers.Signature) Receipt {
-	ins, err := NewBuilder().Create().WithCommands(commands).WithSignature(sig).Now()
+	ins, err := NewReceiptBuilder().Create().WithCommands(commands).WithSignature(sig).Now()
 	if err != nil {
 		panic(err)
 	}

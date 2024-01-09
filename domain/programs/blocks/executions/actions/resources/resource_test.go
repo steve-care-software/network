@@ -22,6 +22,7 @@ func TestResource_Success(t *testing.T) {
 					"myVariable",
 					layers.NewKindWithPromptForTests(),
 				),
+				"myInput",
 			),
 		),
 	)
@@ -73,6 +74,7 @@ func TestResource_withoutSignature_returnsError(t *testing.T) {
 					"myVariable",
 					layers.NewKindWithPromptForTests(),
 				),
+				"myInput",
 			),
 		),
 	)

@@ -30,10 +30,6 @@ func TestConditionValue_withResource_Success(t *testing.T) {
 func TestConditionValue_withCondition_Success(t *testing.T) {
 	condition := NewConditionForTests(
 		NewConditionResourceForTests(22),
-		NewOperatorWithAndForTests(),
-		NewConditionValueWithResourceForTests(
-			NewConditionResourceForTests(33),
-		),
 	)
 	conditionValue := NewConditionValueWithConditionForTests(condition)
 

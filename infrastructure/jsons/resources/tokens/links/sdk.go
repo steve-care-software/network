@@ -15,8 +15,7 @@ type Element struct {
 // Condition represents a condition
 type Condition struct {
 	Resource ConditionResource `json:"resource"`
-	Operator Operator          `json:"operator"`
-	Next     ConditionValue    `json:"next"`
+	Next     *ConditionValue   `json:"next"`
 }
 
 // ConditionValue represents a condition value

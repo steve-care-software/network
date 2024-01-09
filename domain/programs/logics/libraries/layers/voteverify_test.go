@@ -7,7 +7,7 @@ import (
 
 func TestVoteVerify_Success(t *testing.T) {
 	vote := "myVote"
-	message := NewBytesReferenceWithVariableForTests("myMessage")
+	message := "myMessage"
 	hashedRing := "myHashedRingVariable"
 	voteVerify := NewVoteVerifyForTests(vote, message, hashedRing)
 	retVote := voteVerify.Vote()
@@ -30,7 +30,7 @@ func TestVoteVerify_Success(t *testing.T) {
 }
 
 func TestVoteVerify_withoutVote_returnsError(t *testing.T) {
-	message := NewBytesReferenceWithVariableForTests("myMessage")
+	message := "myMessage"
 	hashedRing := "myHashedRingVariable"
 	_, err := NewVoteVerifyBuilder().Create().WithMessage(message).WithHashedRing(hashedRing).Now()
 	if err == nil {
@@ -51,7 +51,7 @@ func TestVoteVerify_withoutMessage_returnsError(t *testing.T) {
 
 func TestVoteVerify_withoutHashedRing_returnsError(t *testing.T) {
 	vote := "myVote"
-	message := NewBytesReferenceWithVariableForTests("myMessage")
+	message := "myMessage"
 	_, err := NewVoteVerifyBuilder().Create().WithMessage(message).WithVote(vote).Now()
 	if err == nil {
 		t.Errorf("the error was expected to be valid, nil returned")

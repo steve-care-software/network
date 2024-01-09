@@ -22,6 +22,7 @@ func TestAction_withList_Success(t *testing.T) {
 					"myVariable",
 					layers.NewKindWithPromptForTests(),
 				),
+				"myInput",
 			),
 		),
 	)

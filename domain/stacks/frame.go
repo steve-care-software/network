@@ -6,6 +6,7 @@ import (
 
 	"steve.care/network/domain/accounts/signers"
 	"steve.care/network/domain/hash"
+	"steve.care/network/domain/programs/blocks/executions/actions/resources"
 )
 
 type frame struct {
@@ -120,6 +121,51 @@ func (obj *frame) FetchHashList(name string) ([]hash.Hash, error) {
 	}
 
 	return assignable.HashList(), nil
+}
+
+// FetchResource fetches an hash by name
+func (obj *frame) FetchHash(name string) (hash.Hash, error) {
+	assignable, err := obj.Fetch(name)
+	if err != nil {
+		return nil, err
+	}
+
+	if !assignable.IsHash() {
+		str := fmt.Sprintf("the assignable (name: %s) was expected to contain an Hash", name)
+		return nil, errors.New(str)
+	}
+
+	return assignable.Hash(), nil
+}
+
+// FetchResource fetches a resource by name
+func (obj *frame) FetchResource(name string) (resources.Resource, error) {
+	assignable, err := obj.Fetch(name)
+	if err != nil {
+		return nil, err
+	}
+
+	if !assignable.IsResource() {
+		str := fmt.Sprintf("the assignable (name: %s) was expected to contain a Resource", name)
+		return nil, errors.New(str)
+	}
+
+	return assignable.Resource(), nil
+}
+
+// FetchResource fetches a resource by name
+func (obj *frame) FetchBytes(name string) ([]byte, error) {
+	assignable, err := obj.Fetch(name)
+	if err != nil {
+		return nil, err
+	}
+
+	if !assignable.IsBytes() {
+		str := fmt.Sprintf("the assignable (name: %s) was expected to contain a []byte", name)
+		return nil, errors.New(str)
+	}
+
+	return assignable.Bytes(), nil
 }
 
 // HasAssignments returns true if there is assignments, false otherwise

@@ -43,7 +43,6 @@ type Layer struct {
 	SignatureVerify  *layers.SignatureVerify  `json:"signature_verify"`
 	VoteVerify       *layers.VoteVerify       `json:"vote_verify"`
 	Vote             *layers.Vote             `json:"vote"`
-	BytesReference   *layers.BytesReference   `json:"bytes_reference"`
 }
 
 // Link represents a link

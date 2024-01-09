@@ -3,31 +3,37 @@ package stacks
 import (
 	"errors"
 
+	"steve.care/network/domain/accounts/encryptors"
 	"steve.care/network/domain/accounts/signers"
 	"steve.care/network/domain/hash"
+	"steve.care/network/domain/programs/blocks/executions/actions/resources"
 )
 
 type assignableBuilder struct {
-	pBool         *bool
-	bytes         []byte
-	signerPubKey  signers.PublicKey
-	signerPubKeys []signers.PublicKey
-	signature     signers.Signature
-	vote          signers.Vote
-	hashList      []hash.Hash
-	hash          hash.Hash
+	pBool              *bool
+	bytes              []byte
+	encryptorPublicKey encryptors.PublicKey
+	signerPubKey       signers.PublicKey
+	signerPubKeys      []signers.PublicKey
+	signature          signers.Signature
+	vote               signers.Vote
+	hashList           []hash.Hash
+	hash               hash.Hash
+	resource           resources.Resource
 }
 
 func createAssignableBuilder() AssignableBuilder {
 	out := assignableBuilder{
-		pBool:         nil,
-		bytes:         nil,
-		signerPubKey:  nil,
-		signerPubKeys: nil,
-		signature:     nil,
-		vote:          nil,
-		hashList:      nil,
-		hash:          nil,
+		pBool:              nil,
+		bytes:              nil,
+		encryptorPublicKey: nil,
+		signerPubKey:       nil,
+		signerPubKeys:      nil,
+		signature:          nil,
+		vote:               nil,
+		hashList:           nil,
+		hash:               nil,
+		resource:           nil,
 	}
 
 	return &out
@@ -47,6 +53,12 @@ func (app *assignableBuilder) WithBool(boolValue bool) AssignableBuilder {
 // WithBytes add bytes to the builder
 func (app *assignableBuilder) WithBytes(bytes []byte) AssignableBuilder {
 	app.bytes = bytes
+	return app
+}
+
+// WithEncryptorPublicKey adds an encryptorPublicKey to the builder
+func (app *assignableBuilder) WithEncryptorPublicKey(encryptorPublicKey encryptors.PublicKey) AssignableBuilder {
+	app.encryptorPublicKey = encryptorPublicKey
 	return app
 }
 
@@ -86,6 +98,12 @@ func (app *assignableBuilder) WithHash(hash hash.Hash) AssignableBuilder {
 	return app
 }
 
+// WithResource adds a resource to the builder
+func (app *assignableBuilder) WithResource(resource resources.Resource) AssignableBuilder {
+	app.resource = resource
+	return app
+}
+
 // Now builds a new Assignable instance
 func (app *assignableBuilder) Now() (Assignable, error) {
 	if app.pBool != nil {
@@ -98,6 +116,10 @@ func (app *assignableBuilder) Now() (Assignable, error) {
 
 	if app.bytes != nil {
 		return createAssignableWithBytes(app.bytes), nil
+	}
+
+	if app.encryptorPublicKey != nil {
+		return createAssignableWithEncryptorPublicKey(app.encryptorPublicKey), nil
 	}
 
 	if app.signerPubKey != nil {
@@ -130,6 +152,10 @@ func (app *assignableBuilder) Now() (Assignable, error) {
 
 	if app.hash != nil {
 		return createAssignableWithHash(app.hash), nil
+	}
+
+	if app.resource != nil {
+		return createAssignableWithResource(app.resource), nil
 	}
 
 	return nil, errors.New("the Assignable is invalid")

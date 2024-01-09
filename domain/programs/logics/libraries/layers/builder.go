@@ -55,5 +55,11 @@ func (app *builder) Now() (Layers, error) {
 		return nil, err
 	}
 
-	return createLayers(*pHash, app.list), nil
+	mp := map[string]Layer{}
+	for _, oneLayer := range app.list {
+		keyname := oneLayer.Hash().String()
+		mp[keyname] = oneLayer
+	}
+
+	return createLayers(*pHash, mp, app.list), nil
 }

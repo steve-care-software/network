@@ -11,7 +11,7 @@ import (
 type resourceTokenLinkAdapter struct {
 	hashAdapter              hash.Adapter
 	builder                  resources_links.Builder
-	linkBuilder              links.Builder
+	linkBuilder              links.LinkBuilder
 	elementsBuilder          links.ElementsBuilder
 	elementBuilder           links.ElementBuilder
 	conditionBuilder         links.ConditionBuilder
@@ -262,13 +262,16 @@ func (app *resourceTokenLinkAdapter) conditionToStruct(
 	ins links.Condition,
 ) structs_links.Condition {
 	resource := app.conditionResourceToStruct(ins.Resource())
-	operator := app.operatorToStruct(ins.Operator())
-	next := app.conditionValueToStruct(ins.Next())
-	return structs_links.Condition{
+	output := structs_links.Condition{
 		Resource: resource,
-		Operator: operator,
-		Next:     next,
 	}
+
+	if ins.HasNext() {
+		next := app.conditionValueToStruct(ins.Next())
+		output.Next = &next
+	}
+
+	return output
 }
 
 func (app *resourceTokenLinkAdapter) structToCondition(
@@ -279,21 +282,17 @@ func (app *resourceTokenLinkAdapter) structToCondition(
 		return nil, err
 	}
 
-	operator, err := app.structToOperator(ins.Operator)
-	if err != nil {
-		return nil, err
+	builder := app.conditionBuilder.Create().WithResource(resource)
+	if ins.Next != nil {
+		next, err := app.structToConditionValue(*ins.Next)
+		if err != nil {
+			return nil, err
+		}
+
+		builder.WithNext(next)
 	}
 
-	next, err := app.structToConditionValue(ins.Next)
-	if err != nil {
-		return nil, err
-	}
-
-	return app.conditionBuilder.Create().
-		WithResource(resource).
-		WithOperator(operator).
-		WithNext(next).
-		Now()
+	return builder.Now()
 }
 
 func (app *resourceTokenLinkAdapter) conditionValueToStruct(

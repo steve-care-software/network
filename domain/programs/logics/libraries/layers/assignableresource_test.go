@@ -6,7 +6,7 @@ import (
 )
 
 func TestAssignableResource_withCompile_Success(t *testing.T) {
-	compile := NewBytesReferenceWithVariableForTests("myVariable")
+	compile := "myVariable"
 	ins := NewAssignableResourceWithCompileForTests(compile)
 
 	if !ins.IsCompile() {
@@ -20,6 +20,11 @@ func TestAssignableResource_withCompile_Success(t *testing.T) {
 	}
 
 	if ins.IsAmountByQuery() {
+		t.Errorf("the assignableResource was expected to NOT contain an amountByQuery")
+		return
+	}
+
+	if ins.IsListByQuery() {
 		t.Errorf("the assignableResource was expected to NOT contain an amountByQuery")
 		return
 	}
@@ -65,6 +70,11 @@ func TestAssignableResource_withDecompile_Success(t *testing.T) {
 		return
 	}
 
+	if ins.IsListByQuery() {
+		t.Errorf("the assignableResource was expected to NOT contain an amountByQuery")
+		return
+	}
+
 	if ins.IsRetrieveByQuery() {
 		t.Errorf("the assignableResource was expected to NOT contain an retrieveByQuery")
 		return
@@ -88,7 +98,7 @@ func TestAssignableResource_withDecompile_Success(t *testing.T) {
 }
 
 func TestAssignableResource_withAmountByQuery_Success(t *testing.T) {
-	amountByQuery := NewBytesReferenceWithVariableForTests("myVariable")
+	amountByQuery := "myVariable"
 	ins := NewAssignableResourceWithAmountByQueryForTests(amountByQuery)
 
 	if ins.IsCompile() {
@@ -103,6 +113,11 @@ func TestAssignableResource_withAmountByQuery_Success(t *testing.T) {
 
 	if !ins.IsAmountByQuery() {
 		t.Errorf("the assignableResource was expected to contain an amountByQuery")
+		return
+	}
+
+	if ins.IsListByQuery() {
+		t.Errorf("the assignableResource was expected to NOT contain an amountByQuery")
 		return
 	}
 
@@ -128,8 +143,54 @@ func TestAssignableResource_withAmountByQuery_Success(t *testing.T) {
 	}
 }
 
+func TestAssignableResource_withListByQuery_Success(t *testing.T) {
+	listByQuery := "myVariable"
+	ins := NewAssignableResourceWithListByQueryForTests(listByQuery)
+
+	if ins.IsCompile() {
+		t.Errorf("the assignableResource was expected to NOT contain a compile")
+		return
+	}
+
+	if ins.IsDecompile() {
+		t.Errorf("the assignableResource was expected to NOT contain a decompile")
+		return
+	}
+
+	if ins.IsAmountByQuery() {
+		t.Errorf("the assignableResource was expected to NOT contain an amountByQuery")
+		return
+	}
+
+	if !ins.IsListByQuery() {
+		t.Errorf("the assignableResource was expected to contain an amountByQuery")
+		return
+	}
+
+	if ins.IsRetrieveByQuery() {
+		t.Errorf("the assignableResource was expected to NOT contain an retrieveByQuery")
+		return
+	}
+
+	if ins.IsRetrieveByHash() {
+		t.Errorf("the assignableResource was expected to NOT contain an retrieveByHash")
+		return
+	}
+
+	if ins.IsAmount() {
+		t.Errorf("the assignableResource was expected to NOT contain an amount")
+		return
+	}
+
+	retListByQuery := ins.ListByQuery()
+	if !reflect.DeepEqual(listByQuery, retListByQuery) {
+		t.Errorf("the listByQuery is invalid")
+		return
+	}
+}
+
 func TestAssignableResource_withRetrieveByQuery_Success(t *testing.T) {
-	retrieveByQuery := NewBytesReferenceWithVariableForTests("myVariable")
+	retrieveByQuery := "myVariable"
 	ins := NewAssignableResourceWithRetrieveByQueryForTests(retrieveByQuery)
 
 	if ins.IsCompile() {
@@ -143,6 +204,11 @@ func TestAssignableResource_withRetrieveByQuery_Success(t *testing.T) {
 	}
 
 	if ins.IsAmountByQuery() {
+		t.Errorf("the assignableResource was expected to NOT contain an amountByQuery")
+		return
+	}
+
+	if ins.IsListByQuery() {
 		t.Errorf("the assignableResource was expected to NOT contain an amountByQuery")
 		return
 	}
@@ -170,7 +236,7 @@ func TestAssignableResource_withRetrieveByQuery_Success(t *testing.T) {
 }
 
 func TestAssignableResource_withRetrieveByHash_Success(t *testing.T) {
-	retrieveByHash := NewBytesReferenceWithVariableForTests("myVariable")
+	retrieveByHash := "myVariable"
 	ins := NewAssignableResourceWithRetrieveByHashForTests(retrieveByHash)
 
 	if ins.IsCompile() {
@@ -184,6 +250,11 @@ func TestAssignableResource_withRetrieveByHash_Success(t *testing.T) {
 	}
 
 	if ins.IsAmountByQuery() {
+		t.Errorf("the assignableResource was expected to NOT contain an amountByQuery")
+		return
+	}
+
+	if ins.IsListByQuery() {
 		t.Errorf("the assignableResource was expected to NOT contain an amountByQuery")
 		return
 	}
@@ -224,6 +295,11 @@ func TestAssignableResource_withAmount_Success(t *testing.T) {
 	}
 
 	if ins.IsAmountByQuery() {
+		t.Errorf("the assignableResource was expected to NOT contain an amountByQuery")
+		return
+	}
+
+	if ins.IsListByQuery() {
 		t.Errorf("the assignableResource was expected to NOT contain an amountByQuery")
 		return
 	}

@@ -6,7 +6,7 @@ import (
 )
 
 func TestSigner_withSign_Success(t *testing.T) {
-	sign := NewBytesReferenceWithVariableForTests("mySign")
+	sign := "mySign"
 	signer := NewSignerWithSignForTests(sign)
 
 	if !signer.IsSign() {
@@ -160,7 +160,7 @@ func TestSigner_withHashPublicKeys_Success(t *testing.T) {
 
 func TestSigner_withVoteVerifty_Success(t *testing.T) {
 	vote := "myVote"
-	message := NewBytesReferenceWithVariableForTests("myMessage")
+	message := "myMessage"
 	hashedRing := "myHashedRingVariable"
 	voteVerify := NewVoteVerifyForTests(vote, message, hashedRing)
 	signer := NewSignerWithVoteVerifyForTests(voteVerify)
@@ -214,7 +214,7 @@ func TestSigner_withVoteVerifty_Success(t *testing.T) {
 
 func TestSigner_withSignatureVerifty_Success(t *testing.T) {
 	signature := "mySignature"
-	message := NewBytesReferenceWithVariableForTests("myMessage")
+	message := "myMessage"
 	signatureVerify := NewSignatureVerifyForTests(signature, message)
 	signer := NewSignerWithSignatureVerifyForTests(signatureVerify)
 

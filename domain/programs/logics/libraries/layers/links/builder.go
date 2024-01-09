@@ -55,5 +55,11 @@ func (app *builder) Now() (Links, error) {
 		return nil, err
 	}
 
-	return createLinks(*pHash, app.list), nil
+	mp := map[string]Link{}
+	for _, oneLink := range app.list {
+		keyname := oneLink.Hash().String()
+		mp[keyname] = oneLink
+	}
+
+	return createLinks(*pHash, mp, app.list), nil
 }

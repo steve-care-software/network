@@ -7,7 +7,7 @@ import (
 
 func TestSignatureVerify_Success(t *testing.T) {
 	signature := "mySignature"
-	message := NewBytesReferenceWithVariableForTests("myMessage")
+	message := "myMessage"
 	signatureVerify := NewSignatureVerifyForTests(signature, message)
 	retSignature := signatureVerify.Signature()
 	if signature != retSignature {
@@ -23,7 +23,7 @@ func TestSignatureVerify_Success(t *testing.T) {
 }
 
 func TestSignatureVerify_withoutSignature_returnsError(t *testing.T) {
-	message := NewBytesReferenceWithVariableForTests("myMessage")
+	message := "myMessage"
 	_, err := NewSignatureVerifyBuilder().Create().WithMessage(message).Now()
 	if err == nil {
 		t.Errorf("the error was expected to be valid, nil returned")

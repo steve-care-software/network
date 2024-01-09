@@ -7,7 +7,7 @@ import (
 
 func TestVote_Success(t *testing.T) {
 	ring := "myRingVariable"
-	message := NewBytesReferenceWithVariableForTests("myMessage")
+	message := "myMessage"
 	vote := NewVoteForTests(ring, message)
 	retRing := vote.Ring()
 	if ring != retRing {
@@ -23,7 +23,7 @@ func TestVote_Success(t *testing.T) {
 }
 
 func TestVote_withoutRing_returnsError(t *testing.T) {
-	message := NewBytesReferenceWithVariableForTests("myMessage")
+	message := "myMessage"
 	_, err := NewVoteBuilder().Create().WithMessage(message).Now()
 	if err == nil {
 		t.Errorf("the error was expected to be valid, nil returned")

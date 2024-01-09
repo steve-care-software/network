@@ -4,7 +4,7 @@ import "steve.care/network/domain/hash"
 
 type signer struct {
 	hash             hash.Hash
-	sign             BytesReference
+	sign             string
 	vote             Vote
 	genSignerPubKeys uint
 	hashPublicKeys   string
@@ -16,7 +16,7 @@ type signer struct {
 
 func createSignerWithSign(
 	hash hash.Hash,
-	sign BytesReference,
+	sign string,
 ) Signer {
 	return createSignerInternally(
 		hash,
@@ -37,7 +37,7 @@ func createSignerWithVote(
 ) Signer {
 	return createSignerInternally(
 		hash,
-		nil,
+		"",
 		vote,
 		0,
 		"",
@@ -54,7 +54,7 @@ func createSignerWithGenerateSignerKeys(
 ) Signer {
 	return createSignerInternally(
 		hash,
-		nil,
+		"",
 		nil,
 		genSignerPubKeys,
 		"",
@@ -71,7 +71,7 @@ func createSignerWithHashPublicKeys(
 ) Signer {
 	return createSignerInternally(
 		hash,
-		nil,
+		"",
 		nil,
 		0,
 		hashPublicKeys,
@@ -88,7 +88,7 @@ func createSignerWithVoteVerify(
 ) Signer {
 	return createSignerInternally(
 		hash,
-		nil,
+		"",
 		nil,
 		0,
 		"",
@@ -105,7 +105,7 @@ func createSignerWithSignatureVerify(
 ) Signer {
 	return createSignerInternally(
 		hash,
-		nil,
+		"",
 		nil,
 		0,
 		"",
@@ -122,7 +122,7 @@ func createSignerWithBytes(
 ) Signer {
 	return createSignerInternally(
 		hash,
-		nil,
+		"",
 		nil,
 		0,
 		"",
@@ -138,7 +138,7 @@ func createSignerWithIsPublicKey(
 ) Signer {
 	return createSignerInternally(
 		hash,
-		nil,
+		"",
 		nil,
 		0,
 		"",
@@ -151,7 +151,7 @@ func createSignerWithIsPublicKey(
 
 func createSignerInternally(
 	hash hash.Hash,
-	sign BytesReference,
+	sign string,
 	vote Vote,
 	genSignerPubKeys uint,
 	hashPublicKeys string,
@@ -182,11 +182,11 @@ func (obj *signer) Hash() hash.Hash {
 
 // IsSign returns true if there is a sign, false otherwise
 func (obj *signer) IsSign() bool {
-	return obj.sign != nil
+	return obj.sign != ""
 }
 
 // Sign returns the sign, if any
-func (obj *signer) Sign() BytesReference {
+func (obj *signer) Sign() string {
 	return obj.sign
 }
 

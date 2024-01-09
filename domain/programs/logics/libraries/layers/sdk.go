@@ -92,6 +92,14 @@ func NewEngineBuilder() EngineBuilder {
 	)
 }
 
+// NewExecutionBuilder creates a new execution builder
+func NewExecutionBuilder() ExecutionBuilder {
+	hashAdapter := hash.NewAdapter()
+	return createExecutionBuilder(
+		hashAdapter,
+	)
+}
+
 // NewAssignableResourceBuilder creates a new assignable resource builder
 func NewAssignableResourceBuilder() AssignableResourceBuilder {
 	hashAdapter := hash.NewAdapter()
@@ -156,22 +164,6 @@ func NewVoteBuilder() VoteBuilder {
 	)
 }
 
-// NewBytesReferencesBuilder creates a new bytes references builder
-func NewBytesReferencesBuilder() BytesReferencesBuilder {
-	hashAdapter := hash.NewAdapter()
-	return createBytesReferencesBuilder(
-		hashAdapter,
-	)
-}
-
-// NewBytesReferenceBuilder creates a new bytes reference builder
-func NewBytesReferenceBuilder() BytesReferenceBuilder {
-	hashAdapter := hash.NewAdapter()
-	return createBytesReferenceBuilder(
-		hashAdapter,
-	)
-}
-
 // Builder represents the layers builder
 type Builder interface {
 	Create() Builder
@@ -183,6 +175,7 @@ type Builder interface {
 type Layers interface {
 	Hash() hash.Hash
 	List() []Layer
+	Fetch(hash hash.Hash) (Layer, error)
 }
 
 // LayerBuilder represents a layer builder
@@ -199,7 +192,6 @@ type Layer interface {
 	Hash() hash.Hash
 	Instructions() Instructions
 	Output() Output
-	HasInput() bool
 	Input() string
 }
 
@@ -344,7 +336,7 @@ type Assignable interface {
 // EngineBuilder represents an engine builder
 type EngineBuilder interface {
 	Create() EngineBuilder
-	WithExecution(execution BytesReference) EngineBuilder
+	WithExecution(execution Execution) EngineBuilder
 	WithResource(resource AssignableResource) EngineBuilder
 	Now() (Engine, error)
 }
@@ -353,19 +345,36 @@ type EngineBuilder interface {
 type Engine interface {
 	Hash() hash.Hash
 	IsExecution() bool
-	Execution() BytesReference
+	Execution() Execution
 	IsResource() bool
 	Resource() AssignableResource
+}
+
+// ExecutionBuilder represents an execution builder
+type ExecutionBuilder interface {
+	Create() ExecutionBuilder
+	WithInput(input string) ExecutionBuilder
+	WithLayer(layer string) ExecutionBuilder
+	Now() (Execution, error)
+}
+
+// Execution represents an execution
+type Execution interface {
+	Hash() hash.Hash
+	Input() string
+	HasLayer() bool
+	Layer() string
 }
 
 // AssignableResourceBuilder represents an assignable resource builder
 type AssignableResourceBuilder interface {
 	Create() AssignableResourceBuilder
-	WithCompile(compile BytesReference) AssignableResourceBuilder
+	WithCompile(compile string) AssignableResourceBuilder
 	WithDecompile(decompile string) AssignableResourceBuilder
-	WihAmountByQuery(amountByQuery BytesReference) AssignableResourceBuilder
-	WithRetrieveByQuery(retrieveByQuery BytesReference) AssignableResourceBuilder
-	WithRetrieveByHash(retrieveByHash BytesReference) AssignableResourceBuilder
+	WihAmountByQuery(amountByQuery string) AssignableResourceBuilder
+	WithListByQuery(listByQuery string) AssignableResourceBuilder
+	WithRetrieveByQuery(retrieveByQuery string) AssignableResourceBuilder
+	WithRetrieveByHash(retrieveByHash string) AssignableResourceBuilder
 	IsAmount() AssignableResourceBuilder
 	Now() (AssignableResource, error)
 }
@@ -374,24 +383,26 @@ type AssignableResourceBuilder interface {
 type AssignableResource interface {
 	Hash() hash.Hash
 	IsCompile() bool
-	Compile() BytesReference
+	Compile() string
 	IsDecompile() bool
 	Decompile() string
 	IsAmountByQuery() bool
-	AmountByQuery() BytesReference
+	AmountByQuery() string
+	IsListByQuery() bool
+	ListByQuery() string
 	IsRetrieveByQuery() bool
-	RetrieveByQuery() BytesReference
+	RetrieveByQuery() string
 	IsRetrieveByHash() bool
-	RetrieveByHash() BytesReference
+	RetrieveByHash() string
 	IsAmount() bool
 }
 
 // BytesBuilder represents a bytes builder
 type BytesBuilder interface {
 	Create() BytesBuilder
-	WithJoin(join BytesReferences) BytesBuilder
-	WithCompare(compare BytesReferences) BytesBuilder
-	WithHashBytes(hashBytes BytesReference) BytesBuilder
+	WithJoin(join []string) BytesBuilder
+	WithCompare(compare []string) BytesBuilder
+	WithHashBytes(hashBytes string) BytesBuilder
 	Now() (Bytes, error)
 }
 
@@ -399,11 +410,11 @@ type BytesBuilder interface {
 type Bytes interface {
 	Hash() hash.Hash
 	IsJoin() bool
-	Join() BytesReferences
+	Join() []string
 	IsCompare() bool
-	Compare() BytesReferences
+	Compare() []string
 	IsHashBytes() bool
-	HashBytes() BytesReference
+	HashBytes() string
 }
 
 // IdentityBuilder represents an identity builder
@@ -426,8 +437,8 @@ type Identity interface {
 // EncryptorBuilder represents an encryptor builder
 type EncryptorBuilder interface {
 	Create() EncryptorBuilder
-	WithDecrypt(decrypt BytesReference) EncryptorBuilder
-	WithEncrypt(encrypt BytesReference) EncryptorBuilder
+	WithDecrypt(decrypt string) EncryptorBuilder
+	WithEncrypt(encrypt string) EncryptorBuilder
 	IsPublicKey() EncryptorBuilder
 	Now() (Encryptor, error)
 }
@@ -436,16 +447,16 @@ type EncryptorBuilder interface {
 type Encryptor interface {
 	Hash() hash.Hash
 	IsDecrypt() bool
-	Decrypt() BytesReference
+	Decrypt() string
 	IsEncrypt() bool
-	Encrypt() BytesReference
+	Encrypt() string
 	IsPublicKey() bool
 }
 
 // SignerBuilder represents a signer builder
 type SignerBuilder interface {
 	Create() SignerBuilder
-	WithSign(sign BytesReference) SignerBuilder
+	WithSign(sign string) SignerBuilder
 	WithVote(vote Vote) SignerBuilder
 	WithGenerateSignerPublicKey(genPubKey uint) SignerBuilder
 	WithHashPublicKeys(hashPubKeys string) SignerBuilder
@@ -460,7 +471,7 @@ type SignerBuilder interface {
 type Signer interface {
 	Hash() hash.Hash
 	IsSign() bool
-	Sign() BytesReference
+	Sign() string
 	IsVote() bool
 	Vote() Vote
 	IsGenerateSignerPublicKeys() bool
@@ -480,7 +491,7 @@ type Signer interface {
 type SignatureVerifyBuilder interface {
 	Create() SignatureVerifyBuilder
 	WithSignature(signature string) SignatureVerifyBuilder
-	WithMessage(message BytesReference) SignatureVerifyBuilder
+	WithMessage(message string) SignatureVerifyBuilder
 	Now() (SignatureVerify, error)
 }
 
@@ -488,14 +499,14 @@ type SignatureVerifyBuilder interface {
 type SignatureVerify interface {
 	Hash() hash.Hash
 	Signature() string
-	Message() BytesReference
+	Message() string
 }
 
 // VoteVerifyBuilder represents a vote verify builder
 type VoteVerifyBuilder interface {
 	Create() VoteVerifyBuilder
 	WithVote(vote string) VoteVerifyBuilder
-	WithMessage(msg BytesReference) VoteVerifyBuilder
+	WithMessage(msg string) VoteVerifyBuilder
 	WithHashedRing(hashedRing string) VoteVerifyBuilder
 	Now() (VoteVerify, error)
 }
@@ -504,7 +515,7 @@ type VoteVerifyBuilder interface {
 type VoteVerify interface {
 	Hash() hash.Hash
 	Vote() string
-	Message() BytesReference
+	Message() string
 	HashedRing() string
 }
 
@@ -512,7 +523,7 @@ type VoteVerify interface {
 type VoteBuilder interface {
 	Create() VoteBuilder
 	WithRing(ring string) VoteBuilder
-	WithMessage(message BytesReference) VoteBuilder
+	WithMessage(message string) VoteBuilder
 	Now() (Vote, error)
 }
 
@@ -520,35 +531,5 @@ type VoteBuilder interface {
 type Vote interface {
 	Hash() hash.Hash
 	Ring() string
-	Message() BytesReference
-}
-
-// BytesReferencesBuilder represents the bytes references builder
-type BytesReferencesBuilder interface {
-	Create() BytesReferencesBuilder
-	WithList(list []BytesReference) BytesReferencesBuilder
-	Now() (BytesReferences, error)
-}
-
-// BytesReferences represents bytes values
-type BytesReferences interface {
-	Hash() hash.Hash
-	List() []BytesReference
-}
-
-// BytesReferenceBuilder represents the bytes reference builder
-type BytesReferenceBuilder interface {
-	Create() BytesReferenceBuilder
-	WithVariable(variable string) BytesReferenceBuilder
-	WithBytes(bytes []byte) BytesReferenceBuilder
-	Now() (BytesReference, error)
-}
-
-// BytesReference a bytes value
-type BytesReference interface {
-	Hash() hash.Hash
-	IsVariable() bool
-	Variable() string
-	IsBytes() bool
-	Bytes() []byte
+	Message() string
 }

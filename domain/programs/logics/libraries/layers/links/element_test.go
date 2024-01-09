@@ -26,10 +26,6 @@ func TestElement_Success(t *testing.T) {
 func TestElement_withCondition_Success(t *testing.T) {
 	condition := NewConditionForTests(
 		NewConditionResourceForTests(23),
-		NewOperatorWithAndForTests(),
-		NewConditionValueWithResourceForTests(
-			NewConditionResourceForTests(44),
-		),
 	)
 
 	pLayer, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes"))
