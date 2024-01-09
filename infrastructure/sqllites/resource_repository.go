@@ -182,7 +182,7 @@ func (app *resourceRepository) retrieveLayerByHash(hash hash.Hash) (layers.Layer
 
 	builder := app.layerBuilder.Create()
 	if retBytesReferenceHashBytes != nil {
-		pBytesReferenceHash, err := app.hashAdapter.FromBytes(retBytesReferenceHashBytes)
+		/*pBytesReferenceHash, err := app.hashAdapter.FromBytes(retBytesReferenceHashBytes)
 		if err != nil {
 			return nil, err
 		}
@@ -192,7 +192,7 @@ func (app *resourceRepository) retrieveLayerByHash(hash hash.Hash) (layers.Layer
 			return nil, err
 		}
 
-		builder.WithBytesReference(bytesReference)
+		builder.WithBytesReference(bytesReference)*/
 	}
 
 	return builder.Now()

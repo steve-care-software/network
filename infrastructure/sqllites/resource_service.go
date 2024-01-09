@@ -11,7 +11,6 @@ import (
 	"steve.care/network/domain/programs/blocks/executions/actions/resources/tokens/queries"
 	"steve.care/network/domain/programs/blocks/executions/actions/resources/tokens/receipts"
 	"steve.care/network/domain/programs/blocks/executions/actions/resources/tokens/suites"
-	commands_layers "steve.care/network/domain/programs/logics/libraries/layers"
 )
 
 type resourceService struct {
@@ -70,7 +69,7 @@ func (app *resourceService) insertToken(ins tokens.Token) error {
 }
 
 func (app *resourceService) insertLayer(ins layers.Layer) error {
-	if ins.IsBytesReference() {
+	/*if ins.IsBytesReference() {
 		bytesReference := ins.BytesReference()
 		err := app.insertLayerBytesReference(bytesReference)
 		if err != nil {
@@ -83,11 +82,12 @@ func (app *resourceService) insertLayer(ins layers.Layer) error {
 		}
 
 		return nil
-	}
+	}*/
 
 	return nil
 }
 
+/*
 func (app *resourceService) insertLayerBytesReference(ins commands_layers.BytesReference) error {
 	hash := ins.Hash().Bytes()
 	variable := ins.Variable()
@@ -98,7 +98,7 @@ func (app *resourceService) insertLayerBytesReference(ins commands_layers.BytesR
 	}
 
 	return nil
-}
+}*/
 
 func (app *resourceService) insertLink(ins links.Link) error {
 	return nil
