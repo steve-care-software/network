@@ -17,10 +17,12 @@ type Builder interface {
 
 // Application represents the block application
 type Application interface {
+	Exists(hash hash.Hash) bool
 	Retrieve(hash hash.Hash) (blocks.Block, error)
 	RetrieveHeadByProgram(program hash.Hash) (blocks.Block, error)
 	Transact(trx transactions.Transactions) error
 	Queue() (transactions.Transactions, error)
 	Mine(program hash.Hash) error
 	Rewind(head hash.Hash) error
+	Insert(blocks blocks.Block) error
 }

@@ -1,9 +1,9 @@
 package peers
 
 import (
-	"hash"
 	"net/url"
 
+	"steve.care/network/domain/hash"
 	"steve.care/network/domain/programs"
 )
 

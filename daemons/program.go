@@ -50,7 +50,7 @@ func (app *program) Start() error {
 			}
 
 			// sync the program with peers:
-			err = app.peersApplication.Sync(program)
+			err = app.peersApplication.Execute(program)
 			if err != nil {
 				return err
 			}

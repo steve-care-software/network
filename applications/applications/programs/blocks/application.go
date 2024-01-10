@@ -53,6 +53,12 @@ func createApplication(
 	return &out
 }
 
+// Exists returns true if the block exists, false otherwise
+func (app *application) Exists(hash hash.Hash) bool {
+	_, err := app.Retrieve(hash)
+	return err != nil
+}
+
 // Retrieve retrieves a block
 func (app *application) Retrieve(hash hash.Hash) (blocks.Block, error) {
 	return app.blockRepository.Retrieve(hash)
@@ -166,7 +172,7 @@ func (app *application) Mine(program hash.Hash) error {
 	}
 
 	// insert the block:
-	return app.blockService.Insert(newBlock)
+	return app.Insert(newBlock)
 }
 
 // Rewind rewinds a block
@@ -184,4 +190,9 @@ func (app *application) Rewind(head hash.Hash) error {
 	}
 
 	return app.blockService.Delete(block.Hash())
+}
+
+// Insert inserts a block
+func (app *application) Insert(blocks blocks.Block) error {
+	return app.blockService.Insert(blocks)
 }
