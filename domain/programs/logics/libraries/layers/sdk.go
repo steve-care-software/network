@@ -333,6 +333,23 @@ type Assignable interface {
 	Engine() Engine
 }
 
+// ConstantBuilder represents a constant builder
+type ConstantBuilder interface {
+	Create() ConstantBuilder
+	WithBool(boolValue bool) ConstantBuilder
+	WithBytes(bytes []byte) ConstantBuilder
+	Now() (Constant, error)
+}
+
+// Constant represents a constant assignable
+type Constant interface {
+	Hash() hash.Hash
+	IsBool() bool
+	Bool() *bool
+	IsBytes() bool
+	Bytes() []byte
+}
+
 // EngineBuilder represents an engine builder
 type EngineBuilder interface {
 	Create() EngineBuilder
