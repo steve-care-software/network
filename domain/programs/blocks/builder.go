@@ -4,22 +4,22 @@ import (
 	"errors"
 
 	"steve.care/network/domain/hash"
-	"steve.care/network/domain/programs/blocks/executions"
+	"steve.care/network/domain/programs/blocks/transactions"
 )
 
 type builder struct {
-	hashAdapter hash.Adapter
-	executions  executions.Executions
-	parent      hash.Hash
+	hashAdapter  hash.Adapter
+	transactions transactions.Transactions
+	parent       hash.Hash
 }
 
 func createBuilder(
 	hashAdapter hash.Adapter,
 ) Builder {
 	out := builder{
-		hashAdapter: hashAdapter,
-		executions:  nil,
-		parent:      nil,
+		hashAdapter:  hashAdapter,
+		transactions: nil,
+		parent:       nil,
 	}
 
 	return &out
@@ -32,9 +32,9 @@ func (app *builder) Create() Builder {
 	)
 }
 
-// WithExecutions add executions to the builder
-func (app *builder) WithExecutions(executions executions.Executions) Builder {
-	app.executions = executions
+// WithTransactions add transactions to the builder
+func (app *builder) WithTransactions(transactions transactions.Transactions) Builder {
+	app.transactions = transactions
 	return app
 }
 
@@ -46,12 +46,12 @@ func (app *builder) WithParent(parent hash.Hash) Builder {
 
 // Now builds a new Block instance
 func (app *builder) Now() (Block, error) {
-	if app.executions != nil {
-		return nil, errors.New("the executions is mandatory in order to build a Block instance")
+	if app.transactions != nil {
+		return nil, errors.New("the transactions is mandatory in order to build a Block instance")
 	}
 
 	data := [][]byte{
-		app.executions.Hash().Bytes(),
+		app.transactions.Hash().Bytes(),
 	}
 
 	if app.parent != nil {
@@ -64,8 +64,8 @@ func (app *builder) Now() (Block, error) {
 	}
 
 	if app.parent != nil {
-		return createBlockWithParent(*pHash, app.executions, app.parent), nil
+		return createBlockWithParent(*pHash, app.transactions, app.parent), nil
 	}
 
-	return createBlock(*pHash, app.executions), nil
+	return createBlock(*pHash, app.transactions), nil
 }

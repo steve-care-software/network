@@ -3,7 +3,7 @@ package resources
 import (
 	"steve.care/network/domain/accounts/signers"
 	"steve.care/network/domain/hash"
-	"steve.care/network/domain/programs/blocks/executions/actions/resources/tokens"
+	"steve.care/network/domain/programs/blocks/transactions/executions/actions/resources/tokens"
 )
 
 type resource struct {

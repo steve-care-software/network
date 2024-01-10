@@ -2,39 +2,39 @@ package blocks
 
 import (
 	"steve.care/network/domain/hash"
-	"steve.care/network/domain/programs/blocks/executions"
+	"steve.care/network/domain/programs/blocks/transactions"
 )
 
 type block struct {
-	hash       hash.Hash
-	executions executions.Executions
-	parent     hash.Hash
+	hash         hash.Hash
+	transactions transactions.Transactions
+	parent       hash.Hash
 }
 
 func createBlock(
 	hash hash.Hash,
-	executions executions.Executions,
+	transactions transactions.Transactions,
 ) Block {
-	return createBlockInternally(hash, executions, nil)
+	return createBlockInternally(hash, transactions, nil)
 }
 
 func createBlockWithParent(
 	hash hash.Hash,
-	executions executions.Executions,
+	transactions transactions.Transactions,
 	parent hash.Hash,
 ) Block {
-	return createBlockInternally(hash, executions, parent)
+	return createBlockInternally(hash, transactions, parent)
 }
 
 func createBlockInternally(
 	hash hash.Hash,
-	executions executions.Executions,
+	transactions transactions.Transactions,
 	parent hash.Hash,
 ) Block {
 	out := block{
-		hash:       hash,
-		executions: executions,
-		parent:     parent,
+		hash:         hash,
+		transactions: transactions,
+		parent:       parent,
 	}
 
 	return &out
@@ -45,9 +45,9 @@ func (obj *block) Hash() hash.Hash {
 	return obj.hash
 }
 
-// Executions returns the executions
-func (obj *block) Executions() executions.Executions {
-	return obj.executions
+// Transactions returns the transactions
+func (obj *block) Transactions() transactions.Transactions {
+	return obj.transactions
 }
 
 // HasParent returns true if there is parent, false otherwise

@@ -9,7 +9,7 @@ import (
 	"bytes"
 
 	"steve.care/network/domain/credentials"
-	"steve.care/network/domain/programs/blocks/executions/actions/resources"
+	"steve.care/network/domain/programs/blocks/transactions/executions/actions/resources"
 	"steve.care/network/infrastructure/edwards25519"
 	"steve.care/network/infrastructure/jsons"
 )

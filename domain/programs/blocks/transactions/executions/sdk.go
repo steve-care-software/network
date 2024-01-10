@@ -2,7 +2,7 @@ package executions
 
 import (
 	"steve.care/network/domain/hash"
-	"steve.care/network/domain/programs/blocks/executions/actions"
+	"steve.care/network/domain/programs/blocks/transactions/executions/actions"
 )
 
 // NewBuilder creates a new builder instance

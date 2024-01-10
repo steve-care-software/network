@@ -4,7 +4,7 @@ import (
 	"errors"
 
 	"steve.care/network/domain/hash"
-	"steve.care/network/domain/programs/blocks/executions/actions/resources"
+	"steve.care/network/domain/programs/blocks/transactions/executions/actions/resources"
 )
 
 type actionBuilder struct {

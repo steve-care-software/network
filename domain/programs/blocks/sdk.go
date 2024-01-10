@@ -2,7 +2,7 @@ package blocks
 
 import (
 	"steve.care/network/domain/hash"
-	"steve.care/network/domain/programs/blocks/executions"
+	"steve.care/network/domain/programs/blocks/transactions"
 )
 
 // NewBuilder creates a new builder instance
@@ -16,7 +16,7 @@ func NewBuilder() Builder {
 // Builder represents the block builder
 type Builder interface {
 	Create() Builder
-	WithExecutions(executions executions.Executions) Builder
+	WithTransactions(transactions transactions.Transactions) Builder
 	WithParent(parent hash.Hash) Builder
 	Now() (Block, error)
 }
@@ -24,7 +24,7 @@ type Builder interface {
 // Block representa a block
 type Block interface {
 	Hash() hash.Hash
-	Executions() executions.Executions
+	Transactions() transactions.Transactions
 	HasParent() bool
 	Parent() hash.Hash
 }

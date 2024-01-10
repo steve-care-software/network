@@ -2,7 +2,7 @@ package jsons
 
 import (
 	"steve.care/network/domain/hash"
-	resources_layers "steve.care/network/domain/programs/blocks/executions/actions/resources/tokens/layers"
+	resources_layers "steve.care/network/domain/programs/blocks/transactions/executions/actions/resources/tokens/layers"
 	"steve.care/network/domain/programs/logics/libraries/layers"
 	structs_tokens "steve.care/network/infrastructure/jsons/resources/tokens"
 	structs_layers "steve.care/network/infrastructure/jsons/resources/tokens/layers"

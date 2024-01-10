@@ -3,11 +3,11 @@ package tokens
 import (
 	"time"
 
-	"steve.care/network/domain/programs/blocks/executions/actions/resources/tokens/dashboards"
-	"steve.care/network/domain/programs/blocks/executions/actions/resources/tokens/layers"
-	"steve.care/network/domain/programs/blocks/executions/actions/resources/tokens/links"
-	"steve.care/network/domain/programs/blocks/executions/actions/resources/tokens/queries"
-	"steve.care/network/domain/programs/blocks/executions/actions/resources/tokens/receipts"
+	"steve.care/network/domain/programs/blocks/transactions/executions/actions/resources/tokens/dashboards"
+	"steve.care/network/domain/programs/blocks/transactions/executions/actions/resources/tokens/layers"
+	"steve.care/network/domain/programs/blocks/transactions/executions/actions/resources/tokens/links"
+	"steve.care/network/domain/programs/blocks/transactions/executions/actions/resources/tokens/queries"
+	"steve.care/network/domain/programs/blocks/transactions/executions/actions/resources/tokens/receipts"
 )
 
 // NewTokenWithLayerForTests creates a new token with layer for tests

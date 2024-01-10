@@ -1,7 +1,7 @@
 package jsons
 
 import (
-	resources_suites "steve.care/network/domain/programs/blocks/executions/actions/resources/tokens/suites"
+	resources_suites "steve.care/network/domain/programs/blocks/transactions/executions/actions/resources/tokens/suites"
 	"steve.care/network/domain/programs/logics/suites"
 	"steve.care/network/domain/programs/logics/suites/expectations"
 	structs_tokens "steve.care/network/infrastructure/jsons/resources/tokens"

@@ -4,7 +4,7 @@ import (
 	"steve.care/network/domain/credentials"
 	"steve.care/network/domain/hash"
 	"steve.care/network/domain/programs"
-	"steve.care/network/domain/programs/blocks/executions"
+	"steve.care/network/domain/programs/blocks/transactions/executions"
 	"steve.care/network/domain/receipts"
 )
 
