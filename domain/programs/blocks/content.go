@@ -5,33 +5,33 @@ import (
 	"steve.care/network/domain/programs/blocks/transactions"
 )
 
-type block struct {
+type content struct {
 	hash         hash.Hash
 	transactions transactions.Transactions
 	parent       hash.Hash
 }
 
-func createBlock(
+func createContent(
 	hash hash.Hash,
 	transactions transactions.Transactions,
-) Block {
-	return createBlockInternally(hash, transactions, nil)
+) Content {
+	return createContentInternally(hash, transactions, nil)
 }
 
-func createBlockWithParent(
+func createContentWithParent(
 	hash hash.Hash,
 	transactions transactions.Transactions,
 	parent hash.Hash,
-) Block {
-	return createBlockInternally(hash, transactions, parent)
+) Content {
+	return createContentInternally(hash, transactions, parent)
 }
 
-func createBlockInternally(
+func createContentInternally(
 	hash hash.Hash,
 	transactions transactions.Transactions,
 	parent hash.Hash,
-) Block {
-	out := block{
+) Content {
+	out := content{
 		hash:         hash,
 		transactions: transactions,
 		parent:       parent,
@@ -41,21 +41,21 @@ func createBlockInternally(
 }
 
 // Hash returns the hash
-func (obj *block) Hash() hash.Hash {
+func (obj *content) Hash() hash.Hash {
 	return obj.hash
 }
 
 // Transactions returns the transactions
-func (obj *block) Transactions() transactions.Transactions {
+func (obj *content) Transactions() transactions.Transactions {
 	return obj.transactions
 }
 
 // HasParent returns true if there is parent, false otherwise
-func (obj *block) HasParent() bool {
+func (obj *content) HasParent() bool {
 	return obj.parent != nil
 }
 
 // Parent returns the parent, if any
-func (obj *block) Parent() hash.Hash {
+func (obj *content) Parent() hash.Hash {
 	return obj.parent
 }

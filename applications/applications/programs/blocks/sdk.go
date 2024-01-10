@@ -1,10 +1,19 @@
 package blocks
 
 import (
+	"steve.care/network/domain/credentials"
 	"steve.care/network/domain/hash"
 	"steve.care/network/domain/programs/blocks"
 	"steve.care/network/domain/programs/blocks/transactions"
 )
+
+// Builder represents the application builder
+type Builder interface {
+	Create() Builder
+	WithCredentials(credentials credentials.Credentials) Builder
+	WithDifficulty(difficulty blocks.Difficulty) Builder
+	Now() (Application, error)
+}
 
 // Application represents the block application
 type Application interface {
@@ -12,8 +21,6 @@ type Application interface {
 	RetrieveHeadByProgram(program hash.Hash) (blocks.Block, error)
 	Transact(trx transactions.Transactions) error
 	Queue() (transactions.Transactions, error)
-	Mine(program hash.Hash) (blocks.Block, error)
-	Rewind(head hash.Hash) (blocks.Block, error)
-	Insert(block blocks.Block) error
-	Save(block blocks.Block) error
+	Mine(program hash.Hash) error
+	Rewind(head hash.Hash) error
 }

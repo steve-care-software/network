@@ -13,9 +13,9 @@ type builder struct {
 	parent       hash.Hash
 }
 
-func createBuilder(
+func createContentBuilder(
 	hashAdapter hash.Adapter,
-) Builder {
+) ContentBuilder {
 	out := builder{
 		hashAdapter:  hashAdapter,
 		transactions: nil,
@@ -26,28 +26,28 @@ func createBuilder(
 }
 
 // Create initializes the builder
-func (app *builder) Create() Builder {
-	return createBuilder(
+func (app *builder) Create() ContentBuilder {
+	return createContentBuilder(
 		app.hashAdapter,
 	)
 }
 
 // WithTransactions add transactions to the builder
-func (app *builder) WithTransactions(transactions transactions.Transactions) Builder {
+func (app *builder) WithTransactions(transactions transactions.Transactions) ContentBuilder {
 	app.transactions = transactions
 	return app
 }
 
 // WithParent add parent to the builder
-func (app *builder) WithParent(parent hash.Hash) Builder {
+func (app *builder) WithParent(parent hash.Hash) ContentBuilder {
 	app.parent = parent
 	return app
 }
 
-// Now builds a new Block instance
-func (app *builder) Now() (Block, error) {
+// Now builds a new Content instance
+func (app *builder) Now() (Content, error) {
 	if app.transactions != nil {
-		return nil, errors.New("the transactions is mandatory in order to build a Block instance")
+		return nil, errors.New("the transactions is mandatory in order to build a Content instance")
 	}
 
 	data := [][]byte{
@@ -64,8 +64,8 @@ func (app *builder) Now() (Block, error) {
 	}
 
 	if app.parent != nil {
-		return createBlockWithParent(*pHash, app.transactions, app.parent), nil
+		return createContentWithParent(*pHash, app.transactions, app.parent), nil
 	}
 
-	return createBlock(*pHash, app.transactions), nil
+	return createContent(*pHash, app.transactions), nil
 }

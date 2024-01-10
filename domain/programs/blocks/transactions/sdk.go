@@ -47,3 +47,14 @@ type Transaction interface {
 	Executions() executions.Executions
 	Signature() signers.Signature
 }
+
+// Repository represents a transaction repository
+type Repository interface {
+	Retrieve(hash hash.Hash) (Transaction, error)
+	Queue() ([]hash.Hash, error)
+}
+
+// Service returns the transaction service
+type Service interface {
+	Insert(trx Transaction) error
+}
