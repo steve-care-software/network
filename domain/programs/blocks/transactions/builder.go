@@ -1,4 +1,4 @@
-package executions
+package transactions
 
 import (
 	"errors"
@@ -8,7 +8,7 @@ import (
 
 type builder struct {
 	hashAapter hash.Adapter
-	list       []Execution
+	list       []Transaction
 }
 
 func createBuilder(
@@ -30,24 +30,24 @@ func (app *builder) Create() Builder {
 }
 
 // WithList adds a list to the builder
-func (app *builder) WithList(list []Execution) Builder {
+func (app *builder) WithList(list []Transaction) Builder {
 	app.list = list
 	return app
 }
 
-// Now builds a new Executions instance
-func (app *builder) Now() (Executions, error) {
+// Now builds a new Transactions instance
+func (app *builder) Now() (Transactions, error) {
 	if app.list != nil && len(app.list) <= 0 {
 		app.list = nil
 	}
 
 	if app.list == nil {
-		return nil, errors.New("there must be at least 1 Execution in order to build an Executions instance")
+		return nil, errors.New("there must be at least 1 Transaction in order to build an Transactions instance")
 	}
 
 	data := [][]byte{}
-	for _, oneExecution := range app.list {
-		data = append(data, oneExecution.Hash().Bytes())
+	for _, oneTransaction := range app.list {
+		data = append(data, oneTransaction.Hash().Bytes())
 	}
 
 	pHash, err := app.hashAapter.FromMultiBytes(data)
@@ -55,5 +55,5 @@ func (app *builder) Now() (Executions, error) {
 		return nil, err
 	}
 
-	return createExecutions(*pHash, app.list), nil
+	return createTransactions(*pHash, app.list), nil
 }
