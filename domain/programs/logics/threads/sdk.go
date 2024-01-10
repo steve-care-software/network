@@ -1,8 +1,6 @@
 package threads
 
 import (
-	"time"
-
 	"steve.care/network/domain/hash"
 	"steve.care/network/domain/programs/logics/libraries/layers"
 )
@@ -41,7 +39,6 @@ type ThreadBuilder interface {
 	Create() ThreadBuilder
 	WithInput(input []byte) ThreadBuilder
 	WithEntry(entry layers.Layer) ThreadBuilder
-	WithWaitPeriod(waitPeriod time.Duration) ThreadBuilder
 	Now() (Thread, error)
 }
 
@@ -50,5 +47,4 @@ type Thread interface {
 	Hash() hash.Hash
 	Input() []byte
 	Entry() layers.Layer
-	WaitPeriod() time.Duration
 }

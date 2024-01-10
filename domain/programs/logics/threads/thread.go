@@ -1,30 +1,25 @@
 package threads
 
 import (
-	"time"
-
 	"steve.care/network/domain/hash"
 	"steve.care/network/domain/programs/logics/libraries/layers"
 )
 
 type thread struct {
-	hash       hash.Hash
-	input      []byte
-	entry      layers.Layer
-	waitPeriod time.Duration
+	hash  hash.Hash
+	input []byte
+	entry layers.Layer
 }
 
 func createThread(
 	hash hash.Hash,
 	input []byte,
 	entry layers.Layer,
-	waitPeriod time.Duration,
 ) Thread {
 	out := thread{
-		hash:       hash,
-		input:      input,
-		entry:      entry,
-		waitPeriod: waitPeriod,
+		hash:  hash,
+		input: input,
+		entry: entry,
 	}
 
 	return &out
@@ -43,9 +38,4 @@ func (obj *thread) Input() []byte {
 // Entry returns the entry
 func (obj *thread) Entry() layers.Layer {
 	return obj.entry
-}
-
-// WaitPeriod returns the waitPeriod
-func (obj *thread) WaitPeriod() time.Duration {
-	return obj.waitPeriod
 }

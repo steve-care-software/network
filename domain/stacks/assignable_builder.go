@@ -6,7 +6,7 @@ import (
 	"steve.care/network/domain/accounts/encryptors"
 	"steve.care/network/domain/accounts/signers"
 	"steve.care/network/domain/hash"
-	"steve.care/network/domain/programs/blocks/executions/actions/resources"
+	"steve.care/network/domain/programs/blocks/transactions/executions/actions/resources"
 )
 
 type assignableBuilder struct {
