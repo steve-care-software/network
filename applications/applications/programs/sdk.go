@@ -5,6 +5,7 @@ import (
 	"steve.care/network/applications/applications/programs/cruds"
 	"steve.care/network/applications/applications/programs/logics"
 	"steve.care/network/applications/applications/programs/peers"
+	"steve.care/network/applications/applications/programs/threads"
 	"steve.care/network/domain/credentials"
 )
 
@@ -20,5 +21,6 @@ type Application interface {
 	Block() blocks.Application
 	CRUD() cruds.Application
 	Logic() logics.Application
+	Threads() threads.Application
 	Peers() peers.Application
 }
