@@ -10,6 +10,7 @@ import (
 type Application interface {
 	Retrieve(hash hash.Hash) (blocks.Block, error)
 	RetrieveHeadByProgram(program hash.Hash) (blocks.Block, error)
+	Transact(executions executions.Executions) error
 	Queue() (executions.Executions, error)
 	Mine(program hash.Hash) (blocks.Block, error)
 	Rewind(head hash.Hash) (blocks.Block, error)
