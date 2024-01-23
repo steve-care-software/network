@@ -1,10 +1,11 @@
-package executions
+package transactions
 
 import (
 	"reflect"
 	"testing"
 
 	"steve.care/network/domain/accounts/signers"
+	"steve.care/network/domain/programs/blocks/transactions/executions"
 	"steve.care/network/domain/programs/blocks/transactions/executions/actions"
 	"steve.care/network/domain/programs/blocks/transactions/executions/actions/resources"
 	"steve.care/network/domain/programs/blocks/transactions/executions/actions/resources/tokens"
@@ -12,7 +13,7 @@ import (
 	"steve.care/network/domain/programs/logics/libraries/layers"
 )
 
-func TestExecutions_Success(t *testing.T) {
+func TestTransactions_Success(t *testing.T) {
 	token := tokens.NewTokenWithLayerForTests(
 		token_layers.NewLayerWithLayerForTests(
 			layers.NewLayerForTests(
@@ -35,17 +36,28 @@ func TestExecutions_Success(t *testing.T) {
 		return
 	}
 
-	actionsIns := actions.NewActionsForTests([]actions.Action{
-		actions.NewActionWithCreateForTests(
-			resources.NewResourceForTests(token, signature),
+	executions := executions.NewExecutionsForTests([]executions.Execution{
+		executions.NewExecutionForTests(
+			actions.NewActionsForTests([]actions.Action{
+				actions.NewActionWithCreateForTests(
+					resources.NewResourceForTests(token, signature),
+				),
+			}),
 		),
 	})
 
-	list := []Execution{
-		NewExecutionForTests(actionsIns),
+	executionsMsg := executions.Hash().Bytes()
+	execSignature, err := signers.NewFactory().Create().Sign(executionsMsg)
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
 	}
 
-	ins := NewExecutionsForTests(list)
+	list := []Transaction{
+		NewTransactionForTests(executions, execSignature),
+	}
+
+	ins := NewTransactionsForTests(list)
 
 	retList := ins.List()
 	if !reflect.DeepEqual(list, retList) {
@@ -54,15 +66,15 @@ func TestExecutions_Success(t *testing.T) {
 	}
 }
 
-func TestExecutions_withEmptyList_returnsError(t *testing.T) {
-	_, err := NewBuilder().Create().WithList([]Execution{}).Now()
+func TestTransactions_withEmptyList_returnsError(t *testing.T) {
+	_, err := NewBuilder().Create().WithList([]Transaction{}).Now()
 	if err == nil {
 		t.Errorf("the error was expected to be valid, nil returned")
 	}
 }
 
-func TestExecutions_withoutList_returnsError(t *testing.T) {
-	_, err := NewBuilder().Create().Now()
+func TestTransactions_withoutList_returnsError(t *testing.T) {
+	_, err := NewBuilder().Create().WithList([]Transaction{}).Now()
 	if err == nil {
 		t.Errorf("the error was expected to be valid, nil returned")
 	}

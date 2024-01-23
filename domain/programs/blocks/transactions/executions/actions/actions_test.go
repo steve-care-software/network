@@ -30,7 +30,8 @@ func TestAction_withList_Success(t *testing.T) {
 	msg := token.Hash().Bytes()
 	signature, err := signers.NewFactory().Create().Sign(msg)
 	if err != nil {
-		panic(err)
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
 	}
 
 	list := []Action{
