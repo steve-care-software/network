@@ -1,26 +1,26 @@
 package daemons
 
 import (
-	"steve.care/network/applications/applications/programs/cruds"
+	"steve.care/network/applications/applications/programs/graphs"
 	"steve.care/network/applications/applications/programs/logics"
 	"steve.care/network/applications/applications/programs/peers"
 	"steve.care/network/applications/applications/programs/threads"
 )
 
 type program struct {
-	crudApplication   cruds.Application
+	graphApplication  graphs.Application
 	threadApplication threads.Application
 	peersApplication  peers.Application
 	isActive          bool
 }
 
 func createApplication(
-	crudApplication cruds.Application,
+	graphApplication graphs.Application,
 	peersApplication peers.Application,
 	logicApplication logics.Application,
 ) Application {
 	out := program{
-		crudApplication:  crudApplication,
+		graphApplication: graphApplication,
 		peersApplication: peersApplication,
 		isActive:         false,
 	}
@@ -37,14 +37,15 @@ func (app *program) Start() error {
 		}
 
 		// fetch the active programs hash list:
-		hashesList, err := app.crudApplication.List(true)
+		isActive := true
+		retHashes, err := app.graphApplication.List(&isActive)
 		if err != nil {
 			return err
 		}
 
-		for _, oneHash := range hashesList {
+		for _, oneHash := range retHashes {
 			// retrieve the program from hash:
-			program, err := app.crudApplication.Retrieve(oneHash)
+			program, err := app.graphApplication.Retrieve(oneHash)
 			if err != nil {
 				return err
 			}

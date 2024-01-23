@@ -10,11 +10,10 @@ import (
 
 type builder struct {
 	hashAdapter hash.Adapter
-	name        string
 	description string
 	head        blocks.Block
 	logic       logics.Logic
-	parent      Program
+	metadata    MetaData
 }
 
 func createBuilder(
@@ -22,11 +21,10 @@ func createBuilder(
 ) Builder {
 	out := builder{
 		hashAdapter: hashAdapter,
-		name:        "",
 		description: "",
 		head:        nil,
 		logic:       nil,
-		parent:      nil,
+		metadata:    nil,
 	}
 
 	return &out
@@ -37,12 +35,6 @@ func (app *builder) Create() Builder {
 	return createBuilder(
 		app.hashAdapter,
 	)
-}
-
-// WithName adds a name to the builder
-func (app *builder) WithName(name string) Builder {
-	app.name = name
-	return app
 }
 
 // WithDescription adds a description to the builder
@@ -63,24 +55,19 @@ func (app *builder) WithHead(head blocks.Block) Builder {
 	return app
 }
 
-// WithParent adds a parent to the builder
-func (app *builder) WithParent(parent Program) Builder {
-	app.parent = parent
+// WithMetaData adds a metadata to the builder
+func (app *builder) WithMetaData(metadata MetaData) Builder {
+	app.metadata = metadata
 	return app
 }
 
 // Now builds a new Program instance
 func (app *builder) Now() (Program, error) {
-	if app.name == "" {
-		return nil, errors.New("the name is mandatory in order to build a Program instance")
-	}
-
 	if app.description == "" {
 		return nil, errors.New("the description is mandatory in order to build a Program instance")
 	}
 
 	data := [][]byte{
-		[]byte(app.name),
 		[]byte(app.description),
 	}
 
@@ -92,8 +79,8 @@ func (app *builder) Now() (Program, error) {
 		data = append(data, app.logic.Hash().Bytes())
 	}
 
-	if app.parent != nil {
-		data = append(data, app.parent.Hash().Bytes())
+	if app.metadata != nil {
+		data = append(data, app.metadata.Hash().Bytes())
 	}
 
 	pHash, err := app.hashAdapter.FromMultiBytes(data)
@@ -101,33 +88,33 @@ func (app *builder) Now() (Program, error) {
 		return nil, err
 	}
 
-	if app.head != nil && app.logic != nil && app.parent != nil {
-		return createProgramWithHeadAndLogicAndParent(*pHash, app.name, app.description, app.head, app.logic, app.parent), nil
+	if app.head != nil && app.logic != nil && app.metadata != nil {
+		return createProgramWithHeadAndLogicAndMetaData(*pHash, app.description, app.head, app.logic, app.metadata), nil
 	}
 
 	if app.head != nil && app.logic != nil {
-		return createProgramWithHeadAndLogic(*pHash, app.name, app.description, app.head, app.logic), nil
+		return createProgramWithHeadAndLogic(*pHash, app.description, app.head, app.logic), nil
 	}
 
-	if app.head != nil && app.parent != nil {
-		return createProgramWithHeadAndParent(*pHash, app.name, app.description, app.head, app.parent), nil
+	if app.head != nil && app.metadata != nil {
+		return createProgramWithHeadAndMetaData(*pHash, app.description, app.head, app.metadata), nil
 	}
 
-	if app.logic != nil && app.parent != nil {
-		return createProgramWithLogicAndParent(*pHash, app.name, app.description, app.logic, app.parent), nil
+	if app.logic != nil && app.metadata != nil {
+		return createProgramWithLogicAndMetaData(*pHash, app.description, app.logic, app.metadata), nil
 	}
 
 	if app.head != nil {
-		return createProgramWithHead(*pHash, app.name, app.description, app.head), nil
+		return createProgramWithHead(*pHash, app.description, app.head), nil
 	}
 
 	if app.logic != nil {
-		return createProgramWithLogic(*pHash, app.name, app.description, app.logic), nil
+		return createProgramWithLogic(*pHash, app.description, app.logic), nil
 	}
 
-	if app.parent != nil {
-		return createProgramWithParent(*pHash, app.name, app.description, app.parent), nil
+	if app.metadata != nil {
+		return createProgramWithMetaData(*pHash, app.description, app.metadata), nil
 	}
 
-	return createProgram(*pHash, app.name, app.description), nil
+	return createProgram(*pHash, app.description), nil
 }

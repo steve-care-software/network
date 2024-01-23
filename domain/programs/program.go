@@ -8,104 +8,93 @@ import (
 
 type program struct {
 	hash        hash.Hash
-	name        string
 	description string
 	head        blocks.Block
 	logic       logics.Logic
-	parent      Program
+	metaData    MetaData
 }
 
 func createProgram(
 	hash hash.Hash,
-	name string,
 	description string,
 ) Program {
-	return createProgramInternally(hash, name, description, nil, nil, nil)
+	return createProgramInternally(hash, description, nil, nil, nil)
 }
 
 func createProgramWithHead(
 	hash hash.Hash,
-	name string,
 	description string,
 	head blocks.Block,
 ) Program {
-	return createProgramInternally(hash, name, description, head, nil, nil)
+	return createProgramInternally(hash, description, head, nil, nil)
 }
 
 func createProgramWithLogic(
 	hash hash.Hash,
-	name string,
 	description string,
 	logic logics.Logic,
 ) Program {
-	return createProgramInternally(hash, name, description, nil, logic, nil)
+	return createProgramInternally(hash, description, nil, logic, nil)
 }
 
-func createProgramWithParent(
+func createProgramWithMetaData(
 	hash hash.Hash,
-	name string,
 	description string,
-	parent Program,
+	metaData MetaData,
 ) Program {
-	return createProgramInternally(hash, name, description, nil, nil, parent)
+	return createProgramInternally(hash, description, nil, nil, metaData)
 }
 
 func createProgramWithHeadAndLogic(
 	hash hash.Hash,
-	name string,
 	description string,
 	head blocks.Block,
 	logic logics.Logic,
 ) Program {
-	return createProgramInternally(hash, name, description, head, logic, nil)
+	return createProgramInternally(hash, description, head, logic, nil)
 }
 
-func createProgramWithHeadAndParent(
+func createProgramWithHeadAndMetaData(
 	hash hash.Hash,
-	name string,
 	description string,
 	head blocks.Block,
-	parent Program,
+	metaData MetaData,
 ) Program {
-	return createProgramInternally(hash, name, description, head, nil, parent)
+	return createProgramInternally(hash, description, head, nil, metaData)
 }
 
-func createProgramWithLogicAndParent(
+func createProgramWithLogicAndMetaData(
 	hash hash.Hash,
-	name string,
 	description string,
 	logic logics.Logic,
-	parent Program,
+	metaData MetaData,
 ) Program {
-	return createProgramInternally(hash, name, description, nil, logic, nil)
+	return createProgramInternally(hash, description, nil, logic, metaData)
 }
 
-func createProgramWithHeadAndLogicAndParent(
+func createProgramWithHeadAndLogicAndMetaData(
 	hash hash.Hash,
-	name string,
 	description string,
 	head blocks.Block,
 	logic logics.Logic,
-	parent Program,
+	metaData MetaData,
 ) Program {
-	return createProgramInternally(hash, name, description, head, logic, parent)
+	return createProgramInternally(hash, description, head, logic, metaData)
 }
 
 func createProgramInternally(
 	hash hash.Hash,
-	name string,
 	description string,
 	head blocks.Block,
 	logic logics.Logic,
-	parent Program,
+	metaData MetaData,
 ) Program {
 	out := program{
 		hash:        hash,
-		name:        name,
 		description: description,
 		head:        head,
 		logic:       logic,
-		parent:      parent,
+		metaData:    metaData,
 	}
 
 	return &out
@@ -114,11 +103,6 @@ func createProgramInternally(
 // Hash returns the hash
 func (obj *program) Hash() hash.Hash {
 	return obj.hash
-}
-
-// Name returns the name
-func (obj *program) Name() string {
-	return obj.name
 }
 
 // Description returns the description
@@ -146,12 +130,12 @@ func (obj *program) Logic() logics.Logic {
 	return obj.logic
 }
 
-// HasParent returns true if there is a parent, false otherwise
-func (obj *program) HasParent() bool {
-	return obj.parent != nil
+// HasMetaData returns true if there is metadata, false otherwise
+func (obj *program) HasMetaData() bool {
+	return obj.metaData != nil
 }
 
-// Parent returns the parent, if any
-func (obj *program) Parent() Program {
-	return obj.parent
+// MetaData returns the metadata, if any
+func (obj *program) MetaData() MetaData {
+	return obj.metaData
 }
