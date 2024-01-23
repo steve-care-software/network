@@ -107,3 +107,10 @@ func TestExecution_withReceipt_Success(t *testing.T) {
 		return
 	}
 }
+
+func TestExecution_withoutActions_returnsError(t *testing.T) {
+	_, err := NewExecutionBuilder().Create().Now()
+	if err == nil {
+		t.Errorf("the error was expected to be valid, nil returned")
+	}
+}
