@@ -8,6 +8,14 @@ import (
 	"steve.care/network/domain/receipts"
 )
 
+// NewBuilder creates a new builder instance
+func NewBuilder() Builder {
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(
+		hashAdapter,
+	)
+}
+
 // Builder represents an execution
 type Builder interface {
 	Create() Builder
