@@ -7,7 +7,7 @@ import (
 	"steve.care/network/domain/programs/blocks/transactions"
 )
 
-type builder struct {
+type contentBuilder struct {
 	hashAdapter  hash.Adapter
 	transactions transactions.Transactions
 	parent       hash.Hash
@@ -16,7 +16,7 @@ type builder struct {
 func createContentBuilder(
 	hashAdapter hash.Adapter,
 ) ContentBuilder {
-	out := builder{
+	out := contentBuilder{
 		hashAdapter:  hashAdapter,
 		transactions: nil,
 		parent:       nil,
@@ -26,27 +26,27 @@ func createContentBuilder(
 }
 
 // Create initializes the builder
-func (app *builder) Create() ContentBuilder {
+func (app *contentBuilder) Create() ContentBuilder {
 	return createContentBuilder(
 		app.hashAdapter,
 	)
 }
 
 // WithTransactions add transactions to the builder
-func (app *builder) WithTransactions(transactions transactions.Transactions) ContentBuilder {
+func (app *contentBuilder) WithTransactions(transactions transactions.Transactions) ContentBuilder {
 	app.transactions = transactions
 	return app
 }
 
 // WithParent add parent to the builder
-func (app *builder) WithParent(parent hash.Hash) ContentBuilder {
+func (app *contentBuilder) WithParent(parent hash.Hash) ContentBuilder {
 	app.parent = parent
 	return app
 }
 
 // Now builds a new Content instance
-func (app *builder) Now() (Content, error) {
-	if app.transactions != nil {
+func (app *contentBuilder) Now() (Content, error) {
+	if app.transactions == nil {
 		return nil, errors.New("the transactions is mandatory in order to build a Content instance")
 	}
 

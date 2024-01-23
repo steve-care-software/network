@@ -142,13 +142,12 @@ func (app *application) Mine(program hash.Hash) error {
 
 	for {
 
-		// build the msg:
-		msg := [][]byte{
-			currentValue.Bytes(),
+		// compute the hash:
+		pHash, err := blocks.Compute(
 			blockContent.Hash().Bytes(),
-		}
+			currentValue.Bytes(),
+		)
 
-		pHash, err := app.hashAdapter.FromMultiBytes(msg)
 		if err != nil {
 			return err
 		}
@@ -164,11 +163,16 @@ func (app *application) Mine(program hash.Hash) error {
 	// build the block:
 	newBlock, err := app.blockBuilder.Create().
 		WithContent(blockContent).
-		WithMinedHash(minedHash).
 		Now()
 
 	if err != nil {
 		return err
+	}
+
+	blockMinedHash := newBlock.MinedHash()
+	if !bytes.Equal(blockMinedHash.Bytes(), minedHash.Bytes()) {
+		str := fmt.Sprintf("there was an error was computing the mined hash while creating the block, the mining value was expected to be %s, %s returned", minedHash.String(), blockMinedHash.String())
+		return errors.New(str)
 	}
 
 	// insert the block:

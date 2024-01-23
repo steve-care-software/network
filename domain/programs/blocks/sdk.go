@@ -5,6 +5,12 @@ import (
 	"steve.care/network/domain/programs/blocks/transactions"
 )
 
+// NewBuilder creates a new builder instance
+func NewBuilder() Builder {
+	hashAdapter := hash.NewAdapter()
+	return createBuilder(hashAdapter)
+}
+
 // NewDifficultyBuilder creates a new difficulty builder
 func NewDifficultyBuilder() DifficultyBuilder {
 	return createDifficultyBuilder()
@@ -16,11 +22,18 @@ func NewContentBuilder() ContentBuilder {
 	return createContentBuilder(hashAdapter)
 }
 
+// Compute computes an hash
+func Compute(msg []byte, result []byte) (*hash.Hash, error) {
+	return hash.NewAdapter().FromMultiBytes([][]byte{
+		result,
+		msg,
+	})
+}
+
 // Builder represents the block builder
 type Builder interface {
 	Create() Builder
 	WithContent(content Content) Builder
-	WithMinedHash(minedHash hash.Hash) Builder
 	WithResult(result []byte) Builder
 	Now() (Block, error)
 }
