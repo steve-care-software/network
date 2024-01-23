@@ -2,47 +2,47 @@ package expectations
 
 import (
 	"steve.care/network/domain/hash"
-	"steve.care/network/domain/programs/logics/libraries/layers"
 	"steve.care/network/domain/programs/logics/libraries/layers/links"
+	"steve.care/network/domain/programs/logics/suites/expectations/outputs"
 )
 
 type expectation struct {
-	hash      hash.Hash
-	output    layers.Layer
-	condition links.Condition
+	hash    hash.Hash
+	success outputs.Output
+	mistake links.Condition
 }
 
-func createExpectationWithOutput(
+func createExpectationWithSuccess(
 	hash hash.Hash,
-	output layers.Layer,
+	success outputs.Output,
 ) Expectation {
 	return createExpectationInternally(
 		hash,
-		output,
+		success,
 		nil,
 	)
 }
 
-func createExpectationWithCondition(
+func createExpectationWithMistake(
 	hash hash.Hash,
-	condition links.Condition,
+	mistake links.Condition,
 ) Expectation {
 	return createExpectationInternally(
 		hash,
 		nil,
-		condition,
+		mistake,
 	)
 }
 
 func createExpectationInternally(
 	hash hash.Hash,
-	output layers.Layer,
-	condition links.Condition,
+	success outputs.Output,
+	mistake links.Condition,
 ) Expectation {
 	out := expectation{
-		hash:      hash,
-		output:    output,
-		condition: condition,
+		hash:    hash,
+		success: success,
+		mistake: mistake,
 	}
 
 	return &out
@@ -53,22 +53,22 @@ func (obj *expectation) Hash() hash.Hash {
 	return obj.hash
 }
 
-// IsOutput returns true if there is an output, false otherwise
-func (obj *expectation) IsOutput() bool {
-	return obj.output != nil
+// IsSuccess returns true if there is a success, false otherwise
+func (obj *expectation) IsSuccess() bool {
+	return obj.success != nil
 }
 
-// Output returns the output, if any
-func (obj *expectation) Output() layers.Layer {
-	return obj.output
+// Success returns the success, if any
+func (obj *expectation) Success() outputs.Output {
+	return obj.success
 }
 
-// IsCondition returns true if there is a condition, false otherwise
-func (obj *expectation) IsCondition() bool {
-	return obj.condition != nil
+// IsMistake returns true if there is a mistake, false otherwise
+func (obj *expectation) IsMistake() bool {
+	return obj.mistake != nil
 }
 
-// Condition returns the condition, if any
-func (obj *expectation) Condition() links.Condition {
-	return obj.condition
+// Mistake returns the mistake, if any
+func (obj *expectation) Mistake() links.Condition {
+	return obj.mistake
 }

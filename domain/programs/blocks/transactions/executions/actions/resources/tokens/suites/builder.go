@@ -5,17 +5,20 @@ import (
 
 	"steve.care/network/domain/programs/logics/suites"
 	"steve.care/network/domain/programs/logics/suites/expectations"
+	"steve.care/network/domain/programs/logics/suites/expectations/outputs"
 )
 
 type builder struct {
 	suite       suites.Suite
 	expectation expectations.Expectation
+	output      outputs.Output
 }
 
 func createBuilder() Builder {
 	out := builder{
 		suite:       nil,
 		expectation: nil,
+		output:      nil,
 	}
 
 	return &out
@@ -38,6 +41,12 @@ func (app *builder) WithExpectation(expectation expectations.Expectation) Builde
 	return app
 }
 
+// WithOutput adds an output to the builder
+func (app *builder) WithOutput(output outputs.Output) Builder {
+	app.output = output
+	return app
+}
+
 // Now builds a new Suite instance
 func (app *builder) Now() (Suite, error) {
 	if app.suite != nil {
@@ -46,6 +55,10 @@ func (app *builder) Now() (Suite, error) {
 
 	if app.expectation != nil {
 		return createSuiteWithExpectation(app.expectation), nil
+	}
+
+	if app.output != nil {
+		return createSuiteWithOutput(app.output), nil
 	}
 
 	return nil, errors.New("the Suite is invalid")

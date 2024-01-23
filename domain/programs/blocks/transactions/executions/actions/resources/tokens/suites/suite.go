@@ -4,11 +4,13 @@ import (
 	"steve.care/network/domain/hash"
 	"steve.care/network/domain/programs/logics/suites"
 	"steve.care/network/domain/programs/logics/suites/expectations"
+	"steve.care/network/domain/programs/logics/suites/expectations/outputs"
 )
 
 type suite struct {
 	suite       suites.Suite
 	expectation expectations.Expectation
+	output      outputs.Output
 }
 
 func createSuiteWithSuite(
@@ -16,6 +18,7 @@ func createSuiteWithSuite(
 ) Suite {
 	return createSuiteInternally(
 		suiteIns,
+		nil,
 		nil,
 	)
 }
@@ -26,16 +29,29 @@ func createSuiteWithExpectation(
 	return createSuiteInternally(
 		nil,
 		expectation,
+		nil,
+	)
+}
+
+func createSuiteWithOutput(
+	output outputs.Output,
+) Suite {
+	return createSuiteInternally(
+		nil,
+		nil,
+		output,
 	)
 }
 
 func createSuiteInternally(
 	suiteIns suites.Suite,
 	expectation expectations.Expectation,
+	output outputs.Output,
 ) Suite {
 	out := suite{
 		suite:       suiteIns,
 		expectation: expectation,
+		output:      output,
 	}
 
 	return &out
@@ -47,7 +63,11 @@ func (obj *suite) Hash() hash.Hash {
 		return obj.suite.Hash()
 	}
 
-	return obj.expectation.Hash()
+	if obj.IsExpectation() {
+		return obj.expectation.Hash()
+	}
+
+	return obj.output.Hash()
 }
 
 // IsSuite returns true if there is a suite, false otherwise
@@ -68,4 +88,14 @@ func (obj *suite) IsExpectation() bool {
 // Expectation returns the expectation, if any
 func (obj *suite) Expectation() expectations.Expectation {
 	return obj.expectation
+}
+
+// IsOutput returns true if there is an output, false otherwise
+func (obj *suite) IsOutput() bool {
+	return obj.output != nil
+}
+
+// Output returns the output, if any
+func (obj *suite) Output() outputs.Output {
+	return obj.output
 }

@@ -4,14 +4,14 @@ import (
 	"errors"
 
 	"steve.care/network/domain/hash"
-	"steve.care/network/domain/programs/logics/libraries/layers"
 	"steve.care/network/domain/programs/logics/libraries/layers/links"
+	"steve.care/network/domain/programs/logics/suites/expectations/outputs"
 )
 
 type builder struct {
 	hashAdapter hash.Adapter
-	output      layers.Layer
-	condition   links.Condition
+	success     outputs.Output
+	mistake     links.Condition
 }
 
 func createBuilder(
@@ -19,8 +19,8 @@ func createBuilder(
 ) Builder {
 	out := builder{
 		hashAdapter: hashAdapter,
-		output:      nil,
-		condition:   nil,
+		success:     nil,
+		mistake:     nil,
 	}
 
 	return &out
@@ -33,27 +33,27 @@ func (app *builder) Create() Builder {
 	)
 }
 
-// WithOutput adds an output to the builder
-func (app *builder) WithOutput(output layers.Layer) Builder {
-	app.output = output
+// WithSuccess adds a success to the builder
+func (app *builder) WithSuccess(success outputs.Output) Builder {
+	app.success = success
 	return app
 }
 
-// WithCondition adds a condition to the builder
-func (app *builder) WithCondition(condition links.Condition) Builder {
-	app.condition = condition
+// WithMistake adds a mistake to the builder
+func (app *builder) WithMistake(mistake links.Condition) Builder {
+	app.mistake = mistake
 	return app
 }
 
 // Now builds a new Expectation instance
 func (app *builder) Now() (Expectation, error) {
 	data := [][]byte{}
-	if app.output != nil {
-		data = append(data, app.output.Hash().Bytes())
+	if app.success != nil {
+		data = append(data, app.success.Hash().Bytes())
 	}
 
-	if app.condition != nil {
-		data = append(data, app.output.Output().Hash().Bytes())
+	if app.mistake != nil {
+		data = append(data, app.mistake.Hash().Bytes())
 	}
 
 	if len(data) != 1 {
@@ -65,9 +65,9 @@ func (app *builder) Now() (Expectation, error) {
 		return nil, err
 	}
 
-	if app.output != nil {
-		return createExpectationWithOutput(*pHash, app.output), nil
+	if app.success != nil {
+		return createExpectationWithSuccess(*pHash, app.success), nil
 	}
 
-	return createExpectationWithCondition(*pHash, app.condition), nil
+	return createExpectationWithMistake(*pHash, app.mistake), nil
 }
