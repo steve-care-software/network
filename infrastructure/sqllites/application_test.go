@@ -20,6 +20,7 @@ type resourceExec struct {
 func TestApplication_Account_InsertThenRetrieve_Success(t *testing.T) {
 	dbDir := "./test_files"
 	keyFieldName := "hash"
+	baseSchema := getSchema()
 	appIns := NewApplication(
 		NewSchemaFactory(
 			keyFieldName,
@@ -28,6 +29,7 @@ func TestApplication_Account_InsertThenRetrieve_Success(t *testing.T) {
 		jsons.NewAccountAdapter(),
 		4096,
 		dbDir,
+		baseSchema,
 	)
 
 	dbName := "testdb"
@@ -40,7 +42,7 @@ func TestApplication_Account_InsertThenRetrieve_Success(t *testing.T) {
 	defer appIns.Close()
 
 	// init out app:
-	err := appIns.Init()
+	err := appIns.Init(dbName)
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return

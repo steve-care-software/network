@@ -61,7 +61,6 @@ func createSchemaFactory(
 func (app *schemaFactory) Create() (schemas.Schema, error) {
 	return app.schema(
 		app.groups([]groups.Group{
-			app.identities(),
 			app.group(
 				"resources",
 				app.elements([]groups.Element{
@@ -74,27 +73,6 @@ func (app *schemaFactory) Create() (schemas.Schema, error) {
 			),
 		}),
 	), nil
-}
-
-func (app *schemaFactory) identities() groups.Group {
-	return app.group(
-		"identities",
-		app.elements([]groups.Element{
-			app.elementWithResources(
-				app.resources([]resources.Resource{
-					app.resource(
-						"account",
-						app.field(app.keyFieldName, fields.KindBytes, false),
-						app.fields([]fields.Field{
-							app.field("username", fields.KindString, false),
-							app.field("encryptor", fields.KindBytes, false),
-							app.field("signer", fields.KindBytes, false),
-						}),
-					),
-				}),
-			),
-		}),
-	)
 }
 
 func (app *schemaFactory) resourcesDashboards() groups.Group {

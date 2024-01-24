@@ -31,6 +31,7 @@ func NewApplication(
 	adapter accounts.Adapter,
 	bitrate int,
 	basePath string,
+	baseSchema string,
 ) applications.Application {
 	return createApplication(
 		schemaFactory,
@@ -38,6 +39,7 @@ func NewApplication(
 		adapter,
 		bitrate,
 		basePath,
+		baseSchema,
 	)
 }
 

@@ -23,6 +23,7 @@ type application struct {
 	basePath      string
 	currentDb     *sql.DB
 	currentTrx    *sql.Tx
+	baseSchema    string
 }
 
 func createApplication(
@@ -31,6 +32,7 @@ func createApplication(
 	adapter accounts.Adapter,
 	bitrate int,
 	basePath string,
+	baseSchema string,
 ) applications.Application {
 	out := application{
 		schemaFactory: schemaFactory,
@@ -38,6 +40,7 @@ func createApplication(
 		adapter:       adapter,
 		bitrate:       bitrate,
 		basePath:      basePath,
+		baseSchema:    baseSchema,
 		currentDb:     nil,
 		currentTrx:    nil,
 	}
@@ -46,13 +49,38 @@ func createApplication(
 }
 
 // Init initializes the application
-func (app *application) Init() error {
+func (app *application) Init(name string) error {
+	// init the base schema:
+	err := app.initBaseSchema(name, app.baseSchema)
+	if err != nil {
+		return err
+	}
+
+	// init the schema:
 	schema, err := app.schemaFactory.Create()
 	if err != nil {
 		return err
 	}
 
 	fmt.Printf("\n%v\n", schema)
+	return nil
+}
+
+func (app *application) initBaseSchema(name string, script string) error {
+	if app.isActive() {
+		return errors.New(currentActiveErrorMsg)
+	}
+
+	err := app.openDatabaseIfNotAlready(name)
+	if err != nil {
+		return err
+	}
+
+	_, err = app.currentDb.Exec(script)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
