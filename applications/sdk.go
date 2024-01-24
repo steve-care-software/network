@@ -6,7 +6,7 @@ import (
 
 // Application represents the core application
 type Application interface {
-	Init(name string, script string) (applications.Application, error)
+	Init() error
 	Begin(name string) (applications.Application, error)
 	Commit() error
 	Rollback() error

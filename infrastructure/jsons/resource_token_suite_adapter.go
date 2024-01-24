@@ -4,6 +4,7 @@ import (
 	resources_suites "steve.care/network/domain/programs/blocks/transactions/executions/actions/resources/tokens/suites"
 	"steve.care/network/domain/programs/logics/suites"
 	"steve.care/network/domain/programs/logics/suites/expectations"
+	"steve.care/network/domain/programs/logics/suites/expectations/outputs"
 	structs_tokens "steve.care/network/infrastructure/jsons/resources/tokens"
 	structs_suites "steve.care/network/infrastructure/jsons/resources/tokens/suites"
 )
@@ -14,6 +15,7 @@ type resourceTokenSuiteAdapter struct {
 	builder            resources_suites.Builder
 	suiteBuilder       suites.SuiteBuilder
 	expectationBuilder expectations.Builder
+	outputBuilder      outputs.Builder
 }
 
 func createResourceTokenSuiteAdapter(
@@ -22,6 +24,7 @@ func createResourceTokenSuiteAdapter(
 	builder resources_suites.Builder,
 	suiteBuilder suites.SuiteBuilder,
 	expectationBuilder expectations.Builder,
+	outputBuilder outputs.Builder,
 ) *resourceTokenSuiteAdapter {
 	out := resourceTokenSuiteAdapter{
 		layerAdapter:       layerAdapter,
@@ -29,6 +32,7 @@ func createResourceTokenSuiteAdapter(
 		builder:            builder,
 		suiteBuilder:       suiteBuilder,
 		expectationBuilder: expectationBuilder,
+		outputBuilder:      outputBuilder,
 	}
 
 	return &out
@@ -108,14 +112,14 @@ func (app *resourceTokenSuiteAdapter) expectationToStruct(
 	ins expectations.Expectation,
 ) structs_suites.Expectation {
 	output := structs_suites.Expectation{}
-	if ins.IsOutput() {
-		layer := app.layerAdapter.layerToStruct(ins.Output())
-		output.Output = &layer
+	if ins.IsSuccess() {
+		success := app.outputToStruct(ins.Success())
+		output.Success = &success
 	}
 
-	if ins.IsCondition() {
-		condition := app.linkAdapter.conditionToStruct(ins.Condition())
-		output.Condition = &condition
+	if ins.IsMistake() {
+		mistake := app.linkAdapter.conditionToStruct(ins.Mistake())
+		output.Mistake = &mistake
 	}
 
 	return output
@@ -125,23 +129,47 @@ func (app *resourceTokenSuiteAdapter) structToExpectation(
 	ins structs_suites.Expectation,
 ) (expectations.Expectation, error) {
 	builder := app.expectationBuilder.Create()
-	if ins.Output != nil {
-		output, err := app.layerAdapter.structToLayer(*ins.Output)
+	if ins.Success != nil {
+		output, err := app.structToOutput(*ins.Success)
 		if err != nil {
 			return nil, err
 		}
 
-		builder.WithOutput(output)
+		builder.WithSuccess(output)
 	}
 
-	if ins.Condition != nil {
-		condition, err := app.linkAdapter.structToCondition(*ins.Condition)
+	if ins.Mistake != nil {
+		condition, err := app.linkAdapter.structToCondition(*ins.Mistake)
 		if err != nil {
 			return nil, err
 		}
 
-		builder.WithCondition(condition)
+		builder.WithMistake(condition)
 	}
 
 	return builder.Now()
+}
+
+func (app *resourceTokenSuiteAdapter) outputToStruct(
+	ins outputs.Output,
+) structs_suites.Output {
+	kind := app.layerAdapter.kindToStruct(ins.Kind())
+	return structs_suites.Output{
+		Kind:  kind,
+		Value: ins.Value(),
+	}
+}
+
+func (app *resourceTokenSuiteAdapter) structToOutput(
+	ins structs_suites.Output,
+) (outputs.Output, error) {
+	kind, err := app.layerAdapter.structToKind(ins.Kind)
+	if err != nil {
+		return nil, err
+	}
+
+	return app.outputBuilder.Create().
+		WithKind(kind).
+		WithValue(ins.Value).
+		Now()
 }

@@ -14,6 +14,12 @@ type Suite struct {
 
 // Expectation represents an expectation
 type Expectation struct {
-	Output    *layers.Layer    `json:"output"`
-	Condition *links.Condition `json:"condition"`
+	Success *Output          `json:"success"`
+	Mistake *links.Condition `json:"mistake"`
+}
+
+// Output represents an output
+type Output struct {
+	Kind  layers.Kind `json:"kind"`
+	Value []byte      `json:"value"`
 }

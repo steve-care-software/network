@@ -1,6 +1,21 @@
 package fields
 
-import "steve.care/network/domain/schemas/resources/fields/kinds"
+const (
+	// KindNil represents the nil kind
+	KindNil (uint8) = iota
+
+	// KindInteger represents the integer kind
+	KindInteger
+
+	// KindFloat represents the float kind
+	KindFloat
+
+	// KindString represents the string kind
+	KindString
+
+	// KindBytes represents the bytes kind
+	KindBytes
+)
 
 // NewBuilder creates a new builder instance
 func NewBuilder() Builder {
@@ -28,7 +43,7 @@ type Fields interface {
 type FieldBuilder interface {
 	Create() FieldBuilder
 	WithName(name string) FieldBuilder
-	WithKind(kind kinds.Kind) FieldBuilder
+	WithKind(kind uint8) FieldBuilder
 	CanBeNil() FieldBuilder
 	Now() (Field, error)
 }
@@ -36,6 +51,6 @@ type FieldBuilder interface {
 // Field represents a field
 type Field interface {
 	Name() string
-	Kind() kinds.Kind
+	Kind() uint8
 	CanBeNil() bool
 }

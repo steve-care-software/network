@@ -3,18 +3,18 @@ package schemas
 import (
 	"errors"
 
-	"steve.care/network/domain/schemas/resources"
+	"steve.care/network/domain/schemas/groups"
 )
 
 type builder struct {
-	resources resources.Resources
-	previous  Schema
+	groups   groups.Groups
+	previous Schema
 }
 
 func createBuilder() Builder {
 	out := builder{
-		resources: nil,
-		previous:  nil,
+		groups:   nil,
+		previous: nil,
 	}
 
 	return &out
@@ -25,9 +25,9 @@ func (app *builder) Create() Builder {
 	return createBuilder()
 }
 
-// WithResources add resources to the builder
-func (app *builder) WithResources(resources resources.Resources) Builder {
-	app.resources = resources
+// WithGroups add groups to the builder
+func (app *builder) WithGroups(groups groups.Groups) Builder {
+	app.groups = groups
 	return app
 }
 
@@ -39,8 +39,8 @@ func (app *builder) WithPrevious(previous Schema) Builder {
 
 // Now builds a new Schema instance
 func (app *builder) Now() (Schema, error) {
-	if app.resources == nil {
-		return nil, errors.New("the resources is mandatory in order to build a Schema instance")
+	if app.groups == nil {
+		return nil, errors.New("the groups is mandatory in order to build a Schema instance")
 	}
 
 	version := uint(0)
@@ -49,5 +49,5 @@ func (app *builder) Now() (Schema, error) {
 		version = previousVersion + 1
 	}
 
-	return createSchema(version, app.resources), nil
+	return createSchema(version, app.groups), nil
 }

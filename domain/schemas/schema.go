@@ -1,37 +1,37 @@
 package schemas
 
-import "steve.care/network/domain/schemas/resources"
+import "steve.care/network/domain/schemas/groups"
 
 type schema struct {
-	version   uint
-	resources resources.Resources
-	previous  Schema
+	version  uint
+	groups   groups.Groups
+	previous Schema
 }
 
 func createSchema(
 	version uint,
-	resources resources.Resources,
+	groups groups.Groups,
 ) Schema {
-	return createSchemaInternally(version, resources, nil)
+	return createSchemaInternally(version, groups, nil)
 }
 
 func createSchemaWithPrevious(
 	version uint,
-	resources resources.Resources,
+	groups groups.Groups,
 	previous Schema,
 ) Schema {
-	return createSchemaInternally(version, resources, previous)
+	return createSchemaInternally(version, groups, previous)
 }
 
 func createSchemaInternally(
 	version uint,
-	resources resources.Resources,
+	groups groups.Groups,
 	previous Schema,
 ) Schema {
 	out := schema{
-		version:   version,
-		resources: resources,
-		previous:  previous,
+		version:  version,
+		groups:   groups,
+		previous: previous,
 	}
 
 	return &out
@@ -42,9 +42,9 @@ func (obj *schema) Version() uint {
 	return obj.version
 }
 
-// Resources returns the resources
-func (obj *schema) Resources() resources.Resources {
-	return obj.resources
+// Groups returns the groups
+func (obj *schema) Groups() groups.Groups {
+	return obj.groups
 }
 
 // HasPrevious returns true if there is a previous, false optherwise

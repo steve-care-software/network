@@ -3,6 +3,7 @@ package tokens
 import (
 	"time"
 
+	"steve.care/network/infrastructure/jsons/resources/tokens/dashboards"
 	"steve.care/network/infrastructure/jsons/resources/tokens/layers"
 	"steve.care/network/infrastructure/jsons/resources/tokens/links"
 	"steve.care/network/infrastructure/jsons/resources/tokens/queries"
@@ -18,11 +19,19 @@ type Token struct {
 
 // Content represents the token content
 type Content struct {
-	Layer   *Layer   `json:"layer"`
-	Link    *Link    `json:"link"`
-	Query   *Query   `json:"query"`
-	Receipt *Receipt `json:"receipt"`
-	Suite   *Suite   `json:"suite"`
+	Dashboard *Dashboard `json:"dashboard"`
+	Layer     *Layer     `json:"layer"`
+	Link      *Link      `json:"link"`
+	Query     *Query     `json:"query"`
+	Receipt   *Receipt   `json:"receipt"`
+	Suite     *Suite     `json:"suite"`
+}
+
+// Dashboard represents a dashboard
+type Dashboard struct {
+	Dashboard *dashboards.Dashboard `json:"dashboard"`
+	Widget    *dashboards.Widget    `json:"widget"`
+	Viewport  *dashboards.Viewport  `json:"viewport"`
 }
 
 // Layer represents a layer

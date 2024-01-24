@@ -1,16 +1,14 @@
 package fields
 
-import "steve.care/network/domain/schemas/resources/fields/kinds"
-
 type field struct {
 	name     string
-	kind     kinds.Kind
+	kind     uint8
 	canBeNil bool
 }
 
 func createField(
 	name string,
-	kind kinds.Kind,
+	kind uint8,
 	canBeNil bool,
 ) Field {
 	out := field{
@@ -28,7 +26,7 @@ func (obj *field) Name() string {
 }
 
 // Kind returns the kind
-func (obj *field) Kind() kinds.Kind {
+func (obj *field) Kind() uint8 {
 	return obj.kind
 }
 

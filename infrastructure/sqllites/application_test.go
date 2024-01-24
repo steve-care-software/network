@@ -6,8 +6,6 @@ import (
 	"reflect"
 	"testing"
 
-	"bytes"
-
 	"steve.care/network/domain/credentials"
 	"steve.care/network/domain/programs/blocks/transactions/executions/actions/resources"
 	"steve.care/network/infrastructure/edwards25519"
@@ -21,7 +19,11 @@ type resourceExec struct {
 
 func TestApplication_Account_InsertThenRetrieve_Success(t *testing.T) {
 	dbDir := "./test_files"
+	keyFieldName := "hash"
 	appIns := NewApplication(
+		NewSchemaFactory(
+			keyFieldName,
+		),
 		edwards25519.NewEncryptor(),
 		jsons.NewAccountAdapter(),
 		4096,
@@ -37,9 +39,15 @@ func TestApplication_Account_InsertThenRetrieve_Success(t *testing.T) {
 	// close:
 	defer appIns.Close()
 
-	// init with our schema:
-	schema := getSchema()
-	initAppIns, err := appIns.Init(dbName, schema)
+	// init out app:
+	err := appIns.Init()
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	// begin our app:
+	initAppIns, err := appIns.Begin(dbName)
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
@@ -103,164 +111,4 @@ func TestApplication_Account_InsertThenRetrieve_Success(t *testing.T) {
 		t.Errorf("the account (username: %s) was NOT expected to exists", username)
 		return
 	}*/
-}
-
-func TestApplication_Resources_InsertThenRetrieve_Success(t *testing.T) {
-	dbDir := "./test_files"
-	appIns := NewApplication(
-		edwards25519.NewEncryptor(),
-		jsons.NewAccountAdapter(),
-		4096,
-		dbDir,
-	)
-
-	dbName := "testdb"
-	defer func() {
-		path := filepath.Join(dbDir, dbName)
-		os.Remove(path)
-	}()
-
-	// close:
-	defer appIns.Close()
-
-	// init with our schema:
-	schema := getSchema()
-	_, err := appIns.Init(dbName, schema)
-	if err != nil {
-		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
-		return
-	}
-
-	/*firstToken := tokens.NewTokenWithLayerForTests(
-		token_layers.NewLayerWithLayerForTests(
-			layers.NewLayerForTests(
-				layers.NewInstructionsForTests([]layers.Instruction{
-					layers.NewInstructionWithStopForTests(),
-				}),
-				layers.NewOutputForTests(
-					"myVariable",
-					layers.NewKindWithPromptForTests(),
-				),
-				"myInput",
-			),
-		),
-	)
-
-	firstMsg := firstToken.Hash().Bytes()
-	firstSignature, err := signers.NewFactory().Create().Sign(firstMsg)
-	if err != nil {
-		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
-		return
-	}
-
-	secondToken := tokens.NewTokenWithLayerForTests(
-		token_layers.NewLayerWithLayerForTests(
-			layers.NewLayerForTests(
-				layers.NewInstructionsForTests([]layers.Instruction{
-					layers.NewInstructionWithStopForTests(),
-				}),
-				layers.NewOutputForTests(
-					"myVariable",
-					layers.NewKindWithPromptForTests(),
-				),
-				"myInput",
-			),
-		),
-	)
-
-	secondMsg := secondToken.Hash().Bytes()
-	secondSignature, err := signers.NewFactory().Create().Sign(secondMsg)
-	if err != nil {
-		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
-		return
-	}*/
-
-	// make the resources execution list:
-	execList := []resourceExec{
-		/*{
-			name: "layerBytesReferenceWithVariable",
-			resource: resources.NewResourceForTests(
-				firstToken,
-				firstSignature,
-			),
-		},
-		{
-			name: "layerBytesReferenceWithBytes",
-			resource: resources.NewResourceForTests(
-				secondToken,
-				secondSignature,
-			),
-		},*/
-	}
-
-	// execute the execution
-	for _, oneExec := range execList {
-		// begin the transaction:
-		coreAppIns, err := appIns.Begin(dbName)
-		if err != nil {
-			t.Errorf("(execution name: %s) - the error was expected to be nil, error returned: %s", oneExec.name, err.Error())
-			return
-		}
-
-		// fetch the resource application:
-		resAppIns := coreAppIns.Resources()
-
-		// insert resource:
-		err = resAppIns.Insert(oneExec.resource)
-		if err != nil {
-			t.Errorf("(execution name: %s) - the error was expected to be nil, error returned: %s", oneExec.name, err.Error())
-			return
-		}
-
-		// commit:
-		err = appIns.Commit()
-		if err != nil {
-			t.Errorf("(execution name: %s) - the error was expected to be nil, error returned: %s", oneExec.name, err.Error())
-			return
-		}
-
-		retResource, err := resAppIns.RetrieveByHash(oneExec.resource.Hash())
-		if err != nil {
-			t.Errorf("(execution name: %s) - the error was expected to be nil, error returned: %s", oneExec.name, err.Error())
-			return
-		}
-
-		if !bytes.Equal(retResource.Hash().Bytes(), oneExec.resource.Hash().Bytes()) {
-			t.Errorf("(execution name: %s) - the returned resource is invalid", oneExec.name)
-			return
-		}
-
-		// delete:
-		/*secAppIns, err := appIns.BeginInMemory()
-		if err != nil {
-			t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
-			return
-		}
-
-		secAccountAppIns := secAppIns.Accounts()
-		err = secAccountAppIns.Delete(credentials)
-		if err != nil {
-			t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
-			return
-		}*/
-
-		// commit:
-		/*err = appIns.Commit()
-		if err != nil {
-			t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
-			return
-		}
-
-		exists, err := secAccountAppIns.Exists(username)
-		if err != nil {
-			t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
-			return
-		}
-
-		if exists {
-			t.Errorf("the account (username: %s) was NOT expected to exists", username)
-			return
-		}*/
-	}
-
 }

@@ -13,6 +13,10 @@ import (
 	"steve.care/network/domain/programs/blocks/transactions/executions/actions/resources/tokens"
 	"steve.care/network/domain/programs/blocks/transactions/executions/actions/resources/tokens/layers"
 	commands_layers "steve.care/network/domain/programs/logics/libraries/layers"
+	"steve.care/network/domain/schemas"
+	"steve.care/network/domain/schemas/groups"
+	schema_resources "steve.care/network/domain/schemas/groups/resources"
+	"steve.care/network/domain/schemas/groups/resources/fields"
 )
 
 const notActiveErrorMsg = "the application NEVER began a transactional state, therefore that method cannot be executed"
@@ -22,12 +26,14 @@ const timeLayout = "2006-01-02T15:04:05.999999999Z07:00"
 
 // NewApplication creates a new application
 func NewApplication(
+	schemaFactory schemas.Factory,
 	encryptor encryptors.Encryptor,
 	adapter accounts.Adapter,
 	bitrate int,
 	basePath string,
 ) applications.Application {
 	return createApplication(
+		schemaFactory,
 		encryptor,
 		adapter,
 		bitrate,
@@ -98,5 +104,38 @@ func NewResourceService(
 ) resources.Service {
 	return createResourceService(
 		txPtr,
+	)
+}
+
+// NewSchemaFactory creates a new schema factory
+func NewSchemaFactory(
+	keyFieldName string,
+) schemas.Factory {
+	builder := schemas.NewBuilder()
+	groupsBuilder := groups.NewBuilder()
+	groupBuilder := groups.NewGroupBuilder()
+	elementsBuilder := groups.NewElementsBuilder()
+	elementBuilder := groups.NewElementBuilder()
+	resourcesBuilder := schema_resources.NewBuilder()
+	resourceBuilder := schema_resources.NewResourceBuilder()
+	connectionsBuilder := schema_resources.NewConnectionsBuilder()
+	connectionBuilder := schema_resources.NewConnectionBuilder()
+	pointerBuilder := schema_resources.NewPointerBuilder()
+	fieldsBuilder := fields.NewBuilder()
+	fieldBuilder := fields.NewFieldBuilder()
+	return createSchemaFactory(
+		builder,
+		groupsBuilder,
+		groupBuilder,
+		elementsBuilder,
+		elementBuilder,
+		resourcesBuilder,
+		resourceBuilder,
+		connectionsBuilder,
+		connectionBuilder,
+		pointerBuilder,
+		fieldsBuilder,
+		fieldBuilder,
+		keyFieldName,
 	)
 }

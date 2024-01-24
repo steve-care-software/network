@@ -3,6 +3,7 @@ package sqllites
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"path/filepath"
 
 	"steve.care/network/applications"
@@ -11,37 +12,52 @@ import (
 	resources_applications "steve.care/network/applications/applications/resources"
 	"steve.care/network/domain/accounts"
 	"steve.care/network/domain/encryptors"
+	"steve.care/network/domain/schemas"
 )
 
 type application struct {
-	encryptor  encryptors.Encryptor
-	adapter    accounts.Adapter
-	bitrate    int
-	basePath   string
-	currentDb  *sql.DB
-	currentTrx *sql.Tx
+	schemaFactory schemas.Factory
+	encryptor     encryptors.Encryptor
+	adapter       accounts.Adapter
+	bitrate       int
+	basePath      string
+	currentDb     *sql.DB
+	currentTrx    *sql.Tx
 }
 
 func createApplication(
+	schemaFactory schemas.Factory,
 	encryptor encryptors.Encryptor,
 	adapter accounts.Adapter,
 	bitrate int,
 	basePath string,
 ) applications.Application {
 	out := application{
-		encryptor:  encryptor,
-		adapter:    adapter,
-		bitrate:    bitrate,
-		basePath:   basePath,
-		currentDb:  nil,
-		currentTrx: nil,
+		schemaFactory: schemaFactory,
+		encryptor:     encryptor,
+		adapter:       adapter,
+		bitrate:       bitrate,
+		basePath:      basePath,
+		currentDb:     nil,
+		currentTrx:    nil,
 	}
 
 	return &out
 }
 
+// Init initializes the application
+func (app *application) Init() error {
+	schema, err := app.schemaFactory.Create()
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("\n%v\n", schema)
+	return nil
+}
+
 // Init inits an application with a script
-func (app *application) Init(name string, script string) (core_applications.Application, error) {
+/*func (app *application) Init(name string, script string) (core_applications.Application, error) {
 	if app.isActive() {
 		return nil, errors.New(currentActiveErrorMsg)
 	}
@@ -57,7 +73,7 @@ func (app *application) Init(name string, script string) (core_applications.Appl
 	}
 
 	return app.begin()
-}
+}*/
 
 // Begin begins the application
 func (app *application) Begin(name string) (core_applications.Application, error) {

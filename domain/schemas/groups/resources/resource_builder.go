@@ -3,7 +3,7 @@ package resources
 import (
 	"errors"
 
-	"steve.care/network/domain/schemas/resources/fields"
+	"steve.care/network/domain/schemas/groups/resources/fields"
 )
 
 type resourceBuilder struct {

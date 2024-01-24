@@ -1,6 +1,6 @@
 package resources
 
-import "steve.care/network/domain/schemas/resources/fields"
+import "steve.care/network/domain/schemas/groups/resources/fields"
 
 type resource struct {
 	name        string

@@ -2,20 +2,18 @@ package fields
 
 import (
 	"errors"
-
-	"steve.care/network/domain/schemas/resources/fields/kinds"
 )
 
 type fieldBuilder struct {
 	name     string
-	kind     kinds.Kind
+	pKind    *uint8
 	canBeNil bool
 }
 
 func createFieldBuilder() FieldBuilder {
 	out := fieldBuilder{
 		name:     "",
-		kind:     nil,
+		pKind:    nil,
 		canBeNil: false,
 	}
 
@@ -34,8 +32,8 @@ func (app *fieldBuilder) WithName(name string) FieldBuilder {
 }
 
 // WithKind adds a kind to the builder
-func (app *fieldBuilder) WithKind(kind kinds.Kind) FieldBuilder {
-	app.kind = kind
+func (app *fieldBuilder) WithKind(kind uint8) FieldBuilder {
+	app.pKind = &kind
 	return app
 }
 
@@ -51,9 +49,9 @@ func (app *fieldBuilder) Now() (Field, error) {
 		return nil, errors.New("the name is mandatory in order to build a Field instance")
 	}
 
-	if app.kind == nil {
+	if app.pKind == nil {
 		return nil, errors.New("the kind is mandatory in order to build a Field instance")
 	}
 
-	return createField(app.name, app.kind, app.canBeNil), nil
+	return createField(app.name, *app.pKind, app.canBeNil), nil
 }

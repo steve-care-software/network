@@ -1,7 +1,7 @@
 package resources
 
 import (
-	"steve.care/network/domain/schemas/resources/fields"
+	"steve.care/network/domain/schemas/groups/resources/fields"
 )
 
 // NewBuilder creates a new builder
