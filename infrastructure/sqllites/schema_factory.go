@@ -248,12 +248,12 @@ func (app *schemaFactory) connections(
 }
 
 func (app *schemaFactory) connection(
-	from resources.Pointer,
-	to resources.Pointer,
+	field string,
+	reference resources.Pointer,
 ) resources.Connection {
 	ins, err := app.connectionBuilder.Create().
-		From(from).
-		To(to).
+		WithField(field).
+		WithReference(reference).
 		Now()
 
 	if err != nil {

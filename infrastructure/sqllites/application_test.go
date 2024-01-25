@@ -21,10 +21,17 @@ func TestApplication_Account_InsertThenRetrieve_Success(t *testing.T) {
 	dbDir := "./test_files"
 	keyFieldName := "hash"
 	baseSchema := getSchema()
+	schema, err := NewSchemaFactory(
+		keyFieldName,
+	).Create()
+
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
 	appIns := NewApplication(
-		NewSchemaFactory(
-			keyFieldName,
-		),
+		schema,
 		edwards25519.NewEncryptor(),
 		jsons.NewAccountAdapter(),
 		4096,
@@ -42,7 +49,7 @@ func TestApplication_Account_InsertThenRetrieve_Success(t *testing.T) {
 	defer appIns.Close()
 
 	// init out app:
-	err := appIns.Init(dbName)
+	err = appIns.Init(dbName)
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return

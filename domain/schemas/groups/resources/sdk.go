@@ -75,15 +75,15 @@ type Connections interface {
 // ConnectionBuilder represents a connection builder
 type ConnectionBuilder interface {
 	Create() ConnectionBuilder
-	From(from Pointer) ConnectionBuilder
-	To(to Pointer) ConnectionBuilder
+	WithField(field string) ConnectionBuilder
+	WithReference(reference Pointer) ConnectionBuilder
 	Now() (Connection, error)
 }
 
 // Connection represenst a connection
 type Connection interface {
-	From() Pointer
-	To() Pointer
+	Field() string
+	Reference() Pointer
 }
 
 // PointerBuilder represents a pointer builder

@@ -12,6 +12,7 @@ import (
 	"steve.care/network/domain/programs/blocks/transactions/executions/actions/resources/tokens"
 	"steve.care/network/domain/programs/blocks/transactions/executions/actions/resources/tokens/layers"
 	commands_layers "steve.care/network/domain/programs/logics/libraries/layers"
+	"steve.care/network/domain/schemas"
 )
 
 type resourceRepository struct {
@@ -21,6 +22,7 @@ type resourceRepository struct {
 	tokenBuilder     tokens.Builder
 	layerBuilder     layers.Builder
 	cmdLayerBuilder  commands_layers.LayerBuilder
+	schema           schemas.Schema
 	dbPtr            *sql.DB
 }
 
@@ -31,6 +33,7 @@ func createResourceRepository(
 	tokenBuilder tokens.Builder,
 	layerBuilder layers.Builder,
 	cmdLayerBuilder commands_layers.LayerBuilder,
+	schema schemas.Schema,
 	dbPtr *sql.DB,
 ) resources.Repository {
 	out := resourceRepository{
@@ -40,6 +43,7 @@ func createResourceRepository(
 		tokenBuilder:     tokenBuilder,
 		layerBuilder:     layerBuilder,
 		cmdLayerBuilder:  cmdLayerBuilder,
+		schema:           schema,
 		dbPtr:            dbPtr,
 	}
 

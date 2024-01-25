@@ -1,28 +1,28 @@
 package resources
 
 type connection struct {
-	from Pointer
-	to   Pointer
+	field     string
+	reference Pointer
 }
 
 func createConnection(
-	from Pointer,
-	to Pointer,
+	field string,
+	reference Pointer,
 ) Connection {
 	out := connection{
-		from: from,
-		to:   to,
+		field:     field,
+		reference: reference,
 	}
 
 	return &out
 }
 
-// From returns the from pointer
-func (obj *connection) From() Pointer {
-	return obj.from
+// Field returns the field
+func (obj *connection) Field() string {
+	return obj.field
 }
 
-// To returns the to pointer
-func (obj *connection) To() Pointer {
-	return obj.to
+// Reference returns the reference
+func (obj *connection) Reference() Pointer {
+	return obj.reference
 }

@@ -3,14 +3,14 @@ package resources
 import "errors"
 
 type connectionBuilder struct {
-	from Pointer
-	to   Pointer
+	field     string
+	reference Pointer
 }
 
 func createConnectionBuilder() ConnectionBuilder {
 	out := connectionBuilder{
-		from: nil,
-		to:   nil,
+		field:     "",
+		reference: nil,
 	}
 
 	return &out
@@ -21,27 +21,27 @@ func (app *connectionBuilder) Create() ConnectionBuilder {
 	return createConnectionBuilder()
 }
 
-// From adds a from pointer to the builder
-func (app *connectionBuilder) From(from Pointer) ConnectionBuilder {
-	app.from = from
+// WithField adds a field to the builder
+func (app *connectionBuilder) WithField(field string) ConnectionBuilder {
+	app.field = field
 	return app
 }
 
-// To adds a to pointer to the builder
-func (app *connectionBuilder) To(to Pointer) ConnectionBuilder {
-	app.to = to
+// WithReference adds a reference to the builder
+func (app *connectionBuilder) WithReference(reference Pointer) ConnectionBuilder {
+	app.reference = reference
 	return app
 }
 
 // Now builds a new Connection instance
 func (app *connectionBuilder) Now() (Connection, error) {
-	if app.from == nil {
-		return nil, errors.New("the from pointer is mandatory in order to build a Connection instance")
+	if app.field == "" {
+		return nil, errors.New("the field is mandatory in order to build a Connection instance")
 	}
 
-	if app.to == nil {
-		return nil, errors.New("the to pointer is mandatory in order to build a Connection instance")
+	if app.reference == nil {
+		return nil, errors.New("the reference is mandatory in order to build a Connection instance")
 	}
 
-	return createConnection(app.from, app.to), nil
+	return createConnection(app.field, app.reference), nil
 }

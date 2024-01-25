@@ -24,9 +24,11 @@ const currentActiveErrorMsg = "the application ALREADY began a transactional sta
 
 const timeLayout = "2006-01-02T15:04:05.999999999Z07:00"
 
+const groupNameDelimiterForTableNames = "_"
+
 // NewApplication creates a new application
 func NewApplication(
-	schemaFactory schemas.Factory,
+	schema schemas.Schema,
 	encryptor encryptors.Encryptor,
 	adapter accounts.Adapter,
 	bitrate int,
@@ -34,7 +36,7 @@ func NewApplication(
 	baseSchema string,
 ) applications.Application {
 	return createApplication(
-		schemaFactory,
+		schema,
 		encryptor,
 		adapter,
 		bitrate,
@@ -81,6 +83,7 @@ func NewAccountService(
 
 // NewResourceRepository creates a new resource repository
 func NewResourceRepository(
+	schema schemas.Schema,
 	dbPtr *sql.DB,
 ) resources.Repository {
 	hashAdapter := hash.NewAdapter()
@@ -96,15 +99,18 @@ func NewResourceRepository(
 		tokenBuilder,
 		layerBuilder,
 		cmdLayerBuilder,
+		schema,
 		dbPtr,
 	)
 }
 
 // NewResourceService creates a new resoruce service
 func NewResourceService(
+	schema schemas.Schema,
 	txPtr *sql.Tx,
 ) resources.Service {
 	return createResourceService(
+		schema,
 		txPtr,
 	)
 }

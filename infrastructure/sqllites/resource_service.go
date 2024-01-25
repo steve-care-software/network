@@ -11,17 +11,21 @@ import (
 	"steve.care/network/domain/programs/blocks/transactions/executions/actions/resources/tokens/queries"
 	"steve.care/network/domain/programs/blocks/transactions/executions/actions/resources/tokens/receipts"
 	"steve.care/network/domain/programs/blocks/transactions/executions/actions/resources/tokens/suites"
+	"steve.care/network/domain/schemas"
 )
 
 type resourceService struct {
-	txPtr *sql.Tx
+	schema schemas.Schema
+	txPtr  *sql.Tx
 }
 
 func createResourceService(
+	schema schemas.Schema,
 	txPtr *sql.Tx,
 ) resources.Service {
 	out := resourceService{
-		txPtr: txPtr,
+		schema: schema,
+		txPtr:  txPtr,
 	}
 
 	return &out
