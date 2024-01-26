@@ -7,14 +7,14 @@ import (
 )
 
 type elementBuilder struct {
-	groups    Groups
-	resources resources.Resources
+	group    Group
+	resource resources.Resource
 }
 
 func createElementBuilder() ElementBuilder {
 	out := elementBuilder{
-		groups:    nil,
-		resources: nil,
+		group:    nil,
+		resource: nil,
 	}
 
 	return &out
@@ -25,26 +25,26 @@ func (app *elementBuilder) Create() ElementBuilder {
 	return createElementBuilder()
 }
 
-// WithGroups add groups to the builder
-func (app *elementBuilder) WithGroups(groups Groups) ElementBuilder {
-	app.groups = groups
+// WithGroup adds a group to the builder
+func (app *elementBuilder) WithGroup(group Group) ElementBuilder {
+	app.group = group
 	return app
 }
 
-// WithResources add resources to the builder
-func (app *elementBuilder) WithResources(resources resources.Resources) ElementBuilder {
-	app.resources = resources
+// WithResource adds a resource to the builder
+func (app *elementBuilder) WithResource(resource resources.Resource) ElementBuilder {
+	app.resource = resource
 	return app
 }
 
 // Now builds a new Element instance
 func (app *elementBuilder) Now() (Element, error) {
-	if app.groups != nil {
-		return createElementWithGroups(app.groups), nil
+	if app.group != nil {
+		return createElementWithGroup(app.group), nil
 	}
 
-	if app.resources != nil {
-		return createElementWithResources(app.resources), nil
+	if app.resource != nil {
+		return createElementWithResource(app.resource), nil
 	}
 
 	return nil, errors.New("the Element is invalid")

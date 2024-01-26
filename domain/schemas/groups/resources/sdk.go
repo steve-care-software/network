@@ -4,14 +4,9 @@ import (
 	"steve.care/network/domain/schemas/groups/resources/fields"
 )
 
-// NewBuilder creates a new builder
+// NewBuilder creates a new resources builder
 func NewBuilder() Builder {
 	return createBuilder()
-}
-
-// NewResourceBuilder creates a new resources builder
-func NewResourceBuilder() ResourceBuilder {
-	return createResourceBuilder()
 }
 
 // NewConnectionsBuilder creates a new connections builder
@@ -29,26 +24,13 @@ func NewPointerBuilder() PointerBuilder {
 	return createPointerBuilder()
 }
 
-// Builder represents the resources builder
+// Builder represents a resource builder
 type Builder interface {
 	Create() Builder
-	WithList(list []Resource) Builder
-	Now() (Resources, error)
-}
-
-// Resources represents a resource
-type Resources interface {
-	List() []Resource
-	Fetch(name string) (Resource, error)
-}
-
-// ResourceBuilder represents a resource builder
-type ResourceBuilder interface {
-	Create() ResourceBuilder
-	WithName(name string) ResourceBuilder
-	WithKey(key fields.Field) ResourceBuilder
-	WithFields(fields fields.Fields) ResourceBuilder
-	WithConnections(connections Connections) ResourceBuilder
+	WithName(name string) Builder
+	WithKey(key fields.Field) Builder
+	WithFields(fields fields.Fields) Builder
+	WithConnections(connections Connections) Builder
 	Now() (Resource, error)
 }
 

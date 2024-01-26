@@ -3,12 +3,14 @@ package groups
 import "errors"
 
 type builder struct {
-	list []Group
+	name   string
+	chains MethodChains
 }
 
 func createBuilder() Builder {
 	out := builder{
-		list: nil,
+		name:   "",
+		chains: nil,
 	}
 
 	return &out
@@ -19,27 +21,27 @@ func (app *builder) Create() Builder {
 	return createBuilder()
 }
 
-// WithList adds a list to the builder
-func (app *builder) WithList(list []Group) Builder {
-	app.list = list
+// WithName adds a name to the builder
+func (app *builder) WithName(name string) Builder {
+	app.name = name
 	return app
 }
 
-// Now builds a new Groups instance
-func (app *builder) Now() (Groups, error) {
-	if app.list != nil && len(app.list) <= 0 {
-		app.list = nil
+// WithChains add chains to the builder
+func (app *builder) WithChains(chains MethodChains) Builder {
+	app.chains = chains
+	return app
+}
+
+// Now builds a new Group instance
+func (app *builder) Now() (Group, error) {
+	if app.name == "" {
+		return nil, errors.New("the name is mandatory in order to build a Group instance")
 	}
 
-	if app.list == nil {
-		return nil, errors.New("there must be at least 1 Group in order to build a Groups instance")
+	if app.chains == nil {
+		return nil, errors.New("the chains is mandatory in order to build a Group instance")
 	}
 
-	mp := map[string]Group{}
-	for _, oneGroup := range app.list {
-		name := oneGroup.Name()
-		mp[name] = oneGroup
-	}
-
-	return createGroups(mp, app.list), nil
+	return createGroup(app.name, app.chains), nil
 }

@@ -15,7 +15,7 @@ type Factory interface {
 // Builder represents a schema builder
 type Builder interface {
 	Create() Builder
-	WithGroups(groups groups.Groups) Builder
+	WithGroup(group groups.Group) Builder
 	WithPrevious(previous Schema) Builder
 	Now() (Schema, error)
 }
@@ -23,7 +23,7 @@ type Builder interface {
 // Schema represents a schema
 type Schema interface {
 	Version() uint
-	Groups() groups.Groups
+	Group() groups.Group
 	HasPrevious() bool
 	Previous() Schema
 }

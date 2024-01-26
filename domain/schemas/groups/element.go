@@ -3,50 +3,50 @@ package groups
 import "steve.care/network/domain/schemas/groups/resources"
 
 type element struct {
-	groups    Groups
-	resources resources.Resources
+	group    Group
+	resource resources.Resource
 }
 
-func createElementWithResources(
-	resources resources.Resources,
+func createElementWithResource(
+	resource resources.Resource,
 ) Element {
-	return createElementInternally(nil, resources)
+	return createElementInternally(nil, resource)
 }
 
-func createElementWithGroups(
-	groups Groups,
+func createElementWithGroup(
+	group Group,
 ) Element {
-	return createElementInternally(groups, nil)
+	return createElementInternally(group, nil)
 }
 
 func createElementInternally(
-	groups Groups,
-	resources resources.Resources,
+	group Group,
+	resource resources.Resource,
 ) Element {
 	out := element{
-		groups:    groups,
-		resources: resources,
+		group:    group,
+		resource: resource,
 	}
 
 	return &out
 }
 
-// IsGroups returns true if there is groups, false otherwise
-func (obj *element) IsGroups() bool {
-	return obj.groups != nil
+// IsGroup returns true if there is group, false otherwise
+func (obj *element) IsGroup() bool {
+	return obj.group != nil
 }
 
-// Groups returns the groups, if any
-func (obj *element) Groups() Groups {
-	return obj.groups
+// Group returns the group, if any
+func (obj *element) Group() Group {
+	return obj.group
 }
 
-// IsResources returns true if there is resources, false otherwise
-func (obj *element) IsResources() bool {
-	return obj.resources != nil
+// IsResource returns true if there is resource, false otherwise
+func (obj *element) IsResource() bool {
+	return obj.resource != nil
 }
 
-// Resources returns the resources, if any
-func (obj *element) Resources() resources.Resources {
-	return obj.resources
+// Resource returns the resource, if any
+func (obj *element) Resource() resources.Resource {
+	return obj.resource
 }

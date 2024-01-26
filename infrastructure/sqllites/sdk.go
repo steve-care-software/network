@@ -112,7 +112,9 @@ func NewResourceService(
 	schema schemas.Schema,
 	txPtr *sql.Tx,
 ) resources.Service {
+	hashAdapter := hash.NewAdapter()
 	return createResourceService(
+		hashAdapter,
 		schema,
 		txPtr,
 	)
@@ -124,12 +126,11 @@ func NewSchemaFactory(
 	keyFieldMethodNames []string,
 ) schemas.Factory {
 	builder := schemas.NewBuilder()
-	groupsBuilder := groups.NewBuilder()
-	groupBuilder := groups.NewGroupBuilder()
-	elementsBuilder := groups.NewElementsBuilder()
+	groupBuilder := groups.NewBuilder()
+	methodChainsBuilder := groups.NewMethodChainsBuilder()
+	methodChainBuilder := groups.NewMethodChainBuilder()
 	elementBuilder := groups.NewElementBuilder()
-	resourcesBuilder := schema_resources.NewBuilder()
-	resourceBuilder := schema_resources.NewResourceBuilder()
+	resourceBuilder := schema_resources.NewBuilder()
 	connectionsBuilder := schema_resources.NewConnectionsBuilder()
 	connectionBuilder := schema_resources.NewConnectionBuilder()
 	pointerBuilder := schema_resources.NewPointerBuilder()
@@ -137,11 +138,10 @@ func NewSchemaFactory(
 	fieldBuilder := fields.NewFieldBuilder()
 	return createSchemaFactory(
 		builder,
-		groupsBuilder,
 		groupBuilder,
-		elementsBuilder,
+		methodChainsBuilder,
+		methodChainBuilder,
 		elementBuilder,
-		resourcesBuilder,
 		resourceBuilder,
 		connectionsBuilder,
 		connectionBuilder,

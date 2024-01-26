@@ -9,12 +9,11 @@ import (
 
 type schemaFactory struct {
 	builder             schemas.Builder
-	groupsBuilder       groups.Builder
-	groupBuilder        groups.GroupBuilder
-	elementsBuilder     groups.ElementsBuilder
+	groupBuilder        groups.Builder
+	methodChainsBuilder groups.MethodChainsBuilder
+	methodChainBuilder  groups.MethodChainBuilder
 	elementBuilder      groups.ElementBuilder
-	resourcesBuilder    resources.Builder
-	resourceBuilder     resources.ResourceBuilder
+	resourceBuilder     resources.Builder
 	connectionsBuilder  resources.ConnectionsBuilder
 	connectionBuilder   resources.ConnectionBuilder
 	pointerBuilder      resources.PointerBuilder
@@ -26,12 +25,11 @@ type schemaFactory struct {
 
 func createSchemaFactory(
 	builder schemas.Builder,
-	groupsBuilder groups.Builder,
-	groupBuilder groups.GroupBuilder,
-	elementsBuilder groups.ElementsBuilder,
+	groupBuilder groups.Builder,
+	methodChainsBuilder groups.MethodChainsBuilder,
+	methodChainBuilder groups.MethodChainBuilder,
 	elementBuilder groups.ElementBuilder,
-	resourcesBuilder resources.Builder,
-	resourceBuilder resources.ResourceBuilder,
+	resourceBuilder resources.Builder,
 	connectionsBuilder resources.ConnectionsBuilder,
 	connectionBuilder resources.ConnectionBuilder,
 	pointerBuilder resources.PointerBuilder,
@@ -42,11 +40,10 @@ func createSchemaFactory(
 ) schemas.Factory {
 	out := schemaFactory{
 		builder:             builder,
-		groupsBuilder:       groupsBuilder,
 		groupBuilder:        groupBuilder,
-		elementsBuilder:     elementsBuilder,
+		methodChainsBuilder: methodChainsBuilder,
+		methodChainBuilder:  methodChainBuilder,
 		elementBuilder:      elementBuilder,
-		resourcesBuilder:    resourcesBuilder,
 		resourceBuilder:     resourceBuilder,
 		connectionsBuilder:  connectionsBuilder,
 		connectionBuilder:   connectionBuilder,
@@ -70,20 +67,20 @@ func (app *schemaFactory) Create() (schemas.Schema, error) {
 	)
 
 	return app.schema(
-		app.groups([]groups.Group{
-			app.group(
-				"resources",
-				app.elements([]groups.Element{
-					app.elementWithGroups(
-						app.groups([]groups.Group{
-							app.resourcesDashboards(
-								key,
-							),
-						}),
+		app.group(
+			"resources",
+			app.chains([]groups.MethodChain{
+				app.chain(
+					"IsDashboard",
+					"Dashboard",
+					app.elementWithGroup(
+						app.resourcesDashboards(
+							key,
+						),
 					),
-				}),
-			),
-		}),
+				),
+			}),
+		),
 	), nil
 }
 
@@ -92,9 +89,11 @@ func (app *schemaFactory) resourcesDashboards(
 ) groups.Group {
 	return app.group(
 		"dashboards",
-		app.elements([]groups.Element{
-			app.elementWithResources(
-				app.resources([]resources.Resource{
+		app.chains([]groups.MethodChain{
+			app.chain(
+				"IsViewport",
+				"Viewport",
+				app.elementWithResource(
 					app.resource(
 						"viewport",
 						key,
@@ -103,31 +102,17 @@ func (app *schemaFactory) resourcesDashboards(
 							app.field("height", []string{"Height"}, fields.KindInteger, false),
 						}),
 					),
-				}),
+				),
 			),
 		}),
 	)
 }
 
 func (app *schemaFactory) schema(
-	groups groups.Groups,
+	group groups.Group,
 ) schemas.Schema {
 	ins, err := app.builder.Create().
-		WithGroups(groups).
-		Now()
-
-	if err != nil {
-		panic(err)
-	}
-
-	return ins
-}
-
-func (app *schemaFactory) groups(
-	list []groups.Group,
-) groups.Groups {
-	ins, err := app.groupsBuilder.Create().
-		WithList(list).
+		WithGroup(group).
 		Now()
 
 	if err != nil {
@@ -139,11 +124,11 @@ func (app *schemaFactory) groups(
 
 func (app *schemaFactory) group(
 	name string,
-	elements groups.Elements,
+	chains groups.MethodChains,
 ) groups.Group {
 	ins, err := app.groupBuilder.Create().
 		WithName(name).
-		WithElements(elements).
+		WithChains(chains).
 		Now()
 
 	if err != nil {
@@ -153,10 +138,10 @@ func (app *schemaFactory) group(
 	return ins
 }
 
-func (app *schemaFactory) elements(
-	list []groups.Element,
-) groups.Elements {
-	ins, err := app.elementsBuilder.Create().
+func (app *schemaFactory) chains(
+	list []groups.MethodChain,
+) groups.MethodChains {
+	ins, err := app.methodChainsBuilder.Create().
 		WithList(list).
 		Now()
 
@@ -167,11 +152,15 @@ func (app *schemaFactory) elements(
 	return ins
 }
 
-func (app *schemaFactory) elementWithResources(
-	resources resources.Resources,
-) groups.Element {
-	ins, err := app.elementBuilder.Create().
-		WithResources(resources).
+func (app *schemaFactory) chain(
+	condition string,
+	value string,
+	element groups.Element,
+) groups.MethodChain {
+	ins, err := app.methodChainBuilder.Create().
+		WithCondition(condition).
+		WithValue(value).
+		WithElement(element).
 		Now()
 
 	if err != nil {
@@ -181,11 +170,11 @@ func (app *schemaFactory) elementWithResources(
 	return ins
 }
 
-func (app *schemaFactory) elementWithGroups(
-	groups groups.Groups,
+func (app *schemaFactory) elementWithResource(
+	resource resources.Resource,
 ) groups.Element {
 	ins, err := app.elementBuilder.Create().
-		WithGroups(groups).
+		WithResource(resource).
 		Now()
 
 	if err != nil {
@@ -195,11 +184,11 @@ func (app *schemaFactory) elementWithGroups(
 	return ins
 }
 
-func (app *schemaFactory) resources(
-	list []resources.Resource,
-) resources.Resources {
-	ins, err := app.resourcesBuilder.Create().
-		WithList(list).
+func (app *schemaFactory) elementWithGroup(
+	group groups.Group,
+) groups.Element {
+	ins, err := app.elementBuilder.Create().
+		WithGroup(group).
 		Now()
 
 	if err != nil {

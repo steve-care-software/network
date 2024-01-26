@@ -17,9 +17,9 @@ func getSchema() string {
 		DROP TABLE IF EXISTS token;
 		CREATE TABLE token (
 			hash BLOB PRIMARY KEY,
-			dashboards_viewport BLOB,
+			resources_dashboards_viewport BLOB,
 			created_on TEXT,
-			FOREIGN KEY(dashboards_viewport) REFERENCES resources_dashboards_viewport(hash)
+			FOREIGN KEY(resources_dashboards_viewport) REFERENCES resources_dashboards_viewport(hash)
 		);
 
 		DROP TABLE IF EXISTS resource;

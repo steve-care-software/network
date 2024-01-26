@@ -121,7 +121,7 @@ func (app *resourceRepository) RetrieveByHash(hash hash.Hash) (resources.Resourc
 }
 
 func (app *resourceRepository) retrieveTokenByHash(hash hash.Hash) (tokens.Token, error) {
-	rows, err := app.dbPtr.Query("SELECT dashboards_viewport, created_on FROM token WHERE hash = ?", hash.Bytes())
+	rows, err := app.dbPtr.Query("SELECT resources_dashboards_viewport, created_on FROM token WHERE hash = ?", hash.Bytes())
 	if err != nil {
 		return nil, err
 	}

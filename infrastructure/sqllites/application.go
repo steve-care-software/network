@@ -70,13 +70,13 @@ func (app *application) Init(name string) error {
 	}
 
 	// init the schema:
-	groups := app.schema.Groups()
-	tableMetaDataList, err := app.initGroups("", groups)
+	group := app.schema.Group()
+	tableMetaDataList, err := app.initGroup("", group)
 	if err != nil {
 		return err
 	}
 
-	connectionsMap, err := app.initGroupsForConnections(groups, tableMetaDataList)
+	connectionsMap, err := app.initGroupForConnections(group, tableMetaDataList)
 	if err != nil {
 		return err
 	}
@@ -141,68 +141,48 @@ func (app *application) generateSchema(metaData []*tableMetaData, connections ma
 	return schema, nil
 }
 
-func (app *application) initGroupsForConnections(groups groups.Groups, metaData []*tableMetaData) (map[string][]string, error) {
-	output := map[string][]string{}
-	list := groups.List()
-	for _, oneGroup := range list {
-		retMap, err := app.initGroupForConnections(oneGroup, metaData)
-		if err != nil {
-			return nil, err
-		}
-
-		for tableName, strList := range retMap {
-			output[tableName] = strList
-		}
-	}
-
-	return output, nil
-}
-
 func (app *application) initGroupForConnections(group groups.Group, metaData []*tableMetaData) (map[string][]string, error) {
-	elements := group.Elements()
-	return app.initElementsForConnections(elements, metaData)
+	chains := group.Chains()
+	return app.initMethodChainsForConnections(chains, metaData)
 }
 
-func (app *application) initElementsForConnections(elements groups.Elements, metaData []*tableMetaData) (map[string][]string, error) {
+func (app *application) initMethodChainsForConnections(chains groups.MethodChains, metaData []*tableMetaData) (map[string][]string, error) {
+	list := chains.List()
 	output := map[string][]string{}
-	list := elements.List()
-	for _, oneElement := range list {
-		retMap, err := app.initElementForConnections(oneElement, metaData)
+	for _, oneChain := range list {
+		retMap, err := app.initMethodChainForConnections(oneChain, metaData)
 		if err != nil {
 			return nil, err
 		}
 
-		for tableName, strList := range retMap {
-			output[tableName] = strList
+		for keyname, list := range retMap {
+			output[keyname] = list
 		}
 	}
 
 	return output, nil
+}
+
+func (app *application) initMethodChainForConnections(chain groups.MethodChain, metaData []*tableMetaData) (map[string][]string, error) {
+	element := chain.Element()
+	return app.initElementForConnections(element, metaData)
 }
 
 func (app *application) initElementForConnections(element groups.Element, metaData []*tableMetaData) (map[string][]string, error) {
-	if element.IsGroups() {
-		groups := element.Groups()
-		return app.initGroupsForConnections(groups, metaData)
+	if element.IsGroup() {
+		group := element.Group()
+		return app.initGroupForConnections(group, metaData)
 	}
 
-	resources := element.Resources()
-	return app.initResourcesForConnections(resources, metaData)
-}
-
-func (app *application) initResourcesForConnections(resources resources.Resources, metaData []*tableMetaData) (map[string][]string, error) {
-	output := map[string][]string{}
-	list := resources.List()
-	for _, oneResource := range list {
-		tableName, list, err := app.initResourceForConnections(oneResource, metaData)
-		if err != nil {
-			return nil, err
-		}
-
-		output[tableName] = list
+	resource := element.Resource()
+	tableName, list, err := app.initResourceForConnections(resource, metaData)
+	if err != nil {
+		return nil, err
 	}
 
-	return output, nil
+	return map[string][]string{
+		tableName: list,
+	}, nil
 }
 
 func (app *application) initResourceForConnections(resource resources.Resource, metaData []*tableMetaData) (string, []string, error) {
@@ -266,69 +246,51 @@ func (app *application) getTableNameByResourceName(resourceName string, metaData
 	return "", errors.New(str)
 }
 
-func (app *application) initGroups(previousGroupName string, groups groups.Groups) ([]*tableMetaData, error) {
-	output := []*tableMetaData{}
-	list := groups.List()
-	for _, oneGroup := range list {
-		retOutput, err := app.initGroup(previousGroupName, oneGroup)
-		if err != nil {
-			return nil, err
-		}
-
-		output = append(output, retOutput...)
-	}
-
-	return output, nil
-}
-
 func (app *application) initGroup(previousGroupName string, group groups.Group) ([]*tableMetaData, error) {
 	name := group.Name()
 	if previousGroupName != "" {
 		name = fmt.Sprintf("%s%s%s", previousGroupName, groupNameDelimiterForTableNames, name)
 	}
 
-	elements := group.Elements()
-	return app.initElements(name, elements)
+	chains := group.Chains()
+	return app.initChains(name, chains)
 }
 
-func (app *application) initElements(groupName string, elements groups.Elements) ([]*tableMetaData, error) {
+func (app *application) initChains(groupName string, chains groups.MethodChains) ([]*tableMetaData, error) {
 	output := []*tableMetaData{}
-	list := elements.List()
-	for _, oneElement := range list {
-		retOutput, err := app.initElement(groupName, oneElement)
+	list := chains.List()
+	for _, oneChain := range list {
+		retList, err := app.initChain(groupName, oneChain)
 		if err != nil {
 			return nil, err
 		}
 
-		output = append(output, retOutput...)
+		output = append(output, retList...)
 	}
 
 	return output, nil
+}
+
+func (app *application) initChain(groupName string, chain groups.MethodChain) ([]*tableMetaData, error) {
+	element := chain.Element()
+	return app.initElement(groupName, element)
 }
 
 func (app *application) initElement(groupName string, element groups.Element) ([]*tableMetaData, error) {
-	if element.IsGroups() {
-		groups := element.Groups()
-		return app.initGroups(groupName, groups)
+	if element.IsGroup() {
+		group := element.Group()
+		return app.initGroup(groupName, group)
 	}
 
-	resources := element.Resources()
-	return app.initResources(groupName, resources)
-}
-
-func (app *application) initResources(groupName string, resources resources.Resources) ([]*tableMetaData, error) {
-	output := []*tableMetaData{}
-	list := resources.List()
-	for _, oneResource := range list {
-		pTableMetaData, err := app.initResource(groupName, oneResource)
-		if err != nil {
-			return nil, err
-		}
-
-		output = append(output, pTableMetaData)
+	resource := element.Resource()
+	pMetaData, err := app.initResource(groupName, resource)
+	if err != nil {
+		return nil, err
 	}
 
-	return output, nil
+	return []*tableMetaData{
+		pMetaData,
+	}, nil
 }
 
 func (app *application) initResource(groupName string, resource resources.Resource) (*tableMetaData, error) {

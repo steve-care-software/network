@@ -7,13 +7,13 @@ import (
 )
 
 type builder struct {
-	groups   groups.Groups
+	group    groups.Group
 	previous Schema
 }
 
 func createBuilder() Builder {
 	out := builder{
-		groups:   nil,
+		group:    nil,
 		previous: nil,
 	}
 
@@ -25,9 +25,9 @@ func (app *builder) Create() Builder {
 	return createBuilder()
 }
 
-// WithGroups add groups to the builder
-func (app *builder) WithGroups(groups groups.Groups) Builder {
-	app.groups = groups
+// WithGroup adds a group to the builder
+func (app *builder) WithGroup(group groups.Group) Builder {
+	app.group = group
 	return app
 }
 
@@ -39,8 +39,8 @@ func (app *builder) WithPrevious(previous Schema) Builder {
 
 // Now builds a new Schema instance
 func (app *builder) Now() (Schema, error) {
-	if app.groups == nil {
-		return nil, errors.New("the groups is mandatory in order to build a Schema instance")
+	if app.group == nil {
+		return nil, errors.New("the group is mandatory in order to build a Schema instance")
 	}
 
 	version := uint(0)
@@ -49,5 +49,5 @@ func (app *builder) Now() (Schema, error) {
 		version = previousVersion + 1
 	}
 
-	return createSchema(version, app.groups), nil
+	return createSchema(version, app.group), nil
 }

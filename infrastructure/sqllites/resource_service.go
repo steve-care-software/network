@@ -7,28 +7,29 @@ import (
 	"reflect"
 	"strings"
 
-	"steve.care/network/domain/dashboards/widgets/viewports"
 	"steve.care/network/domain/hash"
 	"steve.care/network/domain/programs/blocks/transactions/executions/actions/resources"
 	"steve.care/network/domain/programs/blocks/transactions/executions/actions/resources/tokens"
-	tokens_dashboards "steve.care/network/domain/programs/blocks/transactions/executions/actions/resources/tokens/dashboards"
 	"steve.care/network/domain/schemas"
-	"steve.care/network/domain/schemas/groups"
+	schema_groups "steve.care/network/domain/schemas/groups"
 	schema_resources "steve.care/network/domain/schemas/groups/resources"
 )
 
 type resourceService struct {
-	schema schemas.Schema
-	txPtr  *sql.Tx
+	hashAdapter hash.Adapter
+	schema      schemas.Schema
+	txPtr       *sql.Tx
 }
 
 func createResourceService(
+	hashAdapter hash.Adapter,
 	schema schemas.Schema,
 	txPtr *sql.Tx,
 ) resources.Service {
 	out := resourceService{
-		schema: schema,
-		txPtr:  txPtr,
+		hashAdapter: hashAdapter,
+		schema:      schema,
+		txPtr:       txPtr,
 	}
 
 	return &out
@@ -56,75 +57,130 @@ func (app *resourceService) Insert(ins resources.Resource) error {
 }
 
 func (app *resourceService) insertToken(ins tokens.Token) error {
-	currentGroupName := "resources"
 	content := ins.Content()
-	group, err := app.schema.Groups().Fetch(currentGroupName)
+	group := app.schema.Group()
+	fkHash, fieldName, err := app.insertGroup(content, group, "")
 	if err != nil {
 		return err
 	}
 
-	if content.IsDashboard() {
-		dashboard := content.Dashboard()
-		fkHash, err := app.insertDashboard(dashboard, group, currentGroupName)
-		if err != nil {
-			return err
-		}
-
-		_, err = app.txPtr.Exec("INSERT OR IGNORE INTO token (hash, dashboards_viewport, created_on) VALUES (?, ?, ?)", ins.Hash().Bytes(), fkHash.Bytes(), ins.CreatedOn().Format(timeLayout))
-		if err != nil {
-			return err
-		}
-
-		return nil
+	queryStr := fmt.Sprintf("INSERT OR IGNORE INTO token (hash, %s, created_on) VALUES (?, ?, ?)", fieldName)
+	_, err = app.txPtr.Exec(queryStr, ins.Hash().Bytes(), fkHash.Bytes(), ins.CreatedOn().Format(timeLayout))
+	if err != nil {
+		return err
 	}
 
 	return nil
 }
 
-func (app *resourceService) insertDashboard(ins tokens_dashboards.Dashboard, group groups.Group, parentName string) (*hash.Hash, error) {
-	currentGroupName := "dashboards"
-	group, err := group.Elements().Search("dashboards")
-	if err != nil {
-		return nil, err
+func (app *resourceService) insertGroup(
+	ins interface{},
+	group schema_groups.Group,
+	parentName string,
+) (*hash.Hash, string, error) {
+	name := group.Name()
+	chains := group.Chains()
+	updatedParentName := name
+	if parentName != "" {
+		updatedParentName = fmt.Sprintf("%s%s%s", parentName, groupNameDelimiterForTableNames, name)
 	}
 
-	concatGroupName := fmt.Sprintf("%s%s%s", parentName, groupNameDelimiterForTableNames, currentGroupName)
-	if ins.IsDashboard() {
-
-	}
-
-	if ins.IsWidget() {
-
-	}
-
-	viewport := ins.Viewport()
-	return app.insertDashboardViewport(viewport, group, concatGroupName)
+	return app.insertChains(ins, chains, updatedParentName)
 }
 
-func (app *resourceService) insertDashboardViewport(
-	ins viewports.Viewport,
-	group groups.Group,
+func (app *resourceService) insertChains(
+	ins interface{},
+	chains schema_groups.MethodChains,
 	parentName string,
-) (*hash.Hash, error) {
-	resource, err := group.Elements().Resource("viewport")
-	if err != nil {
-		return nil, err
+) (*hash.Hash, string, error) {
+	list := chains.List()
+	for _, oneChain := range list {
+		pHash, fieldName, isInserted, err := app.insertChain(ins, oneChain, parentName)
+		if err != nil {
+			return nil, "", err
+		}
+
+		if !isInserted {
+			continue
+		}
+
+		return pHash, fieldName, nil
 	}
 
-	err = app.insertResource(ins, resource, parentName)
+	return nil, "", nil
+}
+
+func (app *resourceService) insertChain(
+	ins interface{},
+	chain schema_groups.MethodChain,
+	parentName string,
+) (*hash.Hash, string, bool, error) {
+	errorString := ""
+	conditionMethodName := chain.Condition()
+	retValue, err := app.callMethodsOnInstance([]string{
+		conditionMethodName,
+	}, ins, &errorString)
 	if err != nil {
-		return nil, err
+		return nil, "", false, err
 	}
 
-	insHash := ins.Hash()
-	return &insHash, nil
+	typeName := reflect.TypeOf(&ins).Elem().Name()
+	if errorString != "" {
+		str := fmt.Sprintf("there was an error while calling a method chain's condition method (name: %s) on a reference instance (type: %s), the error was: %s", conditionMethodName, typeName, errorString)
+		return nil, "", false, errors.New(str)
+	}
+
+	if boolValue, ok := retValue.(bool); ok {
+		if !boolValue {
+			return nil, "", false, nil
+		}
+
+		errorString := ""
+		valueMethodName := chain.Value()
+		retValue, err := app.callMethodsOnInstance([]string{
+			valueMethodName,
+		}, ins, &errorString)
+		if err != nil {
+			return nil, "", false, err
+		}
+
+		if errorString != "" {
+			str := fmt.Sprintf("there was an error while calling a method chain's value method (name: %s) on a reference instance (type: %s), the error was: %s", valueMethodName, typeName, errorString)
+			return nil, "", false, errors.New(str)
+		}
+
+		element := chain.Element()
+		pHash, fieldName, err := app.insertElement(retValue, element, parentName)
+		if err != nil {
+			return nil, "", false, err
+		}
+
+		return pHash, fieldName, true, nil
+	}
+
+	str := fmt.Sprintf("there was an error while calling a method chain's condition method (name: %s) on a reference instance (type: %s), the returned value was expected to be a bool, but it was NOT", conditionMethodName, typeName)
+	return nil, "", false, errors.New(str)
+}
+
+func (app *resourceService) insertElement(
+	ins interface{},
+	element schema_groups.Element,
+	parentName string,
+) (*hash.Hash, string, error) {
+	if element.IsResource() {
+		resource := element.Resource()
+		return app.insertResource(ins, resource, parentName)
+	}
+
+	group := element.Group()
+	return app.insertGroup(ins, group, parentName)
 }
 
 func (app *resourceService) insertResource(
 	ins interface{},
 	resource schema_resources.Resource,
 	parentName string,
-) error {
+) (*hash.Hash, string, error) {
 	key := resource.Key()
 	fieldNames := []string{
 		key.Name(),
@@ -135,12 +191,12 @@ func (app *resourceService) insertResource(
 	typeName := reflect.TypeOf(&ins).Elem().Name()
 	retPkValue, err := app.callMethodsOnInstance(keyMethodNames, ins, &errorString)
 	if err != nil {
-		return err
+		return nil, "", err
 	}
 
 	if errorString != "" {
 		str := fmt.Sprintf("there was an error while calling a field key method (names: %s) on a reference instance (type: %s), the error was: %s", strings.Join(keyMethodNames, ","), typeName, errorString)
-		return errors.New(str)
+		return nil, "", errors.New(str)
 	}
 
 	fieldValues := []interface{}{
@@ -157,12 +213,12 @@ func (app *resourceService) insertResource(
 		methodNames := oneField.Methods()
 		retValue, err := app.callMethodsOnInstance(methodNames, ins, &errorString)
 		if err != nil {
-			return err
+			return nil, "", err
 		}
 
 		if errorString != "" {
 			str := fmt.Sprintf("there was an error while calling a field method (names: %s) on a reference instance (type: %s), the error was: %s", strings.Join(methodNames, ","), typeName, errorString)
-			return errors.New(str)
+			return nil, "", errors.New(str)
 		}
 
 		fieldNames = append(fieldNames, oneField.Name())
@@ -176,10 +232,20 @@ func (app *resourceService) insertResource(
 	queryStr := fmt.Sprintf("INSERT OR IGNORE INTO %s (%s) VALUES (%s)", tableName, fieldNamesStr, fieldValuePlaceHoldersStr)
 	_, err = app.txPtr.Exec(queryStr, fieldValues...)
 	if err != nil {
-		return err
+		return nil, "", err
 	}
 
-	return nil
+	if casted, ok := retPkValue.([]byte); ok {
+		pHash, err := app.hashAdapter.FromBytes(casted)
+		if err != nil {
+			return nil, "", err
+		}
+
+		return pHash, tableName, nil
+	}
+
+	str := fmt.Sprintf("the returned value of the field key method (names: %s) on a reference instance (type: %s), was expected to contain []byte, but it was NOT", strings.Join(keyMethodNames, ","), typeName)
+	return nil, "", errors.New(str)
 }
 
 func (app *resourceService) callMethodsOnInstance(
