@@ -147,7 +147,10 @@ func (app *resourceService) insertResource(
 		retPkValue,
 	}
 
-	fieldValuePlaceHolders := []string{}
+	fieldValuePlaceHolders := []string{
+		"?",
+	}
+
 	fieldsList := resource.Fields().List()
 	for _, oneField := range fieldsList {
 		errorString := ""
