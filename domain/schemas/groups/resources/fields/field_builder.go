@@ -6,6 +6,7 @@ import (
 
 type fieldBuilder struct {
 	name     string
+	methods  []string
 	pKind    *uint8
 	canBeNil bool
 }
@@ -13,6 +14,7 @@ type fieldBuilder struct {
 func createFieldBuilder() FieldBuilder {
 	out := fieldBuilder{
 		name:     "",
+		methods:  nil,
 		pKind:    nil,
 		canBeNil: false,
 	}
@@ -28,6 +30,12 @@ func (app *fieldBuilder) Create() FieldBuilder {
 // WithName adds a name to the builder
 func (app *fieldBuilder) WithName(name string) FieldBuilder {
 	app.name = name
+	return app
+}
+
+// WithMethods add methods to the builder
+func (app *fieldBuilder) WithMethods(methods []string) FieldBuilder {
+	app.methods = methods
 	return app
 }
 
@@ -49,9 +57,22 @@ func (app *fieldBuilder) Now() (Field, error) {
 		return nil, errors.New("the name is mandatory in order to build a Field instance")
 	}
 
+	if app.methods != nil && len(app.methods) <= 0 {
+		app.methods = nil
+	}
+
+	if app.methods == nil {
+		return nil, errors.New("the methods is mandatory in order to build a Field instance")
+	}
+
 	if app.pKind == nil {
 		return nil, errors.New("the kind is mandatory in order to build a Field instance")
 	}
 
-	return createField(app.name, *app.pKind, app.canBeNil), nil
+	return createField(
+		app.name,
+		app.methods,
+		*app.pKind,
+		app.canBeNil,
+	), nil
 }

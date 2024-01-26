@@ -39,6 +39,7 @@ type Builder interface {
 // Resources represents a resource
 type Resources interface {
 	List() []Resource
+	Fetch(name string) (Resource, error)
 }
 
 // ResourceBuilder represents a resource builder

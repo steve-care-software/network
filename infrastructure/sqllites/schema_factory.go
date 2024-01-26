@@ -8,19 +8,20 @@ import (
 )
 
 type schemaFactory struct {
-	builder            schemas.Builder
-	groupsBuilder      groups.Builder
-	groupBuilder       groups.GroupBuilder
-	elementsBuilder    groups.ElementsBuilder
-	elementBuilder     groups.ElementBuilder
-	resourcesBuilder   resources.Builder
-	resourceBuilder    resources.ResourceBuilder
-	connectionsBuilder resources.ConnectionsBuilder
-	connectionBuilder  resources.ConnectionBuilder
-	pointerBuilder     resources.PointerBuilder
-	fieldsBuilder      fields.Builder
-	fieldBuilder       fields.FieldBuilder
-	keyFieldName       string
+	builder             schemas.Builder
+	groupsBuilder       groups.Builder
+	groupBuilder        groups.GroupBuilder
+	elementsBuilder     groups.ElementsBuilder
+	elementBuilder      groups.ElementBuilder
+	resourcesBuilder    resources.Builder
+	resourceBuilder     resources.ResourceBuilder
+	connectionsBuilder  resources.ConnectionsBuilder
+	connectionBuilder   resources.ConnectionBuilder
+	pointerBuilder      resources.PointerBuilder
+	fieldsBuilder       fields.Builder
+	fieldBuilder        fields.FieldBuilder
+	keyFieldName        string
+	keyFieldMethodNames []string
 }
 
 func createSchemaFactory(
@@ -37,21 +38,23 @@ func createSchemaFactory(
 	fieldsBuilder fields.Builder,
 	fieldBuilder fields.FieldBuilder,
 	keyFieldName string,
+	keyFieldMethodNames []string,
 ) schemas.Factory {
 	out := schemaFactory{
-		builder:            builder,
-		groupsBuilder:      groupsBuilder,
-		groupBuilder:       groupBuilder,
-		elementsBuilder:    elementsBuilder,
-		elementBuilder:     elementBuilder,
-		resourcesBuilder:   resourcesBuilder,
-		resourceBuilder:    resourceBuilder,
-		connectionsBuilder: connectionsBuilder,
-		connectionBuilder:  connectionBuilder,
-		pointerBuilder:     pointerBuilder,
-		fieldsBuilder:      fieldsBuilder,
-		fieldBuilder:       fieldBuilder,
-		keyFieldName:       keyFieldName,
+		builder:             builder,
+		groupsBuilder:       groupsBuilder,
+		groupBuilder:        groupBuilder,
+		elementsBuilder:     elementsBuilder,
+		elementBuilder:      elementBuilder,
+		resourcesBuilder:    resourcesBuilder,
+		resourceBuilder:     resourceBuilder,
+		connectionsBuilder:  connectionsBuilder,
+		connectionBuilder:   connectionBuilder,
+		pointerBuilder:      pointerBuilder,
+		fieldsBuilder:       fieldsBuilder,
+		fieldBuilder:        fieldBuilder,
+		keyFieldName:        keyFieldName,
+		keyFieldMethodNames: keyFieldMethodNames,
 	}
 
 	return &out
@@ -59,6 +62,13 @@ func createSchemaFactory(
 
 // Create creates a schema
 func (app *schemaFactory) Create() (schemas.Schema, error) {
+	key := app.field(
+		app.keyFieldName,
+		app.keyFieldMethodNames,
+		fields.KindBytes,
+		false,
+	)
+
 	return app.schema(
 		app.groups([]groups.Group{
 			app.group(
@@ -66,7 +76,9 @@ func (app *schemaFactory) Create() (schemas.Schema, error) {
 				app.elements([]groups.Element{
 					app.elementWithGroups(
 						app.groups([]groups.Group{
-							app.resourcesDashboards(),
+							app.resourcesDashboards(
+								key,
+							),
 						}),
 					),
 				}),
@@ -75,7 +87,9 @@ func (app *schemaFactory) Create() (schemas.Schema, error) {
 	), nil
 }
 
-func (app *schemaFactory) resourcesDashboards() groups.Group {
+func (app *schemaFactory) resourcesDashboards(
+	key fields.Field,
+) groups.Group {
 	return app.group(
 		"dashboards",
 		app.elements([]groups.Element{
@@ -83,10 +97,10 @@ func (app *schemaFactory) resourcesDashboards() groups.Group {
 				app.resources([]resources.Resource{
 					app.resource(
 						"viewport",
-						app.field(app.keyFieldName, fields.KindBytes, false),
+						key,
 						app.fields([]fields.Field{
-							app.field("row", fields.KindInteger, false),
-							app.field("height", fields.KindInteger, false),
+							app.field("row", []string{"Row"}, fields.KindInteger, false),
+							app.field("height", []string{"Height"}, fields.KindInteger, false),
 						}),
 					),
 				}),
@@ -295,11 +309,13 @@ func (app *schemaFactory) fields(
 
 func (app *schemaFactory) field(
 	name string,
+	methods []string,
 	kind uint8,
 	canBeNil bool,
 ) fields.Field {
 	builder := app.fieldBuilder.Create().
 		WithName(name).
+		WithMethods(methods).
 		WithKind(kind)
 
 	if canBeNil {

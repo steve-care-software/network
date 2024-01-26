@@ -43,6 +43,7 @@ type Fields interface {
 type FieldBuilder interface {
 	Create() FieldBuilder
 	WithName(name string) FieldBuilder
+	WithMethods(methods []string) FieldBuilder
 	WithKind(kind uint8) FieldBuilder
 	CanBeNil() FieldBuilder
 	Now() (Field, error)
@@ -51,6 +52,7 @@ type FieldBuilder interface {
 // Field represents a field
 type Field interface {
 	Name() string
+	Methods() []string
 	Kind() uint8
 	CanBeNil() bool
 }

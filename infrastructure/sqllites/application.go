@@ -60,8 +60,11 @@ func createApplication(
 
 // Init initializes the application
 func (app *application) Init(name string) error {
-	// init the base schema:
-	err := app.initBaseSchema(name, app.baseSchema)
+	if app.isActive() {
+		return errors.New(currentActiveErrorMsg)
+	}
+
+	err := app.openDatabaseIfNotAlready(name)
 	if err != nil {
 		return err
 	}
@@ -84,6 +87,12 @@ func (app *application) Init(name string) error {
 	}
 
 	_, err = app.currentDb.Exec(schema)
+	if err != nil {
+		return err
+	}
+
+	// init the base schema:
+	_, err = app.currentDb.Exec(app.baseSchema)
 	if err != nil {
 		return err
 	}
@@ -406,24 +415,6 @@ func (app *application) getTableKindString(kind uint8) (string, error) {
 	}
 
 	return "BLOB", nil
-}
-
-func (app *application) initBaseSchema(name string, script string) error {
-	if app.isActive() {
-		return errors.New(currentActiveErrorMsg)
-	}
-
-	err := app.openDatabaseIfNotAlready(name)
-	if err != nil {
-		return err
-	}
-
-	_, err = app.currentDb.Exec(script)
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
 
 // Begin begins the application

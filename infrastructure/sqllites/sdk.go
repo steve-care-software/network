@@ -7,11 +7,12 @@ import (
 	"steve.care/network/domain/accounts"
 	account_encryptors "steve.care/network/domain/accounts/encryptors"
 	"steve.care/network/domain/accounts/signers"
+	"steve.care/network/domain/dashboards/widgets/viewports"
 	"steve.care/network/domain/encryptors"
 	"steve.care/network/domain/hash"
 	"steve.care/network/domain/programs/blocks/transactions/executions/actions/resources"
 	"steve.care/network/domain/programs/blocks/transactions/executions/actions/resources/tokens"
-	"steve.care/network/domain/programs/blocks/transactions/executions/actions/resources/tokens/layers"
+	token_dashboards "steve.care/network/domain/programs/blocks/transactions/executions/actions/resources/tokens/dashboards"
 	commands_layers "steve.care/network/domain/programs/logics/libraries/layers"
 	"steve.care/network/domain/schemas"
 	"steve.care/network/domain/schemas/groups"
@@ -90,14 +91,16 @@ func NewResourceRepository(
 	signatureAdapter := signers.NewSignatureAdapter()
 	builder := resources.NewBuilder()
 	tokenBuilder := tokens.NewBuilder()
-	layerBuilder := layers.NewBuilder()
+	dashboardBuilder := token_dashboards.NewBuilder()
+	viewportBuilder := viewports.NewBuilder()
 	cmdLayerBuilder := commands_layers.NewLayerBuilder()
 	return createResourceRepository(
 		hashAdapter,
 		signatureAdapter,
 		builder,
 		tokenBuilder,
-		layerBuilder,
+		dashboardBuilder,
+		viewportBuilder,
 		cmdLayerBuilder,
 		schema,
 		dbPtr,
@@ -118,6 +121,7 @@ func NewResourceService(
 // NewSchemaFactory creates a new schema factory
 func NewSchemaFactory(
 	keyFieldName string,
+	keyFieldMethodNames []string,
 ) schemas.Factory {
 	builder := schemas.NewBuilder()
 	groupsBuilder := groups.NewBuilder()
@@ -145,5 +149,6 @@ func NewSchemaFactory(
 		fieldsBuilder,
 		fieldBuilder,
 		keyFieldName,
+		keyFieldMethodNames,
 	)
 }

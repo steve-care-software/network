@@ -13,6 +13,22 @@ func getSchema() string {
 			username TEXT PRIMARY KEY,
 			cipher BLOB
 		);
+
+		DROP TABLE IF EXISTS token;
+		CREATE TABLE token (
+			hash BLOB PRIMARY KEY,
+			dashboards_viewport BLOB,
+			created_on TEXT,
+			FOREIGN KEY(dashboards_viewport) REFERENCES resources_dashboards_viewport(hash)
+		);
+
+		DROP TABLE IF EXISTS resource;
+		CREATE TABLE resource (
+			hash BLOB PRIMARY KEY,
+			token BLOB,
+			signature BLOB,
+			FOREIGN KEY(token) REFERENCES token(hash)
+		);
 	`
 }
 

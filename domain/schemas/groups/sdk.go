@@ -32,6 +32,7 @@ type Builder interface {
 // Groups represents groups
 type Groups interface {
 	List() []Group
+	Fetch(name string) (Group, error)
 }
 
 // GroupBuilder represents a group builder
@@ -58,6 +59,8 @@ type ElementsBuilder interface {
 // Elements represents elements
 type Elements interface {
 	List() []Element
+	Search(name string) (Group, error)
+	Resource(name string) (resources.Resource, error)
 }
 
 // ElementBuilder represents an element builder

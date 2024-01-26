@@ -7,10 +7,11 @@ import (
 	"time"
 
 	"steve.care/network/domain/accounts/signers"
+	"steve.care/network/domain/dashboards/widgets/viewports"
 	"steve.care/network/domain/hash"
 	"steve.care/network/domain/programs/blocks/transactions/executions/actions/resources"
 	"steve.care/network/domain/programs/blocks/transactions/executions/actions/resources/tokens"
-	"steve.care/network/domain/programs/blocks/transactions/executions/actions/resources/tokens/layers"
+	token_dashboards "steve.care/network/domain/programs/blocks/transactions/executions/actions/resources/tokens/dashboards"
 	commands_layers "steve.care/network/domain/programs/logics/libraries/layers"
 	"steve.care/network/domain/schemas"
 )
@@ -20,7 +21,8 @@ type resourceRepository struct {
 	signatureAdapter signers.SignatureAdapter
 	builder          resources.Builder
 	tokenBuilder     tokens.Builder
-	layerBuilder     layers.Builder
+	dashboardBuilder token_dashboards.Builder
+	viewportBuilder  viewports.Builder
 	cmdLayerBuilder  commands_layers.LayerBuilder
 	schema           schemas.Schema
 	dbPtr            *sql.DB
@@ -31,7 +33,8 @@ func createResourceRepository(
 	signatureAdapter signers.SignatureAdapter,
 	builder resources.Builder,
 	tokenBuilder tokens.Builder,
-	layerBuilder layers.Builder,
+	dashboardBuilder token_dashboards.Builder,
+	viewportBuilder viewports.Builder,
 	cmdLayerBuilder commands_layers.LayerBuilder,
 	schema schemas.Schema,
 	dbPtr *sql.DB,
@@ -41,7 +44,8 @@ func createResourceRepository(
 		signatureAdapter: signatureAdapter,
 		builder:          builder,
 		tokenBuilder:     tokenBuilder,
-		layerBuilder:     layerBuilder,
+		dashboardBuilder: dashboardBuilder,
+		viewportBuilder:  viewportBuilder,
 		cmdLayerBuilder:  cmdLayerBuilder,
 		schema:           schema,
 		dbPtr:            dbPtr,
@@ -117,7 +121,7 @@ func (app *resourceRepository) RetrieveByHash(hash hash.Hash) (resources.Resourc
 }
 
 func (app *resourceRepository) retrieveTokenByHash(hash hash.Hash) (tokens.Token, error) {
-	rows, err := app.dbPtr.Query("SELECT layer, created_on FROM token WHERE hash = ?", hash.Bytes())
+	rows, err := app.dbPtr.Query("SELECT dashboards_viewport, created_on FROM token WHERE hash = ?", hash.Bytes())
 	if err != nil {
 		return nil, err
 	}
@@ -129,8 +133,8 @@ func (app *resourceRepository) retrieveTokenByHash(hash hash.Hash) (tokens.Token
 	}
 
 	var retCreatedOn string
-	var retLayerHashBytes []byte
-	err = rows.Scan(&retLayerHashBytes, &retCreatedOn)
+	var retDashboardViewport []byte
+	err = rows.Scan(&retDashboardViewport, &retCreatedOn)
 	if err != nil {
 		return nil, err
 	}
@@ -140,12 +144,17 @@ func (app *resourceRepository) retrieveTokenByHash(hash hash.Hash) (tokens.Token
 		return nil, err
 	}
 
-	pLayerHash, err := app.hashAdapter.FromBytes(retLayerHashBytes)
+	pDashboardViewportHash, err := app.hashAdapter.FromBytes(retDashboardViewport)
 	if err != nil {
 		return nil, err
 	}
 
-	layer, err := app.retrieveLayerByHash(*pLayerHash)
+	dashboardViewport, err := app.retrieveDashboardViewportByHash(*pDashboardViewportHash)
+	if err != nil {
+		return nil, err
+	}
+
+	dashboard, err := app.dashboardBuilder.Create().WithViewport(dashboardViewport).Now()
 	if err != nil {
 		return nil, err
 	}
@@ -156,13 +165,13 @@ func (app *resourceRepository) retrieveTokenByHash(hash hash.Hash) (tokens.Token
 	}
 
 	return app.tokenBuilder.Create().
-		WithLayer(layer).
+		WithDashboard(dashboard).
 		CreatedOn(tm).
 		Now()
 }
 
-func (app *resourceRepository) retrieveLayerByHash(hash hash.Hash) (layers.Layer, error) {
-	rows, err := app.dbPtr.Query("SELECT bytes_reference FROM layer WHERE hash = ?", hash.Bytes())
+func (app *resourceRepository) retrieveDashboardViewportByHash(hash hash.Hash) (viewports.Viewport, error) {
+	rows, err := app.dbPtr.Query("SELECT row, height FROM resources_dashboards_viewport WHERE hash = ?", hash.Bytes())
 	if err != nil {
 		return nil, err
 	}
@@ -173,8 +182,9 @@ func (app *resourceRepository) retrieveLayerByHash(hash hash.Hash) (layers.Layer
 		return nil, errors.New(str)
 	}
 
-	var retBytesReferenceHashBytes []byte
-	err = rows.Scan(&retBytesReferenceHashBytes)
+	var row uint
+	var height uint
+	err = rows.Scan(&row, &height)
 	if err != nil {
 		return nil, err
 	}
@@ -184,58 +194,8 @@ func (app *resourceRepository) retrieveLayerByHash(hash hash.Hash) (layers.Layer
 		return nil, err
 	}
 
-	builder := app.layerBuilder.Create()
-	if retBytesReferenceHashBytes != nil {
-		/*pBytesReferenceHash, err := app.hashAdapter.FromBytes(retBytesReferenceHashBytes)
-		if err != nil {
-			return nil, err
-		}
-
-		bytesReference, err := app.retrieveLayerBytesReferenceByHash(*pBytesReferenceHash)
-		if err != nil {
-			return nil, err
-		}
-
-		builder.WithBytesReference(bytesReference)*/
-	}
-
-	return builder.Now()
+	return app.viewportBuilder.Create().
+		WithRow(row).
+		WithHeight(height).
+		Now()
 }
-
-/*
-func (app *resourceRepository) retrieveLayerBytesReferenceByHash(hash hash.Hash) (commands_layers.BytesReference, error) {
-	rows, err := app.dbPtr.Query("SELECT variable, bytes FROM layer_bytes_reference WHERE hash = ?", hash.Bytes())
-	if err != nil {
-		return nil, err
-	}
-
-	defer rows.Close()
-	if !rows.Next() {
-		str := fmt.Sprintf("the given hash (%s) do NOT match a BytesReference instance", hash.String())
-		return nil, errors.New(str)
-	}
-
-	retVariable := ""
-	var retBytes []byte
-	err = rows.Scan(&retVariable, &retBytes)
-	if err != nil {
-		return nil, err
-	}
-
-	err = rows.Err()
-	if err != nil {
-		return nil, err
-	}
-
-	builder := app.cmdLayerBytesReferenceBuilder.Create()
-	if retVariable != "" {
-		builder.WithVariable(retVariable)
-	}
-
-	if retBytes != nil {
-		builder.WithBytes(retBytes)
-	}
-
-	return builder.Now()
-}
-*/

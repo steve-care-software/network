@@ -35,5 +35,11 @@ func (app *builder) Now() (Groups, error) {
 		return nil, errors.New("there must be at least 1 Group in order to build a Groups instance")
 	}
 
-	return createGroups(app.list), nil
+	mp := map[string]Group{}
+	for _, oneGroup := range app.list {
+		name := oneGroup.Name()
+		mp[name] = oneGroup
+	}
+
+	return createGroups(mp, app.list), nil
 }

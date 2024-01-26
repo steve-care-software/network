@@ -35,5 +35,11 @@ func (app *builder) Now() (Resources, error) {
 		return nil, errors.New("there must be at least 1 Resource in order to build a Resources instance")
 	}
 
-	return createResources(app.list), nil
+	mp := map[string]Resource{}
+	for _, oneResource := range app.list {
+		name := oneResource.Name()
+		mp[name] = oneResource
+	}
+
+	return createResources(mp, app.list), nil
 }
