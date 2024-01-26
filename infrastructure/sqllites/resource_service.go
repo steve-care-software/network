@@ -147,6 +147,7 @@ func (app *resourceService) insertResource(
 		retPkValue,
 	}
 
+	fieldValuePlaceHolders := []string{}
 	fieldsList := resource.Fields().List()
 	for _, oneField := range fieldsList {
 		errorString := ""
@@ -163,11 +164,13 @@ func (app *resourceService) insertResource(
 
 		fieldNames = append(fieldNames, oneField.Name())
 		fieldValues = append(fieldValues, retValue)
+		fieldValuePlaceHolders = append(fieldValuePlaceHolders, "?")
 	}
 
 	fieldNamesStr := strings.Join(fieldNames, ", ")
+	fieldValuePlaceHoldersStr := strings.Join(fieldValuePlaceHolders, ", ")
 	tableName := fmt.Sprintf("%s%s%s", parentName, groupNameDelimiterForTableNames, resource.Name())
-	queryStr := fmt.Sprintf("INSERT OR IGNORE INTO %s (%s) VALUES (?, ?, ?)", tableName, fieldNamesStr)
+	queryStr := fmt.Sprintf("INSERT OR IGNORE INTO %s (%s) VALUES (%s)", tableName, fieldNamesStr, fieldValuePlaceHoldersStr)
 	_, err = app.txPtr.Exec(queryStr, fieldValues...)
 	if err != nil {
 		return err
