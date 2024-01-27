@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"path/filepath"
+	"strings"
 
 	"steve.care/network/applications"
 	core_applications "steve.care/network/applications/applications"
@@ -102,6 +103,8 @@ func (app *application) Init(name string) error {
 
 func (app *application) generateSchema(metaData []*tableMetaData, connections map[string][]string) (string, error) {
 	schema := ""
+	tokenFieldNamesList := []string{}
+	tokenFKNamesList := []string{}
 	for _, oneMetaData := range metaData {
 		tableName := oneMetaData.tableName
 		foreignKeysStringList := []string{}
@@ -133,11 +136,41 @@ func (app *application) generateSchema(metaData []*tableMetaData, connections ma
 			}
 		}
 
+		// token field and FK:
+		fieldName := fmt.Sprintf("%s %s,", tableName, "BLOB")
+		fkName := fmt.Sprintf("FOREIGN KEY(%s) REFERENCES %s(hash)", tableName, tableName)
+		tokenFKNamesList = append(tokenFKNamesList, fkName)
+		tokenFieldNamesList = append(tokenFieldNamesList, fieldName)
+
+		// drop and create tables:
 		dropTableStr := fmt.Sprintf("DROP TABLE IF EXISTS %s;", tableName)
 		createTableStr := fmt.Sprintf("CREATE TABLE %s (%s%s);", tableName, fieldsListString, foreignKeyString)
 		schema = fmt.Sprintf("%s\n\n%s\n%s", schema, dropTableStr, createTableStr)
 	}
 
+	dropTokenTable := "DROP TABLE IF EXISTS token;"
+	createTokenTable := fmt.Sprintf(
+		`CREATE TABLE token (
+			hash BLOB PRIMARY KEY,
+			%s
+			created_on TEXT,
+			%s
+		);
+	`,
+		strings.Join(tokenFieldNamesList, ""),
+		strings.Join(tokenFKNamesList, ","),
+	)
+
+	dropResourceTable := "DROP TABLE IF EXISTS resource;"
+	createResourceTable := `CREATE TABLE resource (
+			hash BLOB PRIMARY KEY,
+			token BLOB,
+			signature BLOB,
+			FOREIGN KEY(token) REFERENCES token(hash)
+		);
+	`
+
+	schema = fmt.Sprintf("%s\n\n%s\n%s\n\n%s\n%s", schema, dropTokenTable, createTokenTable, dropResourceTable, createResourceTable)
 	return schema, nil
 }
 
