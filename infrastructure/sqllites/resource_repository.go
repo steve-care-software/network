@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"steve.care/network/domain/accounts/signers"
@@ -14,6 +15,10 @@ import (
 	token_dashboards "steve.care/network/domain/programs/blocks/transactions/executions/actions/resources/tokens/dashboards"
 	commands_layers "steve.care/network/domain/programs/logics/libraries/layers"
 	"steve.care/network/domain/schemas"
+	"steve.care/network/domain/schemas/groups"
+	schema_resources "steve.care/network/domain/schemas/groups/resources"
+	field_types "steve.care/network/domain/schemas/groups/resources/fields/types"
+	schema_resources_methods "steve.care/network/domain/schemas/groups/resources/methods"
 )
 
 type resourceRepository struct {
@@ -24,6 +29,7 @@ type resourceRepository struct {
 	dashboardBuilder token_dashboards.Builder
 	viewportBuilder  viewports.Builder
 	cmdLayerBuilder  commands_layers.LayerBuilder
+	builders         map[string]interface{}
 	schema           schemas.Schema
 	dbPtr            *sql.DB
 }
@@ -36,6 +42,7 @@ func createResourceRepository(
 	dashboardBuilder token_dashboards.Builder,
 	viewportBuilder viewports.Builder,
 	cmdLayerBuilder commands_layers.LayerBuilder,
+	builders map[string]interface{},
 	schema schemas.Schema,
 	dbPtr *sql.DB,
 ) resources.Repository {
@@ -47,6 +54,7 @@ func createResourceRepository(
 		dashboardBuilder: dashboardBuilder,
 		viewportBuilder:  viewportBuilder,
 		cmdLayerBuilder:  cmdLayerBuilder,
+		builders:         builders,
 		schema:           schema,
 		dbPtr:            dbPtr,
 	}
@@ -104,7 +112,7 @@ func (app *resourceRepository) RetrieveByHash(hash hash.Hash) (resources.Resourc
 		return nil, err
 	}
 
-	token, err := app.retrieveTokenByHash(*pTokenHash)
+	token, err := app.retrieveTokenByHash(*pTokenHash, app.schema.Group())
 	if err != nil {
 		return nil, err
 	}
@@ -120,21 +128,30 @@ func (app *resourceRepository) RetrieveByHash(hash hash.Hash) (resources.Resourc
 		Now()
 }
 
-func (app *resourceRepository) retrieveTokenByHash(hash hash.Hash) (tokens.Token, error) {
-	rows, err := app.dbPtr.Query("SELECT resources_dashboards_viewport, created_on FROM token WHERE hash = ?", hash.Bytes())
+func (app *resourceRepository) retrieveTokenByHash(
+	hash hash.Hash,
+	group groups.Group,
+) (tokens.Token, error) {
+	fieldNames, values, err := app.fetchRetrievalFields(group)
+	if err != nil {
+		return nil, err
+	}
+
+	query := fmt.Sprintf("SELECT %s, created_on FROM token WHERE hash = ?", strings.Join(fieldNames, ","))
+	rows, err := app.dbPtr.Query(query, hash.Bytes())
 	if err != nil {
 		return nil, err
 	}
 
 	defer rows.Close()
 	if !rows.Next() {
-		str := fmt.Sprintf("the given hash (%s) do NOT match a Layer instance", hash.String())
+		str := fmt.Sprintf("the given hash (%s) do NOT match a Token instance", hash.String())
 		return nil, errors.New(str)
 	}
 
-	var retCreatedOn string
-	var retDashboardViewport []byte
-	err = rows.Scan(&retDashboardViewport, &retCreatedOn)
+	var createdOnString string
+	values = append(values, &createdOnString)
+	err = rows.Scan(values...)
 	if err != nil {
 		return nil, err
 	}
@@ -144,47 +161,233 @@ func (app *resourceRepository) retrieveTokenByHash(hash hash.Hash) (tokens.Token
 		return nil, err
 	}
 
-	pDashboardViewportHash, err := app.hashAdapter.FromBytes(retDashboardViewport)
+	createdOn, err := time.Parse(timeLayout, createdOnString)
 	if err != nil {
 		return nil, err
 	}
 
-	dashboardViewport, err := app.retrieveDashboardViewportByHash(*pDashboardViewportHash)
-	if err != nil {
-		return nil, err
+	for idx, oneFieldName := range fieldNames {
+		value := values[idx]
+		if value == nil {
+			continue
+		}
+
+		keynames := []string{}
+		parentName := ""
+		var resourceSchema schema_resources.Resource
+		currentGroup := group
+		nextElements := []groups.Element{}
+		resourceMethods := []schema_resources_methods.Methods{}
+		names := strings.Split(oneFieldName, groupNameDelimiterForTableNames)
+		for _, oneName := range names {
+			if len(nextElements) <= 0 {
+				if currentGroup.Name() == oneName {
+
+					// reuse this
+					nextElements = []groups.Element{}
+					resourceMethods = append(resourceMethods, currentGroup.Methods().Builder())
+					chainList := currentGroup.Chains().List()
+					for _, oneChain := range chainList {
+						nextElements = append(nextElements, oneChain.Element())
+					}
+
+					parentName = oneName
+					keynames = append(keynames, parentName)
+					continue
+				}
+
+				// error
+			}
+
+			for _, oneElement := range nextElements {
+				if oneElement.IsGroup() {
+					group := oneElement.Group()
+					if group.Name() == oneName {
+						currentGroup = group
+
+						// reuse this
+						nextElements = []groups.Element{}
+						resourceMethods = append(resourceMethods, currentGroup.Methods().Builder())
+						chainList := currentGroup.Chains().List()
+						for _, oneChain := range chainList {
+							nextElements = append(nextElements, oneChain.Element())
+						}
+
+						parentName = fmt.Sprintf("%s%s%s", parentName, groupNameDelimiterForTableNames, oneName)
+						keynames = append(keynames, parentName)
+						continue
+					}
+
+					// error
+				}
+
+				if oneElement.IsResource() {
+					resource := oneElement.Resource()
+					if resource.Name() == oneName {
+						resourceSchema = resource
+						break
+					}
+				}
+			}
+
+		}
+
+		if resourceSchema == nil {
+			// error
+		}
+
+		if pValue, ok := value.(*[]byte); ok {
+			pHash, err := app.hashAdapter.FromBytes(*pValue)
+			if err != nil {
+				return nil, err
+			}
+
+			sections := strings.Split(oneFieldName, groupNameDelimiterForTableNames)
+			groupNames := sections[0 : len(sections)-1]
+			parentName := strings.Join(groupNames, groupNameDelimiterForTableNames)
+			retIns, err := app.retrieveResourceValue(
+				resourceSchema,
+				*pHash,
+				parentName,
+			)
+
+			if err != nil {
+				return nil, err
+			}
+
+			length := len(resourceMethods)
+			for idx := range resourceMethods {
+				index := length - idx - 1
+				keyname := keynames[index]
+				resourceMethod := resourceMethods[index]
+				if builderIns, ok := app.builders[keyname]; ok {
+					// initialize the builder:
+					errorString := ""
+					initializeName := resourceMethod.Initialize()
+					retValue, err := callMethodsOnInstance(
+						[]string{
+							initializeName,
+						},
+						builderIns,
+						&errorString,
+					)
+					if err != nil {
+						return nil, err
+					}
+
+					if errorString != "" {
+						return nil, errors.New(errorString)
+					}
+
+					// add the value to the builder:
+					errorString = ""
+					fieldName := resourceMethod.Field().Builder()
+					retValue, err = callMethodOnInstanceWithParams(
+						fieldName,
+						retValue,
+						&errorString,
+						[]interface{}{
+							retIns,
+						},
+					)
+					if err != nil {
+						str := fmt.Sprintf("there was an error while adding a value to the builder (keyname: %s), error: %s", keyname, err.Error())
+						return nil, errors.New(str)
+					}
+
+					if errorString != "" {
+						return nil, errors.New(errorString)
+					}
+
+					// trigger the builder:
+					errorString = ""
+					triggerName := resourceMethod.Trigger()
+					retValue, err = callMethodsOnInstance(
+						[]string{
+							triggerName,
+						},
+						retValue,
+						&errorString,
+					)
+					if err != nil {
+						return nil, err
+					}
+
+					if errorString != "" {
+						return nil, errors.New(errorString)
+					}
+
+					// change the instance to compose:
+					retIns = retValue
+					continue
+				}
+
+				// error
+			}
+
+			return app.tokenBuilder.Create().
+				CreatedOn(createdOn).
+				WithContent(retIns.(tokens.Content)).
+				Now()
+
+		}
+
+		// error
 	}
 
-	dashboard, err := app.dashboardBuilder.Create().WithViewport(dashboardViewport).Now()
-	if err != nil {
-		return nil, err
-	}
-
-	tm, err := time.Parse(timeLayout, retCreatedOn)
-	if err != nil {
-		return nil, err
-	}
-
-	return app.tokenBuilder.Create().
-		WithDashboard(dashboard).
-		CreatedOn(tm).
-		Now()
+	return nil, nil
 }
 
-func (app *resourceRepository) retrieveDashboardViewportByHash(hash hash.Hash) (viewports.Viewport, error) {
-	rows, err := app.dbPtr.Query("SELECT row, height FROM resources_dashboards_viewport WHERE hash = ?", hash.Bytes())
+func (app *resourceRepository) fetchRetrievalFields(
+	group groups.Group,
+) ([]string, []interface{}, error) {
+	var value []byte
+	return []string{
+			"resources_dashboards_viewport",
+		},
+		[]interface{}{
+			&value,
+		}, nil
+}
+
+func (app *resourceRepository) retrieveResourceValue(
+	resource schema_resources.Resource,
+	hash hash.Hash,
+	parentName string,
+) (interface{}, error) {
+	name := resource.Name()
+	tableName := name
+	if parentName != "" {
+		tableName = fmt.Sprintf("%s%s%s", parentName, groupNameDelimiterForTableNames, name)
+	}
+
+	propertyValues := []interface{}{}
+	propertyNames := []string{}
+	fieldsList := resource.Fields().List()
+	for _, oneField := range fieldsList {
+		typ := oneField.Type()
+		propertyValue := app.generateValueFromType(typ)
+		propertyValues = append(propertyValues, &propertyValue)
+
+		propertyName := oneField.Name()
+		propertyNames = append(propertyNames, propertyName)
+
+	}
+
+	propertyNamesStr := strings.Join(propertyNames, ",")
+	queryStr := fmt.Sprintf("SELECT %s FROM %s WHERE hash = ?", propertyNamesStr, tableName)
+	rows, err := app.dbPtr.Query(queryStr, hash.Bytes())
 	if err != nil {
 		return nil, err
 	}
 
 	defer rows.Close()
 	if !rows.Next() {
-		str := fmt.Sprintf("the given hash (%s) do NOT match a Layer instance", hash.String())
+		str := fmt.Sprintf("the given hash (%s) do NOT match a %s instance", tableName, hash.String())
 		return nil, errors.New(str)
 	}
 
-	var row uint
-	var height uint
-	err = rows.Scan(&row, &height)
+	err = rows.Scan(propertyValues...)
 	if err != nil {
 		return nil, err
 	}
@@ -194,8 +397,104 @@ func (app *resourceRepository) retrieveDashboardViewportByHash(hash hash.Hash) (
 		return nil, err
 	}
 
-	return app.viewportBuilder.Create().
-		WithRow(row).
-		WithHeight(height).
-		Now()
+	resourceBuilderMethods := resource.Builder()
+	if builderIns, ok := app.builders[tableName]; ok {
+		// initialize the builder:
+		errorString := ""
+		initializeName := resourceBuilderMethods.Initialize()
+		retValue, err := callMethodsOnInstance(
+			[]string{
+				initializeName,
+			},
+			builderIns,
+			&errorString,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		if errorString != "" {
+			return nil, errors.New(errorString)
+		}
+
+		// set the builder instance:
+		builderIns = retValue
+
+		// pass the fields:
+		for idx, oneField := range fieldsList {
+			errorString := ""
+			fieldMethod := oneField.Methods().Builder()
+			pInterface := propertyValues[idx].(*interface{})
+			retValue, err := callMethodOnInstanceWithParams(
+				fieldMethod,
+				builderIns,
+				&errorString,
+				[]interface{}{
+					*pInterface,
+				},
+			)
+			if err != nil {
+				return nil, err
+			}
+
+			if errorString != "" {
+				return nil, errors.New(errorString)
+			}
+
+			// set the builder instance:
+			builderIns = retValue
+		}
+
+		// trigger:
+		errorString = ""
+		triggerName := resourceBuilderMethods.Trigger()
+		retValue, err = callMethodsOnInstance(
+			[]string{
+				triggerName,
+			},
+			builderIns,
+			&errorString,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		if errorString != "" {
+			return nil, errors.New(errorString)
+		}
+
+		return retValue, nil
+	}
+
+	str := fmt.Sprintf("there is no resource builder for the provided tableName: %s", tableName)
+	return nil, errors.New(str)
+}
+
+func (app *resourceRepository) generateValueFromType(typ field_types.Type) interface{} {
+	if typ.IsKind() {
+		pKind := typ.Kind()
+		return app.generateValue(*pKind)
+	}
+
+	return app.generateValue(field_types.KindBytes)
+}
+
+func (app *resourceRepository) generateValue(kind uint8) interface{} {
+	if kind == field_types.KindInteger {
+		var value int
+		return value
+	}
+
+	if kind == field_types.KindFloat {
+		var value float64
+		return value
+	}
+
+	if kind == field_types.KindString {
+		var value string
+		return value
+	}
+
+	var value []byte
+	return value
 }

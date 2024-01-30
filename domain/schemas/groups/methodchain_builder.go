@@ -1,17 +1,19 @@
 package groups
 
-import "errors"
+import (
+	"errors"
+)
 
 type methodChainBuilder struct {
 	condition string
-	value     string
+	retriever []string
 	element   Element
 }
 
 func createMethodChainBuilder() MethodChainBuilder {
 	out := methodChainBuilder{
 		condition: "",
-		value:     "",
+		retriever: nil,
 		element:   nil,
 	}
 
@@ -29,9 +31,9 @@ func (app *methodChainBuilder) WithCondition(condition string) MethodChainBuilde
 	return app
 }
 
-// WithValue adds a value to the builder
-func (app *methodChainBuilder) WithValue(value string) MethodChainBuilder {
-	app.value = value
+// WithRetriever adds a retriever to the builder
+func (app *methodChainBuilder) WithRetriever(retriever []string) MethodChainBuilder {
+	app.retriever = retriever
 	return app
 }
 
@@ -47,17 +49,21 @@ func (app *methodChainBuilder) Now() (MethodChain, error) {
 		return nil, errors.New("the condition is mandatory in order to build a MethodChain instance")
 	}
 
-	if app.value == "" {
-		return nil, errors.New("the value is mandatory in order to build a MethodChain instance")
-	}
-
 	if app.element == nil {
 		return nil, errors.New("the element is mandatory in order to build a MethodChain instance")
 	}
 
+	if app.retriever != nil && len(app.retriever) <= 0 {
+		app.retriever = nil
+	}
+
+	if app.retriever == nil {
+		return nil, errors.New("the retriever is mandatory in order to build a MethodChain instance")
+	}
+
 	return createMethodChain(
 		app.condition,
-		app.value,
+		app.retriever,
 		app.element,
 	), nil
 }

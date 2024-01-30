@@ -379,7 +379,22 @@ func TestToken_withoutCreationTime_returnsError(t *testing.T) {
 		),
 	)
 
-	_, err := NewBuilder().Create().WithDashboard(dashboard).Now()
+	contentIns, err := NewContentBuilder().Create().WithDashboard(dashboard).Now()
+	if err != nil {
+		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+		return
+	}
+
+	_, err = NewBuilder().Create().WithContent(contentIns).Now()
+	if err == nil {
+		t.Errorf("the error was expected to be valid, nil returned")
+		return
+	}
+}
+
+func TestToken_withoutContent_returnsError(t *testing.T) {
+	createdOn := time.Now().UTC()
+	_, err := NewBuilder().Create().CreatedOn(createdOn).Now()
 	if err == nil {
 		t.Errorf("the error was expected to be valid, nil returned")
 		return

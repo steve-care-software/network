@@ -12,8 +12,13 @@ import (
 
 // NewTokenWithLayerForTests creates a new token with layer for tests
 func NewTokenWithLayerForTests(input layers.Layer) Token {
+	contentIns, err := NewContentBuilder().Create().WithLayer(input).Now()
+	if err != nil {
+		panic(err)
+	}
+
 	createdOn := time.Now().UTC()
-	ins, err := NewBuilder().Create().WithLayer(input).CreatedOn(createdOn).Now()
+	ins, err := NewBuilder().Create().WithContent(contentIns).CreatedOn(createdOn).Now()
 	if err != nil {
 		panic(err)
 	}
@@ -23,8 +28,13 @@ func NewTokenWithLayerForTests(input layers.Layer) Token {
 
 // NewTokenWithLinkForTests creates a new token with link for tests
 func NewTokenWithLinkForTests(input links.Link) Token {
+	contentIns, err := NewContentBuilder().Create().WithLink(input).Now()
+	if err != nil {
+		panic(err)
+	}
+
 	createdOn := time.Now().UTC()
-	ins, err := NewBuilder().Create().WithLink(input).CreatedOn(createdOn).Now()
+	ins, err := NewBuilder().Create().WithContent(contentIns).CreatedOn(createdOn).Now()
 	if err != nil {
 		panic(err)
 	}
@@ -34,8 +44,13 @@ func NewTokenWithLinkForTests(input links.Link) Token {
 
 // NewTokenWithReceiptForTests creates a new token with receipt for tests
 func NewTokenWithReceiptForTests(input receipts.Receipt) Token {
+	contentIns, err := NewContentBuilder().Create().WithReceipt(input).Now()
+	if err != nil {
+		panic(err)
+	}
+
 	createdOn := time.Now().UTC()
-	ins, err := NewBuilder().Create().WithReceipt(input).CreatedOn(createdOn).Now()
+	ins, err := NewBuilder().Create().WithContent(contentIns).CreatedOn(createdOn).Now()
 	if err != nil {
 		panic(err)
 	}
@@ -45,8 +60,13 @@ func NewTokenWithReceiptForTests(input receipts.Receipt) Token {
 
 // NewTokenWithQueryForTests creates a new token with query for tests
 func NewTokenWithQueryForTests(input queries.Query) Token {
+	contentIns, err := NewContentBuilder().Create().WithQuery(input).Now()
+	if err != nil {
+		panic(err)
+	}
+
 	createdOn := time.Now().UTC()
-	ins, err := NewBuilder().Create().WithQuery(input).CreatedOn(createdOn).Now()
+	ins, err := NewBuilder().Create().WithContent(contentIns).CreatedOn(createdOn).Now()
 	if err != nil {
 		panic(err)
 	}
@@ -56,8 +76,13 @@ func NewTokenWithQueryForTests(input queries.Query) Token {
 
 // NewTokenWithDashboardForTests creates a new token with dashboard for tests
 func NewTokenWithDashboardForTests(input dashboards.Dashboard) Token {
+	contentIns, err := NewContentBuilder().Create().WithDashboard(input).Now()
+	if err != nil {
+		panic(err)
+	}
+
 	createdOn := time.Now().UTC()
-	ins, err := NewBuilder().Create().WithDashboard(input).CreatedOn(createdOn).Now()
+	ins, err := NewBuilder().Create().WithContent(contentIns).CreatedOn(createdOn).Now()
 	if err != nil {
 		panic(err)
 	}

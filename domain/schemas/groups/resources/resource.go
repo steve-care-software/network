@@ -1,11 +1,15 @@
 package resources
 
-import "steve.care/network/domain/schemas/groups/resources/fields"
+import (
+	"steve.care/network/domain/schemas/groups/resources/fields"
+	"steve.care/network/domain/schemas/groups/resources/methods"
+)
 
 type resource struct {
 	name        string
 	key         fields.Field
 	fields      fields.Fields
+	builder     methods.Methods
 	connections Connections
 }
 
@@ -13,29 +17,33 @@ func createResource(
 	name string,
 	key fields.Field,
 	fields fields.Fields,
+	builder methods.Methods,
 ) Resource {
-	return createResourceInternally(name, key, fields, nil)
+	return createResourceInternally(name, key, fields, builder, nil)
 }
 
 func createResourceWithConnections(
 	name string,
 	key fields.Field,
 	fields fields.Fields,
+	builder methods.Methods,
 	connections Connections,
 ) Resource {
-	return createResourceInternally(name, key, fields, connections)
+	return createResourceInternally(name, key, fields, builder, connections)
 }
 
 func createResourceInternally(
 	name string,
 	key fields.Field,
 	fields fields.Fields,
+	builder methods.Methods,
 	connections Connections,
 ) Resource {
 	out := resource{
 		name:        name,
 		key:         key,
 		fields:      fields,
+		builder:     builder,
 		connections: connections,
 	}
 
@@ -55,6 +63,11 @@ func (obj *resource) Key() fields.Field {
 // Fields returns the fields
 func (obj *resource) Fields() fields.Fields {
 	return obj.fields
+}
+
+// Builder returns the builder methods
+func (obj *resource) Builder() methods.Methods {
+	return obj.builder
 }
 
 // HasConnections returns true if there is connections, false otherwise

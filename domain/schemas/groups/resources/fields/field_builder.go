@@ -2,12 +2,15 @@ package fields
 
 import (
 	"errors"
+
+	"steve.care/network/domain/schemas/groups/resources/fields/methods"
+	"steve.care/network/domain/schemas/groups/resources/fields/types"
 )
 
 type fieldBuilder struct {
 	name     string
-	methods  []string
-	pKind    *uint8
+	methods  methods.Methods
+	typ      types.Type
 	canBeNil bool
 }
 
@@ -15,7 +18,7 @@ func createFieldBuilder() FieldBuilder {
 	out := fieldBuilder{
 		name:     "",
 		methods:  nil,
-		pKind:    nil,
+		typ:      nil,
 		canBeNil: false,
 	}
 
@@ -34,14 +37,14 @@ func (app *fieldBuilder) WithName(name string) FieldBuilder {
 }
 
 // WithMethods add methods to the builder
-func (app *fieldBuilder) WithMethods(methods []string) FieldBuilder {
+func (app *fieldBuilder) WithMethods(methods methods.Methods) FieldBuilder {
 	app.methods = methods
 	return app
 }
 
-// WithKind adds a kind to the builder
-func (app *fieldBuilder) WithKind(kind uint8) FieldBuilder {
-	app.pKind = &kind
+// WithType adds a type to the builder
+func (app *fieldBuilder) WithType(typ types.Type) FieldBuilder {
+	app.typ = typ
 	return app
 }
 
@@ -57,22 +60,18 @@ func (app *fieldBuilder) Now() (Field, error) {
 		return nil, errors.New("the name is mandatory in order to build a Field instance")
 	}
 
-	if app.methods != nil && len(app.methods) <= 0 {
-		app.methods = nil
-	}
-
 	if app.methods == nil {
 		return nil, errors.New("the methods is mandatory in order to build a Field instance")
 	}
 
-	if app.pKind == nil {
-		return nil, errors.New("the kind is mandatory in order to build a Field instance")
+	if app.typ == nil {
+		return nil, errors.New("the type is mandatory in order to build a Field instance")
 	}
 
 	return createField(
 		app.name,
 		app.methods,
-		*app.pKind,
+		app.typ,
 		app.canBeNil,
 	), nil
 }

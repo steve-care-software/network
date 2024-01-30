@@ -1,7 +1,10 @@
 package sqllites
 
 import (
+	"errors"
 	"fmt"
+	"reflect"
+	"strings"
 
 	"steve.care/network/domain/queries/conditions"
 )
@@ -14,6 +17,92 @@ func getSchema() string {
 			cipher BLOB
 		);
 	`
+}
+
+func callMethodsOnInstance(
+	methods []string,
+	pInstance interface{},
+	pErrorStr *string,
+) (interface{}, error) {
+	defer func() {
+		if r := recover(); r != nil {
+			value := fmt.Sprint(r)
+			*pErrorStr = value
+		}
+	}()
+
+	value := reflect.ValueOf(pInstance)
+	for _, oneMethod := range methods {
+		retValues := value.MethodByName(oneMethod).Call([]reflect.Value{})
+		if len(retValues) < 1 {
+			str := fmt.Sprintf("at least %d values were returned, %d were expected, when calling the method (name %s) in the method chain (%s)", len(retValues), 1, oneMethod, strings.Join(methods, ","))
+			return nil, errors.New(str)
+		}
+
+		value = retValues[0]
+	}
+
+	return value.Interface(), nil
+}
+
+func callMethodOnInstanceWithParams(
+	method string,
+	pInstance interface{},
+	pErrorStr *string,
+	params []interface{},
+) (interface{}, error) {
+	defer func() {
+		if r := recover(); r != nil {
+			value := fmt.Sprint(r)
+			*pErrorStr = value
+		}
+	}()
+
+	value := reflect.ValueOf(pInstance)
+	methodName := value.MethodByName(method)
+	if !methodName.IsValid() {
+		str := fmt.Sprintf("there is no method (name: %s) on the provided instance", method)
+		return nil, errors.New(str)
+	}
+
+	methodAmountArguments := methodName.Type().NumIn()
+	if methodAmountArguments != len(params) {
+		str := fmt.Sprintf("the methodName (%s) was expected to contain %d arguments, but it contains %d arguments in reality", method, len(params), methodAmountArguments)
+		return nil, errors.New(str)
+	}
+
+	methodAmountReturns := methodName.Type().NumIn()
+	if methodName.Type().NumOut() != 1 {
+		str := fmt.Sprintf("the methodName (%s) was expected to contain %d retrun values, but it contains %d arguments in reality", method, 1, methodAmountReturns)
+		return nil, errors.New(str)
+	}
+
+	methodParams := []reflect.Value{}
+	if params != nil && len(params) > 0 {
+		for _, oneParam := range params {
+
+			expectedType := methodName.Type().In(0)
+			value := reflect.ValueOf(oneParam)
+			currentType := value.Type()
+
+			// if the types are different, try to conver it:
+			if expectedType.Kind() != currentType.Kind() {
+				if value.CanConvert(expectedType) {
+					value = value.Convert(expectedType)
+				}
+			}
+
+			methodParams = append(methodParams, value)
+		}
+	}
+
+	retValues := value.MethodByName(method).Call(methodParams)
+	if len(retValues) < 1 {
+		str := fmt.Sprintf("%d  values were returned, at least %d were expected, when calling the method (name %s)", len(retValues), 1, method)
+		return nil, errors.New(str)
+	}
+
+	return retValues[0].Interface(), nil
 }
 
 func processCondition(condition conditions.Condition, arguments []interface{}) (string, []interface{}) {

@@ -16,8 +16,13 @@ import (
 	commands_layers "steve.care/network/domain/programs/logics/libraries/layers"
 	"steve.care/network/domain/schemas"
 	"steve.care/network/domain/schemas/groups"
+	group_methods "steve.care/network/domain/schemas/groups/methods"
 	schema_resources "steve.care/network/domain/schemas/groups/resources"
 	"steve.care/network/domain/schemas/groups/resources/fields"
+	field_methods "steve.care/network/domain/schemas/groups/resources/fields/methods"
+	field_types "steve.care/network/domain/schemas/groups/resources/fields/types"
+	"steve.care/network/domain/schemas/groups/resources/fields/types/dependencies"
+	"steve.care/network/domain/schemas/groups/resources/methods"
 )
 
 const notActiveErrorMsg = "the application NEVER began a transactional state, therefore that method cannot be executed"
@@ -94,6 +99,12 @@ func NewResourceRepository(
 	dashboardBuilder := token_dashboards.NewBuilder()
 	viewportBuilder := viewports.NewBuilder()
 	cmdLayerBuilder := commands_layers.NewLayerBuilder()
+	builders := map[string]interface{}{
+		"resources_dashboards_viewport": viewports.NewBuilder(),
+		"resources_dashboards":          token_dashboards.NewBuilder(),
+		"resources":                     tokens.NewContentBuilder(),
+	}
+
 	return createResourceRepository(
 		hashAdapter,
 		signatureAdapter,
@@ -102,6 +113,7 @@ func NewResourceRepository(
 		dashboardBuilder,
 		viewportBuilder,
 		cmdLayerBuilder,
+		builders,
 		schema,
 		dbPtr,
 	)
@@ -129,25 +141,35 @@ func NewSchemaFactory(
 	groupBuilder := groups.NewBuilder()
 	methodChainsBuilder := groups.NewMethodChainsBuilder()
 	methodChainBuilder := groups.NewMethodChainBuilder()
+	methodBuilder := group_methods.NewBuilder()
 	elementBuilder := groups.NewElementBuilder()
 	resourceBuilder := schema_resources.NewBuilder()
+	resourceMethodsBuilder := methods.NewBuilder()
 	connectionsBuilder := schema_resources.NewConnectionsBuilder()
 	connectionBuilder := schema_resources.NewConnectionBuilder()
 	pointerBuilder := schema_resources.NewPointerBuilder()
 	fieldsBuilder := fields.NewBuilder()
 	fieldBuilder := fields.NewFieldBuilder()
+	fieldMethodsBuilder := field_methods.NewBuilder()
+	fieldTypeBuilder := field_types.NewBuilder()
+	fieldDependencyBuilder := dependencies.NewBuilder()
 	return createSchemaFactory(
 		builder,
 		groupBuilder,
 		methodChainsBuilder,
 		methodChainBuilder,
+		methodBuilder,
 		elementBuilder,
 		resourceBuilder,
+		resourceMethodsBuilder,
 		connectionsBuilder,
 		connectionBuilder,
 		pointerBuilder,
 		fieldsBuilder,
 		fieldBuilder,
+		fieldMethodsBuilder,
+		fieldTypeBuilder,
+		fieldDependencyBuilder,
 		keyFieldName,
 		keyFieldMethodNames,
 	)

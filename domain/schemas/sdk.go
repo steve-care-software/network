@@ -1,6 +1,8 @@
 package schemas
 
-import "steve.care/network/domain/schemas/groups"
+import (
+	"steve.care/network/domain/schemas/groups"
+)
 
 // NewBuilder creates a new builder
 func NewBuilder() Builder {

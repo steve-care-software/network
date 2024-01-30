@@ -12,6 +12,7 @@ type resourceTokenAdapter struct {
 	receiptAdapter *resourceTokenReceiptAdapter
 	queryAdapter   *resourceTokenQueryAdapter
 	builder        tokens.Builder
+	contentBuilder tokens.ContentBuilder
 }
 
 func (app *resourceTokenAdapter) toStruct(ins tokens.Token) (*structs_tokens.Token, error) {
@@ -54,18 +55,15 @@ func (app *resourceTokenAdapter) toStruct(ins tokens.Token) (*structs_tokens.Tok
 }
 
 func (app *resourceTokenAdapter) toInstance(ins structs_tokens.Token) (tokens.Token, error) {
-	createdOn := ins.CreatedOn
 	content := ins.Content
-	builder := app.builder.Create().
-		CreatedOn(createdOn)
-
+	contentBuilder := app.contentBuilder.Create()
 	if content.Layer != nil {
 		layer, err := app.layerAdapter.toInstance(*content.Layer)
 		if err != nil {
 			return nil, err
 		}
 
-		builder.WithLayer(layer)
+		contentBuilder.WithLayer(layer)
 	}
 
 	if content.Link != nil {
@@ -74,7 +72,7 @@ func (app *resourceTokenAdapter) toInstance(ins structs_tokens.Token) (tokens.To
 			return nil, err
 		}
 
-		builder.WithLink(link)
+		contentBuilder.WithLink(link)
 	}
 
 	if content.Suite != nil {
@@ -83,7 +81,7 @@ func (app *resourceTokenAdapter) toInstance(ins structs_tokens.Token) (tokens.To
 			return nil, err
 		}
 
-		builder.WithSuite(suite)
+		contentBuilder.WithSuite(suite)
 	}
 
 	if content.Receipt != nil {
@@ -92,7 +90,7 @@ func (app *resourceTokenAdapter) toInstance(ins structs_tokens.Token) (tokens.To
 			return nil, err
 		}
 
-		builder.WithReceipt(receipt)
+		contentBuilder.WithReceipt(receipt)
 	}
 
 	if content.Query != nil {
@@ -101,8 +99,16 @@ func (app *resourceTokenAdapter) toInstance(ins structs_tokens.Token) (tokens.To
 			return nil, err
 		}
 
-		builder.WithQuery(query)
+		contentBuilder.WithQuery(query)
 	}
 
-	return builder.Now()
+	contentIns, err := contentBuilder.Now()
+	if err != nil {
+		return nil, err
+	}
+
+	return app.builder.Create().
+		CreatedOn(ins.CreatedOn).
+		WithContent(contentIns).
+		Now()
 }

@@ -2,6 +2,7 @@ package resources
 
 import (
 	"steve.care/network/domain/schemas/groups/resources/fields"
+	"steve.care/network/domain/schemas/groups/resources/methods"
 )
 
 // NewBuilder creates a new resources builder
@@ -30,6 +31,7 @@ type Builder interface {
 	WithName(name string) Builder
 	WithKey(key fields.Field) Builder
 	WithFields(fields fields.Fields) Builder
+	WithBuilder(builder methods.Methods) Builder
 	WithConnections(connections Connections) Builder
 	Now() (Resource, error)
 }
@@ -39,6 +41,7 @@ type Resource interface {
 	Name() string
 	Key() fields.Field
 	Fields() fields.Fields
+	Builder() methods.Methods
 	HasConnections() bool
 	Connections() Connections
 }

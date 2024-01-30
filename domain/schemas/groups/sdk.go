@@ -1,6 +1,9 @@
 package groups
 
-import "steve.care/network/domain/schemas/groups/resources"
+import (
+	"steve.care/network/domain/schemas/groups/methods"
+	"steve.care/network/domain/schemas/groups/resources"
+)
 
 // NewBuilder creates a new group builder
 func NewBuilder() Builder {
@@ -27,6 +30,7 @@ type Builder interface {
 	Create() Builder
 	WithName(name string) Builder
 	WithChains(chains MethodChains) Builder
+	WithMethods(methods methods.Methods) Builder
 	Now() (Group, error)
 }
 
@@ -34,6 +38,7 @@ type Builder interface {
 type Group interface {
 	Name() string
 	Chains() MethodChains
+	Methods() methods.Methods
 }
 
 // MethodChainsBuilder represents method chains builder
@@ -52,7 +57,7 @@ type MethodChains interface {
 type MethodChainBuilder interface {
 	Create() MethodChainBuilder
 	WithCondition(condition string) MethodChainBuilder
-	WithValue(value string) MethodChainBuilder
+	WithRetriever(retriever []string) MethodChainBuilder
 	WithElement(element Element) MethodChainBuilder
 	Now() (MethodChain, error)
 }
@@ -60,7 +65,7 @@ type MethodChainBuilder interface {
 // MethodChain represents a method chain
 type MethodChain interface {
 	Condition() string
-	Value() string
+	Retriever() []string
 	Element() Element
 }
 

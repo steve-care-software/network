@@ -115,9 +115,10 @@ func (app *resourceService) insertChain(
 	chain schema_groups.MethodChain,
 	parentName string,
 ) (*hash.Hash, string, bool, error) {
+
 	errorString := ""
 	conditionMethodName := chain.Condition()
-	retValue, err := app.callMethodsOnInstance([]string{
+	retValue, err := callMethodsOnInstance([]string{
 		conditionMethodName,
 	}, ins, &errorString)
 	if err != nil {
@@ -136,16 +137,14 @@ func (app *resourceService) insertChain(
 		}
 
 		errorString := ""
-		valueMethodName := chain.Value()
-		retValue, err := app.callMethodsOnInstance([]string{
-			valueMethodName,
-		}, ins, &errorString)
+		retrieverMethodNames := chain.Retriever()
+		retValue, err := callMethodsOnInstance(retrieverMethodNames, ins, &errorString)
 		if err != nil {
 			return nil, "", false, err
 		}
 
 		if errorString != "" {
-			str := fmt.Sprintf("there was an error while calling a method chain's value method (name: %s) on a reference instance (type: %s), the error was: %s", valueMethodName, typeName, errorString)
+			str := fmt.Sprintf("there was an error while calling a method chain's value method (chain: %s) on a reference instance (type: %s), the error was: %s", strings.Join(retrieverMethodNames, ","), typeName, errorString)
 			return nil, "", false, errors.New(str)
 		}
 
@@ -187,15 +186,15 @@ func (app *resourceService) insertResource(
 	}
 
 	errorString := ""
-	keyMethodNames := key.Methods()
+	keyMethods := key.Methods()
 	typeName := reflect.TypeOf(&ins).Elem().Name()
-	retPkValue, err := app.callMethodsOnInstance(keyMethodNames, ins, &errorString)
+	retPkValue, err := callMethodsOnInstance(keyMethods.Retriever(), ins, &errorString)
 	if err != nil {
 		return nil, "", err
 	}
 
 	if errorString != "" {
-		str := fmt.Sprintf("there was an error while calling a field key method (names: %s) on a reference instance (type: %s), the error was: %s", strings.Join(keyMethodNames, ","), typeName, errorString)
+		str := fmt.Sprintf("there was an error while calling a field key method (names: %s) on a reference instance (type: %s), the error was: %s", strings.Join(keyMethods.Retriever(), ","), typeName, errorString)
 		return nil, "", errors.New(str)
 	}
 
@@ -210,14 +209,14 @@ func (app *resourceService) insertResource(
 	fieldsList := resource.Fields().List()
 	for _, oneField := range fieldsList {
 		errorString := ""
-		methodNames := oneField.Methods()
-		retValue, err := app.callMethodsOnInstance(methodNames, ins, &errorString)
+		methods := oneField.Methods()
+		retValue, err := callMethodsOnInstance(methods.Retriever(), ins, &errorString)
 		if err != nil {
 			return nil, "", err
 		}
 
 		if errorString != "" {
-			str := fmt.Sprintf("there was an error while calling a field method (names: %s) on a reference instance (type: %s), the error was: %s", strings.Join(methodNames, ","), typeName, errorString)
+			str := fmt.Sprintf("there was an error while calling a field method (names: %s) on a reference instance (type: %s), the error was: %s", strings.Join(methods.Retriever(), ","), typeName, errorString)
 			return nil, "", errors.New(str)
 		}
 
@@ -244,34 +243,8 @@ func (app *resourceService) insertResource(
 		return pHash, tableName, nil
 	}
 
-	str := fmt.Sprintf("the returned value of the field key method (names: %s) on a reference instance (type: %s), was expected to contain []byte, but it was NOT", strings.Join(keyMethodNames, ","), typeName)
+	str := fmt.Sprintf("the returned value of the field key method (names: %s) on a reference instance (type: %s), was expected to contain []byte, but it was NOT", strings.Join(keyMethods.Retriever(), ","), typeName)
 	return nil, "", errors.New(str)
-}
-
-func (app *resourceService) callMethodsOnInstance(
-	methods []string,
-	pInstance interface{},
-	pErrorStr *string,
-) (interface{}, error) {
-	defer func() {
-		if r := recover(); r != nil {
-			value := fmt.Sprint(r)
-			*pErrorStr = value
-		}
-	}()
-
-	value := reflect.ValueOf(pInstance)
-	for _, oneMethod := range methods {
-		retValues := value.MethodByName(oneMethod).Call([]reflect.Value{})
-		if len(retValues) != 1 {
-			str := fmt.Sprintf("%d  values were returned, %d were expected, when calling the metod (name %s) in the method chain (%s)", len(retValues), 1, oneMethod, strings.Join(methods, ","))
-			return nil, errors.New(str)
-		}
-
-		value = retValues[0]
-	}
-
-	return value.Interface(), nil
 }
 
 // Delete deletes a resource

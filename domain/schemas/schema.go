@@ -1,6 +1,8 @@
 package schemas
 
-import "steve.care/network/domain/schemas/groups"
+import (
+	"steve.care/network/domain/schemas/groups"
+)
 
 type schema struct {
 	version  uint

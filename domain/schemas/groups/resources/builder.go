@@ -4,12 +4,14 @@ import (
 	"errors"
 
 	"steve.care/network/domain/schemas/groups/resources/fields"
+	"steve.care/network/domain/schemas/groups/resources/methods"
 )
 
 type builder struct {
 	name        string
 	key         fields.Field
 	fields      fields.Fields
+	builder     methods.Methods
 	connections Connections
 }
 
@@ -18,6 +20,7 @@ func createBuilder() Builder {
 		name:        "",
 		key:         nil,
 		fields:      nil,
+		builder:     nil,
 		connections: nil,
 	}
 
@@ -47,6 +50,12 @@ func (app *builder) WithFields(fields fields.Fields) Builder {
 	return app
 }
 
+// WithBuilder adds a builder methods to the builder
+func (app *builder) WithBuilder(builder methods.Methods) Builder {
+	app.builder = builder
+	return app
+}
+
 // WithConnections adds a connections to the builder
 func (app *builder) WithConnections(connections Connections) Builder {
 	app.connections = connections
@@ -67,9 +76,13 @@ func (app *builder) Now() (Resource, error) {
 		return nil, errors.New("the fields is mandatory in order to build a Resource instance")
 	}
 
-	if app.connections != nil {
-		return createResourceWithConnections(app.name, app.key, app.fields, app.connections), nil
+	if app.builder == nil {
+		return nil, errors.New("the builder methods is mandatory in order to build a Resource instance")
 	}
 
-	return createResource(app.name, app.key, app.fields), nil
+	if app.connections != nil {
+		return createResourceWithConnections(app.name, app.key, app.fields, app.builder, app.connections), nil
+	}
+
+	return createResource(app.name, app.key, app.fields, app.builder), nil
 }

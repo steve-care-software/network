@@ -1,20 +1,8 @@
 package fields
 
-const (
-	// KindNil represents the nil kind
-	KindNil (uint8) = iota
-
-	// KindInteger represents the integer kind
-	KindInteger
-
-	// KindFloat represents the float kind
-	KindFloat
-
-	// KindString represents the string kind
-	KindString
-
-	// KindBytes represents the bytes kind
-	KindBytes
+import (
+	"steve.care/network/domain/schemas/groups/resources/fields/methods"
+	"steve.care/network/domain/schemas/groups/resources/fields/types"
 )
 
 // NewBuilder creates a new builder instance
@@ -43,8 +31,8 @@ type Fields interface {
 type FieldBuilder interface {
 	Create() FieldBuilder
 	WithName(name string) FieldBuilder
-	WithMethods(methods []string) FieldBuilder
-	WithKind(kind uint8) FieldBuilder
+	WithMethods(methods methods.Methods) FieldBuilder
+	WithType(typ types.Type) FieldBuilder
 	CanBeNil() FieldBuilder
 	Now() (Field, error)
 }
@@ -52,7 +40,7 @@ type FieldBuilder interface {
 // Field represents a field
 type Field interface {
 	Name() string
-	Methods() []string
-	Kind() uint8
+	Methods() methods.Methods
+	Type() types.Type
 	CanBeNil() bool
 }

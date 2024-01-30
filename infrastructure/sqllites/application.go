@@ -17,6 +17,7 @@ import (
 	"steve.care/network/domain/schemas/groups"
 	"steve.care/network/domain/schemas/groups/resources"
 	"steve.care/network/domain/schemas/groups/resources/fields"
+	field_types "steve.care/network/domain/schemas/groups/resources/fields/types"
 )
 
 type tableMetaData struct {
@@ -383,8 +384,8 @@ func (app *application) getTableFieldString(field fields.Field) (string, error) 
 	}
 
 	name := field.Name()
-	kind := field.Kind()
-	kindString, err := app.getTableKindString(kind)
+	typ := field.Type()
+	kindString, err := app.getTableKindFromType(typ)
 	if err != nil {
 		return "", err
 	}
@@ -392,20 +393,25 @@ func (app *application) getTableFieldString(field fields.Field) (string, error) 
 	return fmt.Sprintf("%s %s%s", name, kindString, notNullString), nil
 }
 
-func (app *application) getTableKindString(kind uint8) (string, error) {
-	if fields.KindNil == kind {
-		return "NULL", nil
+func (app *application) getTableKindFromType(typ field_types.Type) (string, error) {
+	if typ.IsKind() {
+		pKind := typ.Kind()
+		return app.getTableKindString(*pKind)
 	}
 
-	if fields.KindInteger == kind {
+	return app.getTableKindString(field_types.KindBytes)
+}
+
+func (app *application) getTableKindString(kind uint8) (string, error) {
+	if field_types.KindInteger == kind {
 		return "INTEGER", nil
 	}
 
-	if fields.KindFloat == kind {
+	if field_types.KindFloat == kind {
 		return "REAL", nil
 	}
 
-	if fields.KindString == kind {
+	if field_types.KindString == kind {
 		return "TEXT", nil
 	}
 

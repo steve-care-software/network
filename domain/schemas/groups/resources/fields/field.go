@@ -1,22 +1,27 @@
 package fields
 
+import (
+	"steve.care/network/domain/schemas/groups/resources/fields/methods"
+	"steve.care/network/domain/schemas/groups/resources/fields/types"
+)
+
 type field struct {
 	name     string
-	methods  []string
-	kind     uint8
+	methods  methods.Methods
+	typ      types.Type
 	canBeNil bool
 }
 
 func createField(
 	name string,
-	methods []string,
-	kind uint8,
+	methods methods.Methods,
+	typ types.Type,
 	canBeNil bool,
 ) Field {
 	out := field{
 		name:     name,
 		methods:  methods,
-		kind:     kind,
+		typ:      typ,
 		canBeNil: canBeNil,
 	}
 
@@ -29,13 +34,13 @@ func (obj *field) Name() string {
 }
 
 // Methods returns the methods
-func (obj *field) Methods() []string {
+func (obj *field) Methods() methods.Methods {
 	return obj.methods
 }
 
-// Kind returns the kind
-func (obj *field) Kind() uint8 {
-	return obj.kind
+// Type returns the type
+func (obj *field) Type() types.Type {
+	return obj.typ
 }
 
 // CanBeNil returns true if canBeNil, false otherwise

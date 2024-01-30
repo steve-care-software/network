@@ -6,22 +6,11 @@ import (
 	"time"
 
 	"steve.care/network/domain/hash"
-	"steve.care/network/domain/programs/blocks/transactions/executions/actions/resources/tokens/dashboards"
-	"steve.care/network/domain/programs/blocks/transactions/executions/actions/resources/tokens/layers"
-	"steve.care/network/domain/programs/blocks/transactions/executions/actions/resources/tokens/links"
-	"steve.care/network/domain/programs/blocks/transactions/executions/actions/resources/tokens/queries"
-	"steve.care/network/domain/programs/blocks/transactions/executions/actions/resources/tokens/receipts"
-	"steve.care/network/domain/programs/blocks/transactions/executions/actions/resources/tokens/suites"
 )
 
 type builder struct {
 	hashAdapter hash.Adapter
-	layer       layers.Layer
-	link        links.Link
-	suite       suites.Suite
-	receipt     receipts.Receipt
-	query       queries.Query
-	dashboard   dashboards.Dashboard
+	content     Content
 	pCreatedOn  *time.Time
 }
 
@@ -30,12 +19,7 @@ func createBuilder(
 ) Builder {
 	out := builder{
 		hashAdapter: hashAdapter,
-		layer:       nil,
-		link:        nil,
-		suite:       nil,
-		receipt:     nil,
-		query:       nil,
-		dashboard:   nil,
+		content:     nil,
 		pCreatedOn:  nil,
 	}
 
@@ -49,39 +33,9 @@ func (app *builder) Create() Builder {
 	)
 }
 
-// WithLayer adds a layer to the builder
-func (app *builder) WithLayer(layer layers.Layer) Builder {
-	app.layer = layer
-	return app
-}
-
-// WithLink adds a link to the builder
-func (app *builder) WithLink(link links.Link) Builder {
-	app.link = link
-	return app
-}
-
-// WithSuite adds a suite to the builder
-func (app *builder) WithSuite(suite suites.Suite) Builder {
-	app.suite = suite
-	return app
-}
-
-// WithReceipt adds a receipt to the builder
-func (app *builder) WithReceipt(receipt receipts.Receipt) Builder {
-	app.receipt = receipt
-	return app
-}
-
-// WithQuery adds a query to the builder
-func (app *builder) WithQuery(query queries.Query) Builder {
-	app.query = query
-	return app
-}
-
-// WithDashboard adds a dashboard to the builder
-func (app *builder) WithDashboard(dashboard dashboards.Dashboard) Builder {
-	app.dashboard = dashboard
+// WithContent adds a content to the builder
+func (app *builder) WithContent(content Content) Builder {
+	app.content = content
 	return app
 }
 
@@ -97,53 +51,22 @@ func (app *builder) Now() (Token, error) {
 		return nil, errors.New("the creation time is mandatory in order to build a Token instance")
 	}
 
-	data := [][]byte{
+	if app.content == nil {
+		return nil, errors.New("the content is mandatory in order to build a Token instance")
+	}
+
+	pHash, err := app.hashAdapter.FromMultiBytes([][]byte{
 		[]byte(strconv.Itoa(app.pCreatedOn.UTC().Nanosecond())),
-	}
+		app.content.Hash().Bytes(),
+	})
 
-	var content Content
-	if app.layer != nil {
-		content = createContentWithLayer(app.layer)
-		data = append(data, app.layer.Hash().Bytes())
-	}
-
-	if app.link != nil {
-		content = createContentWithLink(app.link)
-		data = append(data, app.link.Hash().Bytes())
-	}
-
-	if app.suite != nil {
-		content = createContentWithSuite(app.suite)
-		data = append(data, app.suite.Hash().Bytes())
-	}
-
-	if app.receipt != nil {
-		content = createContentWithReceipt(app.receipt)
-		data = append(data, app.receipt.Hash().Bytes())
-	}
-
-	if app.query != nil {
-		content = createContentWithQuery(app.query)
-		data = append(data, app.query.Hash().Bytes())
-	}
-
-	if app.dashboard != nil {
-		content = createContentWithDashboard(app.dashboard)
-		data = append(data, app.dashboard.Hash().Bytes())
-	}
-
-	if content == nil {
-		return nil, errors.New("the Token is invalid")
-	}
-
-	pHash, err := app.hashAdapter.FromMultiBytes(data)
 	if err != nil {
 		return nil, err
 	}
 
 	return createToken(
 		*pHash,
-		content,
+		app.content,
 		*app.pCreatedOn,
 	), nil
 }

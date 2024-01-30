@@ -20,15 +20,15 @@ func NewBuilder() Builder {
 	)
 }
 
+// NewContentBuilder creates a new content builder
+func NewContentBuilder() ContentBuilder {
+	return createContentBuilder()
+}
+
 // Builder represents the token builder
 type Builder interface {
 	Create() Builder
-	WithLayer(layer layers.Layer) Builder
-	WithLink(link links.Link) Builder
-	WithSuite(suite suites.Suite) Builder
-	WithReceipt(receipt receipts.Receipt) Builder
-	WithQuery(query queries.Query) Builder
-	WithDashboard(dashboard dashboards.Dashboard) Builder
+	WithContent(content Content) Builder
 	CreatedOn(createdOn time.Time) Builder
 	Now() (Token, error)
 }
@@ -38,6 +38,18 @@ type Token interface {
 	Hash() hash.Hash
 	Content() Content
 	CreatedOn() time.Time
+}
+
+// ContentBuilder represents a content builder
+type ContentBuilder interface {
+	Create() ContentBuilder
+	WithLayer(layer layers.Layer) ContentBuilder
+	WithLink(link links.Link) ContentBuilder
+	WithSuite(suite suites.Suite) ContentBuilder
+	WithReceipt(receipt receipts.Receipt) ContentBuilder
+	WithQuery(query queries.Query) ContentBuilder
+	WithDashboard(dashboard dashboards.Dashboard) ContentBuilder
+	Now() (Content, error)
 }
 
 // Content represents a resource content
