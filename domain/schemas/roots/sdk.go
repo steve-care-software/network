@@ -2,6 +2,7 @@ package roots
 
 import (
 	"steve.care/network/domain/schemas/roots/groups"
+	"steve.care/network/domain/schemas/roots/groups/resources"
 	"steve.care/network/domain/schemas/roots/methods"
 )
 
@@ -24,4 +25,5 @@ type Root interface {
 	Name() string
 	Chains() groups.MethodChains
 	Methods() methods.Methods
+	Search(path []string) (resources.Resource, error)
 }

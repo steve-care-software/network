@@ -200,22 +200,24 @@ func (app *schemaFactory) tokensDashboards(
 							app.field(
 								"viewport",
 								app.fieldMethods(
-									[]string{"Viewport"},
+									[]string{"Viewport", "Hash"},
 									"WithViewport",
 								),
 								app.fieldTypeWithDependency(
 									app.fieldDependency(
+										"Viewport",
 										[]string{"tokens", "dashboards"},
 										"viewport",
+										field_types.KindBytes,
 									),
 								),
-								false,
+								true,
 							),
 						}),
 						app.groupMethods(
 							"Create",
 							"Now",
-							"WithViewport",
+							"WithWidget",
 						),
 					),
 				),
@@ -536,12 +538,16 @@ func (app *schemaFactory) fieldMethods(
 }
 
 func (app *schemaFactory) fieldDependency(
+	retriever string,
 	groups []string,
 	resource string,
+	kind uint8,
 ) dependencies.Dependency {
 	ins, err := app.fieldDependencyBuilder.Create().
+		WithRetriever(retriever).
 		WithGroups(groups).
 		WithResource(resource).
+		WithKind(kind).
 		Now()
 
 	if err != nil {

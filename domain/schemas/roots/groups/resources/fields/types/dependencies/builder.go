@@ -3,14 +3,18 @@ package dependencies
 import "errors"
 
 type builder struct {
-	groups   []string
-	resource string
+	retriever string
+	groups    []string
+	resource  string
+	pKind     *uint8
 }
 
 func createBuilder() Builder {
 	out := builder{
-		groups:   nil,
-		resource: "",
+		retriever: "",
+		groups:    nil,
+		resource:  "",
+		pKind:     nil,
 	}
 
 	return &out
@@ -19,6 +23,12 @@ func createBuilder() Builder {
 // Create initializes the builder
 func (app *builder) Create() Builder {
 	return createBuilder()
+}
+
+// WithRetriever adds a retriever to the builder
+func (app *builder) WithRetriever(retriever string) Builder {
+	app.retriever = retriever
+	return app
 }
 
 // WithGroups add groups to the builder
@@ -33,8 +43,18 @@ func (app *builder) WithResource(resource string) Builder {
 	return app
 }
 
+// WithKind adds a kind to the builder
+func (app *builder) WithKind(kind uint8) Builder {
+	app.pKind = &kind
+	return app
+}
+
 // Now builds a new Dependency instance
 func (app *builder) Now() (Dependency, error) {
+	if app.retriever == "" {
+		return nil, errors.New("the retriever is mandatory in order to build a Dependency instance")
+	}
+
 	if app.groups != nil && len(app.groups) <= 0 {
 		app.groups = nil
 	}
@@ -47,5 +67,9 @@ func (app *builder) Now() (Dependency, error) {
 		return nil, errors.New("the resource is mandatory in order to build a Dependency instance")
 	}
 
-	return createDependency(app.groups, app.resource), nil
+	if app.pKind == nil {
+		return nil, errors.New("the kind is mandatory in order to build a Dependency instance")
+	}
+
+	return createDependency(app.retriever, app.groups, app.resource, *app.pKind), nil
 }

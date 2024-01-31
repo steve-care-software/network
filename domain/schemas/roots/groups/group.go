@@ -1,6 +1,12 @@
 package groups
 
-import "steve.care/network/domain/schemas/roots/groups/methods"
+import (
+	"errors"
+	"fmt"
+
+	"steve.care/network/domain/schemas/roots/groups/methods"
+	"steve.care/network/domain/schemas/roots/groups/resources"
+)
 
 type group struct {
 	name    string
@@ -35,4 +41,19 @@ func (obj *group) Chains() MethodChains {
 // Methods returns the methods
 func (obj *group) Methods() methods.Methods {
 	return obj.methods
+}
+
+// Search searches a resource by path
+func (obj *group) Search(path []string) (resources.Resource, error) {
+	if len(path) <= 0 {
+		str := fmt.Sprintf("the path cannot be empty in order to search for a Resource in a Group (name: %s)", obj.name)
+		return nil, errors.New(str)
+	}
+
+	if obj.name != path[0] {
+		str := fmt.Sprintf("the first path element (%s) does not math the group name (%s)", path[0], obj.name)
+		return nil, errors.New(str)
+	}
+
+	return obj.chains.Search(path[1:])
 }

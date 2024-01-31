@@ -1,7 +1,11 @@
 package roots
 
 import (
+	"errors"
+	"fmt"
+
 	"steve.care/network/domain/schemas/roots/groups"
+	"steve.care/network/domain/schemas/roots/groups/resources"
 	"steve.care/network/domain/schemas/roots/methods"
 )
 
@@ -38,4 +42,19 @@ func (obj *root) Chains() groups.MethodChains {
 // Methods returns the methods
 func (obj *root) Methods() methods.Methods {
 	return obj.methods
+}
+
+// Search searches a resource by path
+func (obj *root) Search(path []string) (resources.Resource, error) {
+	if len(path) <= 0 {
+		str := fmt.Sprintf("the path cannot be empty in order to search for a Resource in a Root (name: %s)", obj.name)
+		return nil, errors.New(str)
+	}
+
+	if obj.name != path[0] {
+		str := fmt.Sprintf("the first path element (%s) does not math the root name (%s)", path[0], obj.name)
+		return nil, errors.New(str)
+	}
+
+	return obj.chains.Search(path[1:])
 }

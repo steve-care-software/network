@@ -7,6 +7,7 @@ import (
 	"steve.care/network/domain/accounts"
 	account_encryptors "steve.care/network/domain/accounts/encryptors"
 	"steve.care/network/domain/accounts/signers"
+	"steve.care/network/domain/dashboards/widgets"
 	"steve.care/network/domain/dashboards/widgets/viewports"
 	"steve.care/network/domain/encryptors"
 	"steve.care/network/domain/hash"
@@ -101,6 +102,7 @@ func NewResourceRepository(
 	viewportBuilder := viewports.NewBuilder()
 	cmdLayerBuilder := commands_layers.NewLayerBuilder()
 	builders := map[string]interface{}{
+		"tokens_dashboards_widget":   widgets.NewWidgetBuilder(),
 		"tokens_dashboards_viewport": viewports.NewBuilder(),
 		"tokens_dashboards":          token_dashboards.NewBuilder(),
 		"tokens":                     tokens.NewContentBuilder(),

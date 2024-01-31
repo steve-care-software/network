@@ -7,9 +7,10 @@ import (
 	"reflect"
 	"testing"
 
-	"steve.care/network/domain/accounts/signers"
 	"steve.care/network/domain/credentials"
+	"steve.care/network/domain/dashboards/widgets"
 	"steve.care/network/domain/dashboards/widgets/viewports"
+	"steve.care/network/domain/hash"
 	"steve.care/network/domain/programs/blocks/transactions/executions/actions/resources"
 	"steve.care/network/domain/programs/blocks/transactions/executions/actions/resources/tokens"
 	token_dashboards "steve.care/network/domain/programs/blocks/transactions/executions/actions/resources/tokens/dashboards"
@@ -170,64 +171,88 @@ func TestApplication_Resources_Success(t *testing.T) {
 	// close:
 	defer appIns.Close()
 
-	// init out app:
-	err = appIns.Init(dbName)
-	if err != nil {
-		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
-		return
-	}
-
-	// begin our app:
-	initAppIns, err := appIns.Begin(dbName)
-	if err != nil {
-		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
-		return
-	}
-
-	// retrieve the resources application:
-	resAppIns := initAppIns.Resources()
-
 	// build viewport resource:
-	viewport := viewports.NewViewportForTests(uint(33), uint(45))
-	token := tokens.NewTokenWithDashboardForTests(
-		token_dashboards.NewDashboardWithViewportForTests(
-			viewport,
+	pRandomHash, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes"))
+	tokens := []tokens.Token{
+		tokens.NewTokenWithDashboardForTests(
+			token_dashboards.NewDashboardWithViewportForTests(
+				viewports.NewViewportForTests(uint(33), uint(45)),
+			),
 		),
-	)
-
-	msg := token.Hash().Bytes()
-	signature, err := signers.NewFactory().Create().Sign(msg)
-	if err != nil {
-		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
-		return
+		tokens.NewTokenWithDashboardForTests(
+			token_dashboards.NewDashboardWithWidgetForTests(
+				widgets.NewWidgetForTests(
+					"this is a title",
+					*pRandomHash,
+					[]byte("this is an input"),
+				),
+			),
+		),
+		tokens.NewTokenWithDashboardForTests(
+			token_dashboards.NewDashboardWithWidgetForTests(
+				widgets.NewWidgetWithViewportForTests(
+					"this is a title",
+					*pRandomHash,
+					[]byte("this is an input"),
+					viewports.NewViewportForTests(uint(33), uint(45)),
+				),
+			),
+		),
 	}
 
-	resource := resources.NewResourceForTests(token, signature)
+	for _, oneToken := range tokens {
+		// init out app:
+		err = appIns.Init(dbName)
+		if err != nil {
+			t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+			return
+		}
 
-	// insert account:
-	err = resAppIns.Insert(resource)
-	if err != nil {
-		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
-		return
+		// begin our app:
+		initAppIns, err := appIns.Begin(dbName)
+		if err != nil {
+			t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+			return
+		}
+
+		// retrieve the resources application:
+		resAppIns := initAppIns.Resources()
+
+		// create the resource from the token:
+		resource := NewResourceFromTokenForTests(oneToken)
+
+		// insert account:
+		err = resAppIns.Insert(resource)
+		if err != nil {
+			t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+			return
+		}
+
+		// commit:
+		err = appIns.Commit()
+		if err != nil {
+			t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+			return
+		}
+
+		resHash := resource.Hash()
+		retResource, err := resAppIns.RetrieveByHash(resHash)
+		if err != nil {
+			t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+			return
+		}
+
+		if !bytes.Equal(retResource.Hash().Bytes(), resHash.Bytes()) {
+			t.Errorf("the returned resource is invalid")
+			return
+		}
+
+		// close our app:
+		err = appIns.Close()
+		if err != nil {
+			t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
+			return
+		}
 	}
 
-	// commit:
-	err = appIns.Commit()
-	if err != nil {
-		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
-		return
-	}
-
-	//resHash := resource.Hash()
-	resHash := resource.Hash()
-	retResource, err := resAppIns.RetrieveByHash(resHash)
-	if err != nil {
-		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
-		return
-	}
-
-	if !bytes.Equal(retResource.Hash().Bytes(), resHash.Bytes()) {
-		t.Errorf("the returned resource is invalid")
-		return
-	}
 }

@@ -169,81 +169,79 @@ func (app *resourceRepository) retrieveTokenByHash(
 	}
 
 	for idx, oneFieldName := range fieldNames {
-		value := values[idx]
-		if value == nil {
-			continue
-		}
-
-		keynames := []string{}
-		parentName := ""
-		var resourceSchema schema_resources.Resource
-		var currentGroup groups.Group
-		nextElements := []groups.Element{}
-		groupMethods := []schema_group_methods.Methods{}
-		rootMethods := []schema_root_methods.Methods{}
-		names := strings.Split(oneFieldName, groupNameDelimiterForTableNames)
-		for _, oneName := range names {
-			if currentGroup == nil {
-				if root.Name() == oneName {
-
-					// reuse this
-					nextElements = []groups.Element{}
-					rootMethods = append(rootMethods, root.Methods())
-					chainList := root.Chains().List()
-					for _, oneChain := range chainList {
-						nextElements = append(nextElements, oneChain.Element())
-					}
-
-					parentName = oneName
-					keynames = append(keynames, parentName)
-					continue
-				}
+		if pValue, ok := values[idx].(*[]byte); ok {
+			if pValue == nil || len(*pValue) <= 0 {
+				continue
 			}
 
-			for _, oneElement := range nextElements {
-				if oneElement.IsGroup() {
-					group := oneElement.Group()
-					if group.Name() == oneName {
-						currentGroup = group
+			keynames := []string{}
+			parentName := ""
+			var resourceSchema schema_resources.Resource
+			var currentGroup groups.Group
+			nextElements := []groups.Element{}
+			groupMethods := []schema_group_methods.Methods{}
+			rootMethods := []schema_root_methods.Methods{}
+			names := strings.Split(oneFieldName, groupNameDelimiterForTableNames)
+			for _, oneName := range names {
+				if currentGroup == nil {
+					if root.Name() == oneName {
 
 						// reuse this
 						nextElements = []groups.Element{}
-						currentGroupMethods := currentGroup.Methods()
-						groupMethods = append(groupMethods, currentGroupMethods)
-						rootMethods = append(rootMethods, currentGroupMethods)
-						chainList := currentGroup.Chains().List()
+						rootMethods = append(rootMethods, root.Methods())
+						chainList := root.Chains().List()
 						for _, oneChain := range chainList {
 							nextElements = append(nextElements, oneChain.Element())
 						}
 
-						parentName = fmt.Sprintf("%s%s%s", parentName, groupNameDelimiterForTableNames, oneName)
+						parentName = oneName
 						keynames = append(keynames, parentName)
 						continue
 					}
-
-					// error
 				}
 
-				if oneElement.IsResource() {
-					resource := oneElement.Resource()
-					if resource.Name() == oneName {
-						resourceSchema = resource
-						groupMethods = append(groupMethods, resourceSchema.Builder())
+				for _, oneElement := range nextElements {
+					if oneElement.IsGroup() {
+						group := oneElement.Group()
+						if group.Name() == oneName {
+							currentGroup = group
 
-						parentName = fmt.Sprintf("%s%s%s", parentName, groupNameDelimiterForTableNames, oneName)
-						keynames = append(keynames, parentName)
-						break
+							// reuse this
+							nextElements = []groups.Element{}
+							currentGroupMethods := currentGroup.Methods()
+							groupMethods = append(groupMethods, currentGroupMethods)
+							rootMethods = append(rootMethods, currentGroupMethods)
+							chainList := currentGroup.Chains().List()
+							for _, oneChain := range chainList {
+								nextElements = append(nextElements, oneChain.Element())
+							}
+
+							parentName = fmt.Sprintf("%s%s%s", parentName, groupNameDelimiterForTableNames, oneName)
+							keynames = append(keynames, parentName)
+							continue
+						}
+
+						// error
+					}
+
+					if oneElement.IsResource() {
+						resource := oneElement.Resource()
+						if resource.Name() == oneName {
+							resourceSchema = resource
+							groupMethods = append(groupMethods, resourceSchema.Builder())
+
+							parentName = fmt.Sprintf("%s%s%s", parentName, groupNameDelimiterForTableNames, oneName)
+							keynames = append(keynames, parentName)
+							break
+						}
 					}
 				}
+
 			}
 
-		}
-
-		if resourceSchema == nil {
-			// error
-		}
-
-		if pValue, ok := value.(*[]byte); ok {
+			if resourceSchema == nil {
+				// error
+			}
 			pHash, err := app.hashAdapter.FromBytes(*pValue)
 			if err != nil {
 				return nil, err
@@ -251,11 +249,12 @@ func (app *resourceRepository) retrieveTokenByHash(
 
 			sections := strings.Split(oneFieldName, groupNameDelimiterForTableNames)
 			groupNames := sections[0 : len(sections)-1]
-			parentName := strings.Join(groupNames, groupNameDelimiterForTableNames)
+			resourceParentName := strings.Join(groupNames, groupNameDelimiterForTableNames)
 			retIns, err := app.retrieveResourceValue(
 				resourceSchema,
 				*pHash,
-				parentName,
+				resourceParentName,
+				root,
 			)
 
 			if err != nil {
@@ -288,24 +287,27 @@ func (app *resourceRepository) retrieveTokenByHash(
 						return nil, errors.New(errorString)
 					}
 
-					// add the value to the builder:
-					errorString = ""
-					fieldName := groupMethod.Element()
-					retValue, err = callMethodOnInstanceWithParams(
-						fieldName,
-						retValue,
-						&errorString,
-						[]interface{}{
-							retIns,
-						},
-					)
-					if err != nil {
-						str := fmt.Sprintf("there was an error while adding a value to the builder (keyname: %s), error: %s", keyname, err.Error())
-						return nil, errors.New(str)
-					}
+					// only add the value to the builder element method when the value is NOT nil:
+					if retIns != nil {
+						errorString = ""
+						fieldName := groupMethod.Element()
+						retValue, err = callMethodOnInstanceWithParams(
+							fieldName,
+							retValue,
+							&errorString,
+							[]interface{}{
+								retIns,
+							},
+						)
 
-					if errorString != "" {
-						return nil, errors.New(errorString)
+						if err != nil {
+							str := fmt.Sprintf("there was an error while adding a value to the builder (keyname: %s), error: %s", keyname, err.Error())
+							return nil, errors.New(str)
+						}
+
+						if errorString != "" {
+							return nil, errors.New(errorString)
+						}
 					}
 
 					// trigger the builder:
@@ -408,6 +410,7 @@ func (app *resourceRepository) retrieveResourceValue(
 	resource schema_resources.Resource,
 	hash hash.Hash,
 	parentName string,
+	root roots.Root,
 ) (interface{}, error) {
 	name := resource.Name()
 	tableName := name
@@ -421,11 +424,10 @@ func (app *resourceRepository) retrieveResourceValue(
 	for _, oneField := range fieldsList {
 		typ := oneField.Type()
 		propertyValue := app.generateValueFromType(typ)
-		propertyValues = append(propertyValues, &propertyValue)
-
 		propertyName := oneField.Name()
-		propertyNames = append(propertyNames, propertyName)
 
+		propertyValues = append(propertyValues, &propertyValue)
+		propertyNames = append(propertyNames, propertyName)
 	}
 
 	propertyNamesStr := strings.Join(propertyNames, ",")
@@ -437,7 +439,7 @@ func (app *resourceRepository) retrieveResourceValue(
 
 	defer rows.Close()
 	if !rows.Next() {
-		str := fmt.Sprintf("the given hash (%s) do NOT match a %s instance", tableName, hash.String())
+		str := fmt.Sprintf("the given hash (%s) do NOT match a %s instance", hash.String(), tableName)
 		return nil, errors.New(str)
 	}
 
@@ -476,27 +478,75 @@ func (app *resourceRepository) retrieveResourceValue(
 
 		// pass the fields:
 		for idx, oneField := range fieldsList {
-			errorString := ""
-			elementMethod := oneField.Methods().Element()
-			pInterface := propertyValues[idx].(*interface{})
-			retValue, err := callMethodOnInstanceWithParams(
-				elementMethod,
-				builderIns,
-				&errorString,
-				[]interface{}{
-					*pInterface,
-				},
-			)
-			if err != nil {
-				return nil, err
+
+			if pCasted, ok := propertyValues[idx].(*interface{}); ok {
+				// only call the builder element method when the value is NOT nil:
+				if *pCasted != nil {
+					casted := *pCasted
+					typ := oneField.Type()
+					if typ.IsDependency() {
+						if castedBytes, ok := (casted.([]byte)); ok {
+							// fetch the dependency resource:
+							dependency := typ.Dependency()
+							groupNames := dependency.Groups()
+							resourceName := dependency.Resource()
+							path := append(groupNames, resourceName)
+							dependencyResourceSchema, err := root.Search(path)
+							if err != nil {
+								return nil, err
+							}
+
+							// create the parent name:
+							dependencyParentName := strings.Join(groupNames, groupNameDelimiterForTableNames)
+
+							// build an hash from the value:
+							pHash, err := app.hashAdapter.FromBytes(castedBytes)
+							if err != nil {
+								return nil, err
+							}
+
+							// fetch the resource value:
+							retResourceValue, err := app.retrieveResourceValue(
+								dependencyResourceSchema,
+								*pHash,
+								dependencyParentName,
+								root,
+							)
+
+							if err != nil {
+								return nil, err
+							}
+
+							// use the resoruce value as the value in the builder:
+							casted = retResourceValue
+						}
+
+					}
+
+					errorString := ""
+					elementMethod := oneField.Methods().Element()
+					retValue, err := callMethodOnInstanceWithParams(
+						elementMethod,
+						builderIns,
+						&errorString,
+						[]interface{}{
+							casted,
+						},
+					)
+					if err != nil {
+						return nil, err
+					}
+
+					if errorString != "" {
+						return nil, errors.New(errorString)
+					}
+
+					// set the builder instance:
+					builderIns = retValue
+				}
+
 			}
 
-			if errorString != "" {
-				return nil, errors.New(errorString)
-			}
-
-			// set the builder instance:
-			builderIns = retValue
 		}
 
 		// trigger:
@@ -530,7 +580,8 @@ func (app *resourceRepository) generateValueFromType(typ field_types.Type) inter
 		return app.generateValue(*pKind)
 	}
 
-	return app.generateValue(field_types.KindBytes)
+	kind := typ.Dependency().Kind()
+	return app.generateValue(kind)
 }
 
 func (app *resourceRepository) generateValue(kind uint8) interface{} {

@@ -33,6 +33,10 @@ func callMethodsOnInstance(
 
 	value := reflect.ValueOf(pInstance)
 	for _, oneMethod := range methods {
+		if value.IsNil() {
+			return nil, nil
+		}
+
 		retValues := value.MethodByName(oneMethod).Call([]reflect.Value{})
 		if len(retValues) < 1 {
 			str := fmt.Sprintf("at least %d values were returned, %d were expected, when calling the method (name %s) in the method chain (%s)", len(retValues), 1, oneMethod, strings.Join(methods, ","))

@@ -39,6 +39,7 @@ type Group interface {
 	Name() string
 	Chains() MethodChains
 	Methods() methods.Methods
+	Search(path []string) (resources.Resource, error)
 }
 
 // MethodChainsBuilder represents method chains builder
@@ -51,6 +52,7 @@ type MethodChainsBuilder interface {
 // MethodChains returns method chains
 type MethodChains interface {
 	List() []MethodChain
+	Search(path []string) (resources.Resource, error)
 }
 
 // MethodChainBuilder represents a method chain builder

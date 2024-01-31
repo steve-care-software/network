@@ -49,7 +49,7 @@ func (app *resourceService) Insert(ins resources.Resource) error {
 		return err
 	}
 
-	_, err = app.txPtr.Exec("INSERT OR IGNORE INTO resource (hash, token, signature) VALUES (?, ?, ?)", ins.Hash().Bytes(), token.Hash().Bytes(), sigBytes)
+	_, err = app.txPtr.Exec("INSERT INTO resource (hash, token, signature) VALUES (?, ?, ?)", ins.Hash().Bytes(), token.Hash().Bytes(), sigBytes)
 	if err != nil {
 		return err
 	}
@@ -65,7 +65,7 @@ func (app *resourceService) insertToken(ins tokens.Token) error {
 		return err
 	}
 
-	queryStr := fmt.Sprintf("INSERT OR IGNORE INTO token (hash, %s, created_on) VALUES (?, ?, ?)", fieldName)
+	queryStr := fmt.Sprintf("INSERT INTO token (hash, %s, created_on) VALUES (?, ?, ?)", fieldName)
 	_, err = app.txPtr.Exec(queryStr, ins.Hash().Bytes(), fkHash.Bytes(), ins.CreatedOn().Format(timeLayout))
 	if err != nil {
 		return err
@@ -80,13 +80,14 @@ func (app *resourceService) insertRoot(
 ) (*hash.Hash, string, error) {
 	name := root.Name()
 	chains := root.Chains()
-	return app.insertChains(ins, chains, name)
+	return app.insertChains(ins, chains, name, root)
 }
 
 func (app *resourceService) insertGroup(
 	ins interface{},
 	group schema_groups.Group,
 	parentName string,
+	root roots.Root,
 ) (*hash.Hash, string, error) {
 	name := group.Name()
 	chains := group.Chains()
@@ -95,17 +96,18 @@ func (app *resourceService) insertGroup(
 		updatedParentName = fmt.Sprintf("%s%s%s", parentName, groupNameDelimiterForTableNames, name)
 	}
 
-	return app.insertChains(ins, chains, updatedParentName)
+	return app.insertChains(ins, chains, updatedParentName, root)
 }
 
 func (app *resourceService) insertChains(
 	ins interface{},
 	chains schema_groups.MethodChains,
 	parentName string,
+	root roots.Root,
 ) (*hash.Hash, string, error) {
 	list := chains.List()
 	for _, oneChain := range list {
-		pHash, fieldName, isInserted, err := app.insertChain(ins, oneChain, parentName)
+		pHash, fieldName, isInserted, err := app.insertChain(ins, oneChain, parentName, root)
 		if err != nil {
 			return nil, "", err
 		}
@@ -124,6 +126,7 @@ func (app *resourceService) insertChain(
 	ins interface{},
 	chain schema_groups.MethodChain,
 	parentName string,
+	root roots.Root,
 ) (*hash.Hash, string, bool, error) {
 
 	errorString := ""
@@ -159,7 +162,7 @@ func (app *resourceService) insertChain(
 		}
 
 		element := chain.Element()
-		pHash, fieldName, err := app.insertElement(retValue, element, parentName)
+		pHash, fieldName, err := app.insertElement(retValue, element, parentName, root)
 		if err != nil {
 			return nil, "", false, err
 		}
@@ -175,20 +178,22 @@ func (app *resourceService) insertElement(
 	ins interface{},
 	element schema_groups.Element,
 	parentName string,
+	root roots.Root,
 ) (*hash.Hash, string, error) {
 	if element.IsResource() {
 		resource := element.Resource()
-		return app.insertResource(ins, resource, parentName)
+		return app.insertResource(ins, resource, parentName, root)
 	}
 
 	group := element.Group()
-	return app.insertGroup(ins, group, parentName)
+	return app.insertGroup(ins, group, parentName, root)
 }
 
 func (app *resourceService) insertResource(
 	ins interface{},
 	resource schema_resources.Resource,
 	parentName string,
+	root roots.Root,
 ) (*hash.Hash, string, error) {
 	key := resource.Key()
 	fieldNames := []string{
@@ -230,6 +235,51 @@ func (app *resourceService) insertResource(
 			return nil, "", errors.New(str)
 		}
 
+		if retValue == nil && !oneField.CanBeNil() {
+			str := fmt.Sprintf("the field (resource: %s, name: %s) is nil but is set as 'cannot be nil' in the schema", resource.Name(), oneField.Name())
+			return nil, "", errors.New(str)
+		}
+
+		// do not set the field in the query if the value is nil:
+		if retValue == nil {
+			continue
+		}
+
+		typ := oneField.Type()
+		if typ.IsDependency() {
+			// call the depenency retriever on the instance:
+			dependency := typ.Dependency()
+			retriever := dependency.Retriever()
+			errorString := ""
+			retValue, err := callMethodsOnInstance([]string{retriever}, ins, &errorString)
+			if err != nil {
+				return nil, "", err
+			}
+
+			if errorString != "" {
+				str := fmt.Sprintf("there was an error while calling a field dependency method (name: %s) on a reference instance (type: %s), the error was: %s", retriever, typeName, errorString)
+				return nil, "", errors.New(str)
+			}
+
+			// fetch the resource:
+			groupNames := dependency.Groups()
+			resourceName := dependency.Resource()
+			path := append(groupNames, resourceName)
+			retResourceSchema, err := root.Search(path)
+			if err != nil {
+				return nil, "", err
+			}
+
+			// generate the parent name:
+			dependencyParentName := strings.Join(groupNames, groupNameDelimiterForTableNames)
+
+			// insert the resource value:
+			_, _, err = app.insertResource(retValue, retResourceSchema, dependencyParentName, root)
+			if err != nil {
+				return nil, "", err
+			}
+		}
+
 		fieldNames = append(fieldNames, oneField.Name())
 		fieldValues = append(fieldValues, retValue)
 		fieldValuePlaceHolders = append(fieldValuePlaceHolders, "?")
@@ -238,7 +288,7 @@ func (app *resourceService) insertResource(
 	fieldNamesStr := strings.Join(fieldNames, ", ")
 	fieldValuePlaceHoldersStr := strings.Join(fieldValuePlaceHolders, ", ")
 	tableName := fmt.Sprintf("%s%s%s", parentName, groupNameDelimiterForTableNames, resource.Name())
-	queryStr := fmt.Sprintf("INSERT OR IGNORE INTO %s (%s) VALUES (%s)", tableName, fieldNamesStr, fieldValuePlaceHoldersStr)
+	queryStr := fmt.Sprintf("INSERT INTO %s (%s) VALUES (%s)", tableName, fieldNamesStr, fieldValuePlaceHoldersStr)
 	_, err = app.txPtr.Exec(queryStr, fieldValues...)
 	if err != nil {
 		return nil, "", err
