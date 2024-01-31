@@ -162,6 +162,64 @@ func (app *schemaFactory) tokensDashboards(
 					),
 				),
 			),
+			app.chain(
+				"IsWidget",
+				[]string{"Widget"},
+				app.elementWithResource(
+					app.resource(
+						"widget",
+						key,
+						app.fields([]fields.Field{
+							app.field(
+								"title",
+								app.fieldMethods(
+									[]string{"Title"},
+									"WithTitle",
+								),
+								app.fieldTypeWithKind(field_types.KindString),
+								false,
+							),
+							app.field(
+								"program",
+								app.fieldMethods(
+									[]string{"Program", "Bytes"},
+									"WithProgram",
+								),
+								app.fieldTypeWithKind(field_types.KindBytes),
+								false,
+							),
+							app.field(
+								"input",
+								app.fieldMethods(
+									[]string{"Input"},
+									"WithInput",
+								),
+								app.fieldTypeWithKind(field_types.KindBytes),
+								false,
+							),
+							app.field(
+								"viewport",
+								app.fieldMethods(
+									[]string{"Viewport"},
+									"WithViewport",
+								),
+								app.fieldTypeWithDependency(
+									app.fieldDependency(
+										[]string{"tokens", "dashboards"},
+										"viewport",
+									),
+								),
+								false,
+							),
+						}),
+						app.groupMethods(
+							"Create",
+							"Now",
+							"WithViewport",
+						),
+					),
+				),
+			),
 		}),
 	)
 }

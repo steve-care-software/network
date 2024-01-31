@@ -1,6 +1,7 @@
 package sqllites
 
 import (
+	"bytes"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -219,14 +220,14 @@ func TestApplication_Resources_Success(t *testing.T) {
 
 	//resHash := resource.Hash()
 	resHash := resource.Hash()
-	_, err = resAppIns.RetrieveByHash(resHash)
+	retResource, err := resAppIns.RetrieveByHash(resHash)
 	if err != nil {
 		t.Errorf("the error was expected to be nil, error returned: %s", err.Error())
 		return
 	}
 
-	/*if !bytes.Equal(retResource.Hash().Bytes(), resHash.Bytes()) {
+	if !bytes.Equal(retResource.Hash().Bytes(), resHash.Bytes()) {
 		t.Errorf("the returned resource is invalid")
 		return
-	}*/
+	}
 }
