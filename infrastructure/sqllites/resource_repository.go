@@ -350,13 +350,58 @@ func (app *resourceRepository) retrieveTokenByHash(
 func (app *resourceRepository) fetchRetrievalFields(
 	root roots.Root,
 ) ([]string, []interface{}, error) {
-	var value []byte
-	return []string{
-			"tokens_dashboards_viewport",
-		},
-		[]interface{}{
-			&value,
-		}, nil
+	parentName := root.Name()
+	chains := root.Chains()
+	fieldNames, err := app.fetchRetrievalFieldsFromMethodChains(parentName, chains)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	values := []interface{}{}
+	for range fieldNames {
+		var value []byte
+		values = append(values, &value)
+	}
+
+	return fieldNames, values, nil
+}
+
+func (app *resourceRepository) fetchRetrievalFieldsFromGroup(
+	parentName string,
+	group groups.Group,
+) ([]string, error) {
+	name := group.Name()
+	updatedParentName := fmt.Sprintf("%s%s%s", parentName, groupNameDelimiterForTableNames, name)
+	chains := group.Chains()
+	return app.fetchRetrievalFieldsFromMethodChains(updatedParentName, chains)
+}
+
+func (app *resourceRepository) fetchRetrievalFieldsFromMethodChains(
+	parentName string,
+	chains groups.MethodChains,
+) ([]string, error) {
+	names := []string{}
+	chainsList := chains.List()
+	for _, oneChain := range chainsList {
+		element := oneChain.Element()
+		if element.IsGroup() {
+			group := element.Group()
+			subNames, err := app.fetchRetrievalFieldsFromGroup(parentName, group)
+			if err != nil {
+				return nil, err
+			}
+
+			names = append(names, subNames...)
+		}
+
+		if element.IsResource() {
+			name := element.Resource().Name()
+			fieldName := fmt.Sprintf("%s%s%s", parentName, groupNameDelimiterForTableNames, name)
+			names = append(names, fieldName)
+		}
+	}
+
+	return names, nil
 }
 
 func (app *resourceRepository) retrieveResourceValue(
