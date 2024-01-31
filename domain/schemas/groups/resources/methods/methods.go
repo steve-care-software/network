@@ -1,22 +1,20 @@
 package methods
 
-import field_methods "steve.care/network/domain/schemas/groups/resources/fields/methods"
-
 type methods struct {
 	initialize string
 	trigger    string
-	field      field_methods.Methods
+	builder    string
 }
 
 func createMethods(
 	initialize string,
 	trigger string,
-	field field_methods.Methods,
+	builder string,
 ) Methods {
 	out := methods{
 		initialize: initialize,
 		trigger:    trigger,
-		field:      field,
+		builder:    builder,
 	}
 
 	return &out
@@ -32,7 +30,7 @@ func (obj *methods) Trigger() string {
 	return obj.trigger
 }
 
-// Field returns the field
-func (obj *methods) Field() field_methods.Methods {
-	return obj.field
+// Builder returns the builder
+func (obj *methods) Builder() string {
+	return obj.builder
 }

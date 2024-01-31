@@ -1,6 +1,6 @@
 package groups
 
-import "steve.care/network/domain/schemas/groups/methods"
+import "steve.care/network/domain/schemas/groups/resources/methods"
 
 type group struct {
 	name    string

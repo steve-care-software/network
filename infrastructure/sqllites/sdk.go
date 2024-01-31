@@ -16,7 +16,6 @@ import (
 	commands_layers "steve.care/network/domain/programs/logics/libraries/layers"
 	"steve.care/network/domain/schemas"
 	"steve.care/network/domain/schemas/groups"
-	group_methods "steve.care/network/domain/schemas/groups/methods"
 	schema_resources "steve.care/network/domain/schemas/groups/resources"
 	"steve.care/network/domain/schemas/groups/resources/fields"
 	field_methods "steve.care/network/domain/schemas/groups/resources/fields/methods"
@@ -141,7 +140,6 @@ func NewSchemaFactory(
 	groupBuilder := groups.NewBuilder()
 	methodChainsBuilder := groups.NewMethodChainsBuilder()
 	methodChainBuilder := groups.NewMethodChainBuilder()
-	methodBuilder := group_methods.NewBuilder()
 	elementBuilder := groups.NewElementBuilder()
 	resourceBuilder := schema_resources.NewBuilder()
 	resourceMethodsBuilder := methods.NewBuilder()
@@ -158,7 +156,6 @@ func NewSchemaFactory(
 		groupBuilder,
 		methodChainsBuilder,
 		methodChainBuilder,
-		methodBuilder,
 		elementBuilder,
 		resourceBuilder,
 		resourceMethodsBuilder,

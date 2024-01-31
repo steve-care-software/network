@@ -185,7 +185,7 @@ func (app *resourceRepository) retrieveTokenByHash(
 
 					// reuse this
 					nextElements = []groups.Element{}
-					resourceMethods = append(resourceMethods, currentGroup.Methods().Builder())
+					resourceMethods = append(resourceMethods, currentGroup.Methods())
 					chainList := currentGroup.Chains().List()
 					for _, oneChain := range chainList {
 						nextElements = append(nextElements, oneChain.Element())
@@ -207,7 +207,7 @@ func (app *resourceRepository) retrieveTokenByHash(
 
 						// reuse this
 						nextElements = []groups.Element{}
-						resourceMethods = append(resourceMethods, currentGroup.Methods().Builder())
+						resourceMethods = append(resourceMethods, currentGroup.Methods())
 						chainList := currentGroup.Chains().List()
 						for _, oneChain := range chainList {
 							nextElements = append(nextElements, oneChain.Element())
@@ -281,7 +281,7 @@ func (app *resourceRepository) retrieveTokenByHash(
 
 					// add the value to the builder:
 					errorString = ""
-					fieldName := resourceMethod.Field().Builder()
+					fieldName := resourceMethod.Builder()
 					retValue, err = callMethodOnInstanceWithParams(
 						fieldName,
 						retValue,

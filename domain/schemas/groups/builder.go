@@ -3,7 +3,7 @@ package groups
 import (
 	"errors"
 
-	"steve.care/network/domain/schemas/groups/methods"
+	"steve.care/network/domain/schemas/groups/resources/methods"
 )
 
 type builder struct {

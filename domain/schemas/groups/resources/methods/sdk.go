@@ -1,9 +1,5 @@
 package methods
 
-import (
-	field_methods "steve.care/network/domain/schemas/groups/resources/fields/methods"
-)
-
 // NewBuilder creates a new builder instance
 func NewBuilder() Builder {
 	return createBuilder()
@@ -14,7 +10,7 @@ type Builder interface {
 	Create() Builder
 	WithInitialize(initialize string) Builder
 	WithTrigger(trigger string) Builder
-	WithField(field field_methods.Methods) Builder
+	WithBuilder(builder string) Builder
 	Now() (Methods, error)
 }
 
@@ -22,5 +18,5 @@ type Builder interface {
 type Methods interface {
 	Initialize() string
 	Trigger() string
-	Field() field_methods.Methods
+	Builder() string
 }

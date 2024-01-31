@@ -3,7 +3,6 @@ package sqllites
 import (
 	"steve.care/network/domain/schemas"
 	"steve.care/network/domain/schemas/groups"
-	group_methods "steve.care/network/domain/schemas/groups/methods"
 	"steve.care/network/domain/schemas/groups/resources"
 	"steve.care/network/domain/schemas/groups/resources/fields"
 	field_methods "steve.care/network/domain/schemas/groups/resources/fields/methods"
@@ -18,7 +17,6 @@ type schemaFactory struct {
 	groupBuilder           groups.Builder
 	methodChainsBuilder    groups.MethodChainsBuilder
 	methodChainBuilder     groups.MethodChainBuilder
-	methodBuilder          group_methods.Builder
 	elementBuilder         groups.ElementBuilder
 	resourceBuilder        resources.Builder
 	builderMethodsBuilder  resource_methods.Builder
@@ -39,7 +37,6 @@ func createSchemaFactory(
 	groupBuilder groups.Builder,
 	methodChainsBuilder groups.MethodChainsBuilder,
 	methodChainBuilder groups.MethodChainBuilder,
-	methodBuilder group_methods.Builder,
 	elementBuilder groups.ElementBuilder,
 	resourceBuilder resources.Builder,
 	builderMethodsBuilder methods.Builder,
@@ -59,7 +56,6 @@ func createSchemaFactory(
 		groupBuilder:           groupBuilder,
 		methodChainsBuilder:    methodChainsBuilder,
 		methodChainBuilder:     methodChainBuilder,
-		methodBuilder:          methodBuilder,
 		elementBuilder:         elementBuilder,
 		resourceBuilder:        resourceBuilder,
 		builderMethodsBuilder:  builderMethodsBuilder,
@@ -93,15 +89,10 @@ func (app *schemaFactory) Create() (schemas.Schema, error) {
 	return app.schema(
 		app.group(
 			"resources",
-			app.groupMethods(
-				app.builderMethods(
-					"Create",
-					"Now",
-					app.fieldMethods(
-						[]string{"Dashboard"},
-						"WithDashboard",
-					),
-				),
+			app.builderMethods(
+				"Create",
+				"Now",
+				"WithDashboard",
 			),
 			app.chains([]groups.MethodChain{
 				app.chain(
@@ -123,15 +114,10 @@ func (app *schemaFactory) resourcesDashboards(
 ) groups.Group {
 	return app.group(
 		"dashboards",
-		app.groupMethods(
-			app.builderMethods(
-				"Create",
-				"Now",
-				app.fieldMethods(
-					[]string{"Viewport"},
-					"WithViewport",
-				),
-			),
+		app.builderMethods(
+			"Create",
+			"Now",
+			"WithViewport",
 		),
 		app.chains([]groups.MethodChain{
 			app.chain(
@@ -164,10 +150,7 @@ func (app *schemaFactory) resourcesDashboards(
 						app.builderMethods(
 							"Create",
 							"Now",
-							app.fieldMethods(
-								[]string{"Viewport"},
-								"WithViewport",
-							),
+							"WithViewport",
 						),
 					),
 				),
@@ -192,7 +175,7 @@ func (app *schemaFactory) schema(
 
 func (app *schemaFactory) group(
 	name string,
-	methods group_methods.Methods,
+	methods resource_methods.Methods,
 	chains groups.MethodChains,
 ) groups.Group {
 	ins, err := app.groupBuilder.Create().
@@ -231,20 +214,6 @@ func (app *schemaFactory) chain(
 		WithCondition(condition).
 		WithRetriever(retriever).
 		WithElement(element).
-		Now()
-
-	if err != nil {
-		panic(err)
-	}
-
-	return ins
-}
-
-func (app *schemaFactory) groupMethods(
-	builder resource_methods.Methods,
-) group_methods.Methods {
-	ins, err := app.methodBuilder.Create().
-		WithBuilder(builder).
 		Now()
 
 	if err != nil {
@@ -325,12 +294,12 @@ func (app schemaFactory) resource(
 func (app *schemaFactory) builderMethods(
 	initialize string,
 	trigger string,
-	field field_methods.Methods,
+	builder string,
 ) resource_methods.Methods {
 	ins, err := app.builderMethodsBuilder.Create().
 		WithInitialize(initialize).
 		WithTrigger(trigger).
-		WithField(field).
+		WithBuilder(builder).
 		Now()
 
 	if err != nil {

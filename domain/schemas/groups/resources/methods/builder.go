@@ -2,21 +2,19 @@ package methods
 
 import (
 	"errors"
-
-	field_methods "steve.care/network/domain/schemas/groups/resources/fields/methods"
 )
 
 type builder struct {
 	initialize string
 	trigger    string
-	field      field_methods.Methods
+	builder    string
 }
 
 func createBuilder() Builder {
 	out := builder{
 		initialize: "",
 		trigger:    "",
-		field:      nil,
+		builder:    "",
 	}
 
 	return &out
@@ -39,9 +37,9 @@ func (app *builder) WithTrigger(trigger string) Builder {
 	return app
 }
 
-// WithField adds a field to the builder
-func (app *builder) WithField(field field_methods.Methods) Builder {
-	app.field = field
+// WithBuilder adds a builder to the builder
+func (app *builder) WithBuilder(builder string) Builder {
+	app.builder = builder
 	return app
 }
 
@@ -55,9 +53,9 @@ func (app *builder) Now() (Methods, error) {
 		return nil, errors.New("the trigger is mandatory in order to build a Methods instance")
 	}
 
-	if app.field == nil {
-		return nil, errors.New("the field is mandatory in order to build a Methods instance")
+	if app.builder == "" {
+		return nil, errors.New("the builder is mandatory in order to build a Methods instance")
 	}
 
-	return createMethods(app.initialize, app.trigger, app.field), nil
+	return createMethods(app.initialize, app.trigger, app.builder), nil
 }
