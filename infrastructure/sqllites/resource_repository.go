@@ -477,10 +477,10 @@ func (app *resourceRepository) retrieveResourceValue(
 		// pass the fields:
 		for idx, oneField := range fieldsList {
 			errorString := ""
-			fieldMethod := oneField.Methods().Builder()
+			elementMethod := oneField.Methods().Element()
 			pInterface := propertyValues[idx].(*interface{})
 			retValue, err := callMethodOnInstanceWithParams(
-				fieldMethod,
+				elementMethod,
 				builderIns,
 				&errorString,
 				[]interface{}{

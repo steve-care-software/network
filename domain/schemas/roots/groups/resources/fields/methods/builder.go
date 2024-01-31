@@ -4,13 +4,13 @@ import "errors"
 
 type builder struct {
 	retriever []string
-	builder   string
+	element   string
 }
 
 func createBuilder() Builder {
 	out := builder{
 		retriever: nil,
-		builder:   "",
+		element:   "",
 	}
 
 	return &out
@@ -27,9 +27,9 @@ func (app *builder) WithRetriever(retriever []string) Builder {
 	return app
 }
 
-// WithBuilder adds a builder to the builder
-func (app *builder) WithBuilder(builder string) Builder {
-	app.builder = builder
+// WithElement adds an element to the builder
+func (app *builder) WithElement(element string) Builder {
+	app.element = element
 	return app
 }
 
@@ -43,9 +43,9 @@ func (app *builder) Now() (Methods, error) {
 		return nil, errors.New("the retriever is mandatory in order to build a Methods instance")
 	}
 
-	if app.builder == "" {
-		return nil, errors.New("the builder is mandatory in order to build a Methods instance")
+	if app.element == "" {
+		return nil, errors.New("the element method is mandatory in order to build a Methods instance")
 	}
 
-	return createMethods(app.retriever, app.builder), nil
+	return createMethods(app.retriever, app.element), nil
 }

@@ -2,16 +2,16 @@ package methods
 
 type methods struct {
 	retriever []string
-	builder   string
+	element   string
 }
 
 func createMethods(
 	retriever []string,
-	builder string,
+	element string,
 ) Methods {
 	out := methods{
 		retriever: retriever,
-		builder:   builder,
+		element:   element,
 	}
 
 	return &out
@@ -22,7 +22,7 @@ func (obj *methods) Retriever() []string {
 	return obj.retriever
 }
 
-// Retriever returns the builder method
-func (obj *methods) Builder() string {
-	return obj.builder
+// Retriever returns the element method
+func (obj *methods) Element() string {
+	return obj.element
 }

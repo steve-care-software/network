@@ -9,12 +9,12 @@ func NewBuilder() Builder {
 type Builder interface {
 	Create() Builder
 	WithRetriever(retriever []string) Builder
-	WithBuilder(builder string) Builder
+	WithElement(element string) Builder
 	Now() (Methods, error)
 }
 
 // Methods represents field methods
 type Methods interface {
 	Retriever() []string
-	Builder() string
+	Element() string
 }

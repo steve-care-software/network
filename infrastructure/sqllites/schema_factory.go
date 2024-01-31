@@ -463,11 +463,11 @@ func (app *schemaFactory) fieldTypeWithKind(
 
 func (app *schemaFactory) fieldMethods(
 	retriever []string,
-	builder string,
+	element string,
 ) field_methods.Methods {
 	ins, err := app.fieldMethodsBuilder.Create().
 		WithRetriever(retriever).
-		WithBuilder(builder).
+		WithElement(element).
 		Now()
 
 	if err != nil {
