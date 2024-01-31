@@ -15,10 +15,12 @@ import (
 	token_dashboards "steve.care/network/domain/programs/blocks/transactions/executions/actions/resources/tokens/dashboards"
 	commands_layers "steve.care/network/domain/programs/logics/libraries/layers"
 	"steve.care/network/domain/schemas"
-	"steve.care/network/domain/schemas/groups"
-	schema_resources "steve.care/network/domain/schemas/groups/resources"
-	field_types "steve.care/network/domain/schemas/groups/resources/fields/types"
-	schema_resources_methods "steve.care/network/domain/schemas/groups/resources/methods"
+	"steve.care/network/domain/schemas/roots"
+	"steve.care/network/domain/schemas/roots/groups"
+	schema_group_methods "steve.care/network/domain/schemas/roots/groups/methods"
+	schema_resources "steve.care/network/domain/schemas/roots/groups/resources"
+	field_types "steve.care/network/domain/schemas/roots/groups/resources/fields/types"
+	schema_root_methods "steve.care/network/domain/schemas/roots/methods"
 )
 
 type resourceRepository struct {
@@ -112,7 +114,7 @@ func (app *resourceRepository) RetrieveByHash(hash hash.Hash) (resources.Resourc
 		return nil, err
 	}
 
-	token, err := app.retrieveTokenByHash(*pTokenHash, app.schema.Group())
+	token, err := app.retrieveTokenByHash(*pTokenHash, app.schema.Root())
 	if err != nil {
 		return nil, err
 	}
@@ -130,9 +132,9 @@ func (app *resourceRepository) RetrieveByHash(hash hash.Hash) (resources.Resourc
 
 func (app *resourceRepository) retrieveTokenByHash(
 	hash hash.Hash,
-	group groups.Group,
+	root roots.Root,
 ) (tokens.Token, error) {
-	fieldNames, values, err := app.fetchRetrievalFields(group)
+	fieldNames, values, err := app.fetchRetrievalFields(root)
 	if err != nil {
 		return nil, err
 	}
@@ -175,18 +177,19 @@ func (app *resourceRepository) retrieveTokenByHash(
 		keynames := []string{}
 		parentName := ""
 		var resourceSchema schema_resources.Resource
-		currentGroup := group
+		var currentGroup groups.Group
 		nextElements := []groups.Element{}
-		resourceMethods := []schema_resources_methods.Methods{}
+		groupMethods := []schema_group_methods.Methods{}
+		rootMethods := []schema_root_methods.Methods{}
 		names := strings.Split(oneFieldName, groupNameDelimiterForTableNames)
 		for _, oneName := range names {
-			if len(nextElements) <= 0 {
-				if currentGroup.Name() == oneName {
+			if currentGroup == nil {
+				if root.Name() == oneName {
 
 					// reuse this
 					nextElements = []groups.Element{}
-					resourceMethods = append(resourceMethods, currentGroup.Methods())
-					chainList := currentGroup.Chains().List()
+					rootMethods = append(rootMethods, root.Methods())
+					chainList := root.Chains().List()
 					for _, oneChain := range chainList {
 						nextElements = append(nextElements, oneChain.Element())
 					}
@@ -195,8 +198,6 @@ func (app *resourceRepository) retrieveTokenByHash(
 					keynames = append(keynames, parentName)
 					continue
 				}
-
-				// error
 			}
 
 			for _, oneElement := range nextElements {
@@ -207,7 +208,9 @@ func (app *resourceRepository) retrieveTokenByHash(
 
 						// reuse this
 						nextElements = []groups.Element{}
-						resourceMethods = append(resourceMethods, currentGroup.Methods())
+						currentGroupMethods := currentGroup.Methods()
+						groupMethods = append(groupMethods, currentGroupMethods)
+						rootMethods = append(rootMethods, currentGroupMethods)
 						chainList := currentGroup.Chains().List()
 						for _, oneChain := range chainList {
 							nextElements = append(nextElements, oneChain.Element())
@@ -225,7 +228,7 @@ func (app *resourceRepository) retrieveTokenByHash(
 					resource := oneElement.Resource()
 					if resource.Name() == oneName {
 						resourceSchema = resource
-						resourceMethods = append(resourceMethods, resourceSchema.Builder())
+						groupMethods = append(groupMethods, resourceSchema.Builder())
 
 						parentName = fmt.Sprintf("%s%s%s", parentName, groupNameDelimiterForTableNames, oneName)
 						keynames = append(keynames, parentName)
@@ -259,16 +262,17 @@ func (app *resourceRepository) retrieveTokenByHash(
 				return nil, err
 			}
 
-			length := len(resourceMethods) - 1
+			length := len(groupMethods)
 			for i := 0; i < length; i++ {
 				lastIndex := length - i - 1
 				keyname := keynames[lastIndex]
-				resourceMethod := resourceMethods[lastIndex]
-				resourceMethodElement := resourceMethods[lastIndex+1]
+				rootMethod := rootMethods[lastIndex]
+				groupMethod := groupMethods[lastIndex]
 				if builderIns, ok := app.builders[keyname]; ok {
+
 					// initialize the builder:
 					errorString := ""
-					initializeName := resourceMethod.Initialize()
+					initializeName := rootMethod.Initialize()
 					retValue, err := callMethodsOnInstance(
 						[]string{
 							initializeName,
@@ -286,7 +290,7 @@ func (app *resourceRepository) retrieveTokenByHash(
 
 					// add the value to the builder:
 					errorString = ""
-					fieldName := resourceMethodElement.Element()
+					fieldName := groupMethod.Element()
 					retValue, err = callMethodOnInstanceWithParams(
 						fieldName,
 						retValue,
@@ -306,7 +310,7 @@ func (app *resourceRepository) retrieveTokenByHash(
 
 					// trigger the builder:
 					errorString = ""
-					triggerName := resourceMethod.Trigger()
+					triggerName := rootMethod.Trigger()
 					retValue, err = callMethodsOnInstance(
 						[]string{
 							triggerName,
@@ -344,7 +348,7 @@ func (app *resourceRepository) retrieveTokenByHash(
 }
 
 func (app *resourceRepository) fetchRetrievalFields(
-	group groups.Group,
+	root roots.Root,
 ) ([]string, []interface{}, error) {
 	var value []byte
 	return []string{

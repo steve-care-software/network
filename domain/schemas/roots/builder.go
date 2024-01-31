@@ -1,14 +1,15 @@
-package groups
+package roots
 
 import (
 	"errors"
 
-	"steve.care/network/domain/schemas/groups/resources/methods"
+	"steve.care/network/domain/schemas/roots/groups"
+	"steve.care/network/domain/schemas/roots/methods"
 )
 
 type builder struct {
 	name    string
-	chains  MethodChains
+	chains  groups.MethodChains
 	methods methods.Methods
 }
 
@@ -34,7 +35,7 @@ func (app *builder) WithName(name string) Builder {
 }
 
 // WithChains add chains to the builder
-func (app *builder) WithChains(chains MethodChains) Builder {
+func (app *builder) WithChains(chains groups.MethodChains) Builder {
 	app.chains = chains
 	return app
 }
@@ -45,19 +46,19 @@ func (app *builder) WithMethods(methods methods.Methods) Builder {
 	return app
 }
 
-// Now builds a new Group instance
-func (app *builder) Now() (Group, error) {
+// Now builds a new Root instance
+func (app *builder) Now() (Root, error) {
 	if app.name == "" {
-		return nil, errors.New("the name is mandatory in order to build a Group instance")
+		return nil, errors.New("the name is mandatoryin order to build a Root instance")
 	}
 
 	if app.chains == nil {
-		return nil, errors.New("the chains is mandatory in order to build a Group instance")
+		return nil, errors.New("the chains is mandatoryin order to build a Root instance")
 	}
 
 	if app.methods == nil {
-		return nil, errors.New("the methods is mandatory in order to build a Group instance")
+		return nil, errors.New("the methods is mandatoryin order to build a Root instance")
 	}
 
-	return createGroup(app.name, app.chains, app.methods), nil
+	return createRoot(app.name, app.chains, app.methods), nil
 }

@@ -11,8 +11,9 @@ import (
 	"steve.care/network/domain/programs/blocks/transactions/executions/actions/resources"
 	"steve.care/network/domain/programs/blocks/transactions/executions/actions/resources/tokens"
 	"steve.care/network/domain/schemas"
-	schema_groups "steve.care/network/domain/schemas/groups"
-	schema_resources "steve.care/network/domain/schemas/groups/resources"
+	"steve.care/network/domain/schemas/roots"
+	schema_groups "steve.care/network/domain/schemas/roots/groups"
+	schema_resources "steve.care/network/domain/schemas/roots/groups/resources"
 )
 
 type resourceService struct {
@@ -58,8 +59,8 @@ func (app *resourceService) Insert(ins resources.Resource) error {
 
 func (app *resourceService) insertToken(ins tokens.Token) error {
 	content := ins.Content()
-	group := app.schema.Group()
-	fkHash, fieldName, err := app.insertGroup(content, group, "")
+	root := app.schema.Root()
+	fkHash, fieldName, err := app.insertRoot(content, root)
 	if err != nil {
 		return err
 	}
@@ -71,6 +72,15 @@ func (app *resourceService) insertToken(ins tokens.Token) error {
 	}
 
 	return nil
+}
+
+func (app *resourceService) insertRoot(
+	ins interface{},
+	root roots.Root,
+) (*hash.Hash, string, error) {
+	name := root.Name()
+	chains := root.Chains()
+	return app.insertChains(ins, chains, name)
 }
 
 func (app *resourceService) insertGroup(

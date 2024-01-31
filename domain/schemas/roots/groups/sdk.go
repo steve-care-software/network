@@ -1,8 +1,8 @@
 package groups
 
 import (
-	"steve.care/network/domain/schemas/groups/resources"
-	"steve.care/network/domain/schemas/groups/resources/methods"
+	"steve.care/network/domain/schemas/roots/groups/methods"
+	"steve.care/network/domain/schemas/roots/groups/resources"
 )
 
 // NewBuilder creates a new group builder

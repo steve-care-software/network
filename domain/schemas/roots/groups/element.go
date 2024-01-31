@@ -1,6 +1,6 @@
 package groups
 
-import "steve.care/network/domain/schemas/groups/resources"
+import "steve.care/network/domain/schemas/roots/groups/resources"
 
 type element struct {
 	group    Group

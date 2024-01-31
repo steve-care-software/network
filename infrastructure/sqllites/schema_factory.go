@@ -2,24 +2,28 @@ package sqllites
 
 import (
 	"steve.care/network/domain/schemas"
-	"steve.care/network/domain/schemas/groups"
-	"steve.care/network/domain/schemas/groups/resources"
-	"steve.care/network/domain/schemas/groups/resources/fields"
-	field_methods "steve.care/network/domain/schemas/groups/resources/fields/methods"
-	field_types "steve.care/network/domain/schemas/groups/resources/fields/types"
-	"steve.care/network/domain/schemas/groups/resources/fields/types/dependencies"
-	"steve.care/network/domain/schemas/groups/resources/methods"
-	resource_methods "steve.care/network/domain/schemas/groups/resources/methods"
+	"steve.care/network/domain/schemas/roots"
+	"steve.care/network/domain/schemas/roots/groups"
+	"steve.care/network/domain/schemas/roots/groups/methods"
+	group_methods "steve.care/network/domain/schemas/roots/groups/methods"
+	"steve.care/network/domain/schemas/roots/groups/resources"
+	"steve.care/network/domain/schemas/roots/groups/resources/fields"
+	field_methods "steve.care/network/domain/schemas/roots/groups/resources/fields/methods"
+	field_types "steve.care/network/domain/schemas/roots/groups/resources/fields/types"
+	"steve.care/network/domain/schemas/roots/groups/resources/fields/types/dependencies"
+	root_methods "steve.care/network/domain/schemas/roots/methods"
 )
 
 type schemaFactory struct {
 	builder                schemas.Builder
+	rootBuilder            roots.Builder
+	rootMethodBuilder      root_methods.Builder
 	groupBuilder           groups.Builder
 	methodChainsBuilder    groups.MethodChainsBuilder
 	methodChainBuilder     groups.MethodChainBuilder
 	elementBuilder         groups.ElementBuilder
 	resourceBuilder        resources.Builder
-	builderMethodsBuilder  resource_methods.Builder
+	groupMethodsBuilder    group_methods.Builder
 	connectionsBuilder     resources.ConnectionsBuilder
 	connectionBuilder      resources.ConnectionBuilder
 	pointerBuilder         resources.PointerBuilder
@@ -34,12 +38,14 @@ type schemaFactory struct {
 
 func createSchemaFactory(
 	builder schemas.Builder,
+	rootBuilder roots.Builder,
+	rootMethodBuilder root_methods.Builder,
 	groupBuilder groups.Builder,
 	methodChainsBuilder groups.MethodChainsBuilder,
 	methodChainBuilder groups.MethodChainBuilder,
 	elementBuilder groups.ElementBuilder,
 	resourceBuilder resources.Builder,
-	builderMethodsBuilder methods.Builder,
+	groupMethodsBuilder methods.Builder,
 	connectionsBuilder resources.ConnectionsBuilder,
 	connectionBuilder resources.ConnectionBuilder,
 	pointerBuilder resources.PointerBuilder,
@@ -53,12 +59,14 @@ func createSchemaFactory(
 ) schemas.Factory {
 	out := schemaFactory{
 		builder:                builder,
+		rootBuilder:            rootBuilder,
+		rootMethodBuilder:      rootMethodBuilder,
 		groupBuilder:           groupBuilder,
 		methodChainsBuilder:    methodChainsBuilder,
 		methodChainBuilder:     methodChainBuilder,
 		elementBuilder:         elementBuilder,
 		resourceBuilder:        resourceBuilder,
-		builderMethodsBuilder:  builderMethodsBuilder,
+		groupMethodsBuilder:    groupMethodsBuilder,
 		connectionsBuilder:     connectionsBuilder,
 		connectionBuilder:      connectionBuilder,
 		pointerBuilder:         pointerBuilder,
@@ -87,9 +95,9 @@ func (app *schemaFactory) Create() (schemas.Schema, error) {
 	)
 
 	return app.schema(
-		app.group(
+		app.root(
 			"tokens",
-			app.builderMethods(
+			app.rootMethods(
 				"Create",
 				"Now",
 			),
@@ -113,7 +121,7 @@ func (app *schemaFactory) tokensDashboards(
 ) groups.Group {
 	return app.group(
 		"dashboards",
-		app.builderMethodsWithElement(
+		app.groupMethods(
 			"Create",
 			"Now",
 			"WithDashboard",
@@ -146,7 +154,7 @@ func (app *schemaFactory) tokensDashboards(
 								false,
 							),
 						}),
-						app.builderMethodsWithElement(
+						app.groupMethods(
 							"Create",
 							"Now",
 							"WithViewport",
@@ -159,10 +167,28 @@ func (app *schemaFactory) tokensDashboards(
 }
 
 func (app *schemaFactory) schema(
-	group groups.Group,
+	root roots.Root,
 ) schemas.Schema {
 	ins, err := app.builder.Create().
-		WithGroup(group).
+		WithRoot(root).
+		Now()
+
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+func (app *schemaFactory) root(
+	name string,
+	methods root_methods.Methods,
+	chains groups.MethodChains,
+) roots.Root {
+	ins, err := app.rootBuilder.Create().
+		WithName(name).
+		WithMethods(methods).
+		WithChains(chains).
 		Now()
 
 	if err != nil {
@@ -174,7 +200,7 @@ func (app *schemaFactory) schema(
 
 func (app *schemaFactory) group(
 	name string,
-	methods resource_methods.Methods,
+	methods group_methods.Methods,
 	chains groups.MethodChains,
 ) groups.Group {
 	ins, err := app.groupBuilder.Create().
@@ -290,12 +316,12 @@ func (app schemaFactory) resource(
 	return ins
 }
 
-func (app *schemaFactory) builderMethodsWithElement(
+func (app *schemaFactory) groupMethods(
 	initialize string,
 	trigger string,
 	element string,
-) resource_methods.Methods {
-	ins, err := app.builderMethodsBuilder.Create().
+) group_methods.Methods {
+	ins, err := app.groupMethodsBuilder.Create().
 		WithInitialize(initialize).
 		WithTrigger(trigger).
 		WithElement(element).
@@ -308,11 +334,11 @@ func (app *schemaFactory) builderMethodsWithElement(
 	return ins
 }
 
-func (app *schemaFactory) builderMethods(
+func (app *schemaFactory) rootMethods(
 	initialize string,
 	trigger string,
-) resource_methods.Methods {
-	ins, err := app.builderMethodsBuilder.Create().
+) root_methods.Methods {
+	ins, err := app.rootMethodBuilder.Create().
 		WithInitialize(initialize).
 		WithTrigger(trigger).
 		Now()

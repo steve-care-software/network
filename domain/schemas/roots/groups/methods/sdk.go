@@ -1,5 +1,9 @@
 package methods
 
+import (
+	root_methods "steve.care/network/domain/schemas/roots/methods"
+)
+
 // NewBuilder creates a new builder instance
 func NewBuilder() Builder {
 	return createBuilder()
@@ -16,8 +20,6 @@ type Builder interface {
 
 // Methods represents a methods
 type Methods interface {
-	Initialize() string
-	Trigger() string
-	HasElement() bool
+	root_methods.Methods
 	Element() string
 }

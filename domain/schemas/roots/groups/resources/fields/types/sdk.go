@@ -1,6 +1,6 @@
 package types
 
-import "steve.care/network/domain/schemas/groups/resources/fields/types/dependencies"
+import "steve.care/network/domain/schemas/roots/groups/resources/fields/types/dependencies"
 
 const (
 	// KindInteger represents the integer kind

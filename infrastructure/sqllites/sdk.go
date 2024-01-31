@@ -15,13 +15,15 @@ import (
 	token_dashboards "steve.care/network/domain/programs/blocks/transactions/executions/actions/resources/tokens/dashboards"
 	commands_layers "steve.care/network/domain/programs/logics/libraries/layers"
 	"steve.care/network/domain/schemas"
-	"steve.care/network/domain/schemas/groups"
-	schema_resources "steve.care/network/domain/schemas/groups/resources"
-	"steve.care/network/domain/schemas/groups/resources/fields"
-	field_methods "steve.care/network/domain/schemas/groups/resources/fields/methods"
-	field_types "steve.care/network/domain/schemas/groups/resources/fields/types"
-	"steve.care/network/domain/schemas/groups/resources/fields/types/dependencies"
-	"steve.care/network/domain/schemas/groups/resources/methods"
+	"steve.care/network/domain/schemas/roots"
+	"steve.care/network/domain/schemas/roots/groups"
+	"steve.care/network/domain/schemas/roots/groups/methods"
+	schema_resources "steve.care/network/domain/schemas/roots/groups/resources"
+	"steve.care/network/domain/schemas/roots/groups/resources/fields"
+	field_methods "steve.care/network/domain/schemas/roots/groups/resources/fields/methods"
+	field_types "steve.care/network/domain/schemas/roots/groups/resources/fields/types"
+	"steve.care/network/domain/schemas/roots/groups/resources/fields/types/dependencies"
+	root_methods "steve.care/network/domain/schemas/roots/methods"
 )
 
 const notActiveErrorMsg = "the application NEVER began a transactional state, therefore that method cannot be executed"
@@ -137,6 +139,8 @@ func NewSchemaFactory(
 	keyFieldMethodNames []string,
 ) schemas.Factory {
 	builder := schemas.NewBuilder()
+	rootBuilder := roots.NewBuilder()
+	rootMethodBuilder := root_methods.NewBuilder()
 	groupBuilder := groups.NewBuilder()
 	methodChainsBuilder := groups.NewMethodChainsBuilder()
 	methodChainBuilder := groups.NewMethodChainBuilder()
@@ -153,6 +157,8 @@ func NewSchemaFactory(
 	fieldDependencyBuilder := dependencies.NewBuilder()
 	return createSchemaFactory(
 		builder,
+		rootBuilder,
+		rootMethodBuilder,
 		groupBuilder,
 		methodChainsBuilder,
 		methodChainBuilder,

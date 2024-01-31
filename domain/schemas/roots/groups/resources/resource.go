@@ -1,8 +1,8 @@
 package resources
 
 import (
-	"steve.care/network/domain/schemas/groups/resources/fields"
-	"steve.care/network/domain/schemas/groups/resources/methods"
+	"steve.care/network/domain/schemas/roots/groups/resources/fields"
+	"steve.care/network/domain/schemas/roots/groups/methods"
 )
 
 type resource struct {

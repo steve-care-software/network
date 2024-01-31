@@ -3,8 +3,8 @@ package fields
 import (
 	"errors"
 
-	"steve.care/network/domain/schemas/groups/resources/fields/methods"
-	"steve.care/network/domain/schemas/groups/resources/fields/types"
+	"steve.care/network/domain/schemas/roots/groups/resources/fields/methods"
+	"steve.care/network/domain/schemas/roots/groups/resources/fields/types"
 )
 
 type fieldBuilder struct {

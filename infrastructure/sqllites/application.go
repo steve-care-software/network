@@ -14,10 +14,11 @@ import (
 	"steve.care/network/domain/accounts"
 	"steve.care/network/domain/encryptors"
 	"steve.care/network/domain/schemas"
-	"steve.care/network/domain/schemas/groups"
-	"steve.care/network/domain/schemas/groups/resources"
-	"steve.care/network/domain/schemas/groups/resources/fields"
-	field_types "steve.care/network/domain/schemas/groups/resources/fields/types"
+	"steve.care/network/domain/schemas/roots"
+	"steve.care/network/domain/schemas/roots/groups"
+	"steve.care/network/domain/schemas/roots/groups/resources"
+	"steve.care/network/domain/schemas/roots/groups/resources/fields"
+	field_types "steve.care/network/domain/schemas/roots/groups/resources/fields/types"
 )
 
 type tableMetaData struct {
@@ -72,13 +73,13 @@ func (app *application) Init(name string) error {
 	}
 
 	// init the schema:
-	group := app.schema.Group()
-	tableMetaDataList, err := app.initGroup("", group)
+	root := app.schema.Root()
+	tableMetaDataList, err := app.initRoot(root)
 	if err != nil {
 		return err
 	}
 
-	connectionsMap, err := app.initGroupForConnections(group, tableMetaDataList)
+	connectionsMap, err := app.initRootForConnections(root, tableMetaDataList)
 	if err != nil {
 		return err
 	}
@@ -173,6 +174,11 @@ func (app *application) generateSchema(metaData []*tableMetaData, connections ma
 
 	schema = fmt.Sprintf("%s\n\n%s\n%s\n\n%s\n%s", schema, dropTokenTable, createTokenTable, dropResourceTable, createResourceTable)
 	return schema, nil
+}
+
+func (app *application) initRootForConnections(root roots.Root, metaData []*tableMetaData) (map[string][]string, error) {
+	chains := root.Chains()
+	return app.initMethodChainsForConnections(chains, metaData)
 }
 
 func (app *application) initGroupForConnections(group groups.Group, metaData []*tableMetaData) (map[string][]string, error) {
@@ -278,6 +284,12 @@ func (app *application) getTableNameByResourceName(resourceName string, metaData
 
 	str := fmt.Sprintf("there is no resource named '%s' in the provided schema", resourceName)
 	return "", errors.New(str)
+}
+
+func (app *application) initRoot(root roots.Root) ([]*tableMetaData, error) {
+	name := root.Name()
+	chains := root.Chains()
+	return app.initChains(name, chains)
 }
 
 func (app *application) initGroup(previousGroupName string, group groups.Group) ([]*tableMetaData, error) {

@@ -1,8 +1,6 @@
 package schemas
 
-import (
-	"steve.care/network/domain/schemas/groups"
-)
+import "steve.care/network/domain/schemas/roots"
 
 // NewBuilder creates a new builder
 func NewBuilder() Builder {
@@ -17,7 +15,7 @@ type Factory interface {
 // Builder represents a schema builder
 type Builder interface {
 	Create() Builder
-	WithGroup(group groups.Group) Builder
+	WithRoot(root roots.Root) Builder
 	WithPrevious(previous Schema) Builder
 	Now() (Schema, error)
 }
@@ -25,7 +23,7 @@ type Builder interface {
 // Schema represents a schema
 type Schema interface {
 	Version() uint
-	Group() groups.Group
+	Root() roots.Root
 	HasPrevious() bool
 	Previous() Schema
 }

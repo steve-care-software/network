@@ -3,17 +3,17 @@ package schemas
 import (
 	"errors"
 
-	"steve.care/network/domain/schemas/groups"
+	"steve.care/network/domain/schemas/roots"
 )
 
 type builder struct {
-	group    groups.Group
+	root     roots.Root
 	previous Schema
 }
 
 func createBuilder() Builder {
 	out := builder{
-		group:    nil,
+		root:     nil,
 		previous: nil,
 	}
 
@@ -25,9 +25,9 @@ func (app *builder) Create() Builder {
 	return createBuilder()
 }
 
-// WithGroup adds a group to the builder
-func (app *builder) WithGroup(group groups.Group) Builder {
-	app.group = group
+// WithRoot adds a root to the builder
+func (app *builder) WithRoot(root roots.Root) Builder {
+	app.root = root
 	return app
 }
 
@@ -39,8 +39,8 @@ func (app *builder) WithPrevious(previous Schema) Builder {
 
 // Now builds a new Schema instance
 func (app *builder) Now() (Schema, error) {
-	if app.group == nil {
-		return nil, errors.New("the group is mandatory in order to build a Schema instance")
+	if app.root == nil {
+		return nil, errors.New("the root is mandatory in order to build a Schema instance")
 	}
 
 	version := uint(0)
@@ -49,5 +49,5 @@ func (app *builder) Now() (Schema, error) {
 		version = previousVersion + 1
 	}
 
-	return createSchema(version, app.group), nil
+	return createSchema(version, app.root), nil
 }

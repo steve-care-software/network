@@ -3,7 +3,7 @@ package groups
 import (
 	"errors"
 
-	"steve.care/network/domain/schemas/groups/resources"
+	"steve.care/network/domain/schemas/roots/groups/resources"
 )
 
 type elementBuilder struct {

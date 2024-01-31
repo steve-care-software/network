@@ -3,7 +3,7 @@ package types
 import (
 	"errors"
 
-	"steve.care/network/domain/schemas/groups/resources/fields/types/dependencies"
+	"steve.care/network/domain/schemas/roots/groups/resources/fields/types/dependencies"
 )
 
 type builder struct {
