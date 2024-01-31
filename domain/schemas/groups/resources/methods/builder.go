@@ -7,14 +7,14 @@ import (
 type builder struct {
 	initialize string
 	trigger    string
-	builder    string
+	element    string
 }
 
 func createBuilder() Builder {
 	out := builder{
 		initialize: "",
 		trigger:    "",
-		builder:    "",
+		element:    "",
 	}
 
 	return &out
@@ -37,9 +37,9 @@ func (app *builder) WithTrigger(trigger string) Builder {
 	return app
 }
 
-// WithBuilder adds a builder to the builder
-func (app *builder) WithBuilder(builder string) Builder {
-	app.builder = builder
+// WithElement adds an element to the builder
+func (app *builder) WithElement(element string) Builder {
+	app.element = element
 	return app
 }
 
@@ -53,9 +53,9 @@ func (app *builder) Now() (Methods, error) {
 		return nil, errors.New("the trigger is mandatory in order to build a Methods instance")
 	}
 
-	if app.builder == "" {
-		return nil, errors.New("the builder is mandatory in order to build a Methods instance")
+	if app.element != "" {
+		return createMethodsWithElement(app.initialize, app.trigger, app.element), nil
 	}
 
-	return createMethods(app.initialize, app.trigger, app.builder), nil
+	return createMethods(app.initialize, app.trigger), nil
 }

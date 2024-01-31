@@ -10,7 +10,7 @@ type Builder interface {
 	Create() Builder
 	WithInitialize(initialize string) Builder
 	WithTrigger(trigger string) Builder
-	WithBuilder(builder string) Builder
+	WithElement(element string) Builder
 	Now() (Methods, error)
 }
 
@@ -18,5 +18,6 @@ type Builder interface {
 type Methods interface {
 	Initialize() string
 	Trigger() string
-	Builder() string
+	HasElement() bool
+	Element() string
 }

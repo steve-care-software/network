@@ -88,18 +88,17 @@ func (app *schemaFactory) Create() (schemas.Schema, error) {
 
 	return app.schema(
 		app.group(
-			"resources",
+			"tokens",
 			app.builderMethods(
 				"Create",
 				"Now",
-				"WithDashboard",
 			),
 			app.chains([]groups.MethodChain{
 				app.chain(
 					"IsDashboard",
 					[]string{"Dashboard"},
 					app.elementWithGroup(
-						app.resourcesDashboards(
+						app.tokensDashboards(
 							key,
 						),
 					),
@@ -109,15 +108,15 @@ func (app *schemaFactory) Create() (schemas.Schema, error) {
 	), nil
 }
 
-func (app *schemaFactory) resourcesDashboards(
+func (app *schemaFactory) tokensDashboards(
 	key fields.Field,
 ) groups.Group {
 	return app.group(
 		"dashboards",
-		app.builderMethods(
+		app.builderMethodsWithElement(
 			"Create",
 			"Now",
-			"WithViewport",
+			"WithDashboard",
 		),
 		app.chains([]groups.MethodChain{
 			app.chain(
@@ -147,7 +146,7 @@ func (app *schemaFactory) resourcesDashboards(
 								false,
 							),
 						}),
-						app.builderMethods(
+						app.builderMethodsWithElement(
 							"Create",
 							"Now",
 							"WithViewport",
@@ -291,15 +290,31 @@ func (app schemaFactory) resource(
 	return ins
 }
 
-func (app *schemaFactory) builderMethods(
+func (app *schemaFactory) builderMethodsWithElement(
 	initialize string,
 	trigger string,
-	builder string,
+	element string,
 ) resource_methods.Methods {
 	ins, err := app.builderMethodsBuilder.Create().
 		WithInitialize(initialize).
 		WithTrigger(trigger).
-		WithBuilder(builder).
+		WithElement(element).
+		Now()
+
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+func (app *schemaFactory) builderMethods(
+	initialize string,
+	trigger string,
+) resource_methods.Methods {
+	ins, err := app.builderMethodsBuilder.Create().
+		WithInitialize(initialize).
+		WithTrigger(trigger).
 		Now()
 
 	if err != nil {

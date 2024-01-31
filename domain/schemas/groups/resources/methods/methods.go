@@ -3,18 +3,33 @@ package methods
 type methods struct {
 	initialize string
 	trigger    string
-	builder    string
+	element    string
 }
 
 func createMethods(
 	initialize string,
 	trigger string,
-	builder string,
+) Methods {
+	return createMethodsInternally(initialize, trigger, "")
+}
+
+func createMethodsWithElement(
+	initialize string,
+	trigger string,
+	element string,
+) Methods {
+	return createMethodsInternally(initialize, trigger, element)
+}
+
+func createMethodsInternally(
+	initialize string,
+	trigger string,
+	element string,
 ) Methods {
 	out := methods{
 		initialize: initialize,
 		trigger:    trigger,
-		builder:    builder,
+		element:    element,
 	}
 
 	return &out
@@ -30,7 +45,12 @@ func (obj *methods) Trigger() string {
 	return obj.trigger
 }
 
-// Builder returns the builder
-func (obj *methods) Builder() string {
-	return obj.builder
+// HasElement returns true if there is an element method
+func (obj *methods) HasElement() bool {
+	return obj.element != ""
+}
+
+// Element returns the element method
+func (obj *methods) Element() string {
+	return obj.element
 }

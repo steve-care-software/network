@@ -225,6 +225,10 @@ func (app *resourceRepository) retrieveTokenByHash(
 					resource := oneElement.Resource()
 					if resource.Name() == oneName {
 						resourceSchema = resource
+						resourceMethods = append(resourceMethods, resourceSchema.Builder())
+
+						parentName = fmt.Sprintf("%s%s%s", parentName, groupNameDelimiterForTableNames, oneName)
+						keynames = append(keynames, parentName)
 						break
 					}
 				}
@@ -255,11 +259,12 @@ func (app *resourceRepository) retrieveTokenByHash(
 				return nil, err
 			}
 
-			length := len(resourceMethods)
-			for idx := range resourceMethods {
-				index := length - idx - 1
-				keyname := keynames[index]
-				resourceMethod := resourceMethods[index]
+			length := len(resourceMethods) - 1
+			for i := 0; i < length; i++ {
+				lastIndex := length - i - 1
+				keyname := keynames[lastIndex]
+				resourceMethod := resourceMethods[lastIndex]
+				resourceMethodElement := resourceMethods[lastIndex+1]
 				if builderIns, ok := app.builders[keyname]; ok {
 					// initialize the builder:
 					errorString := ""
@@ -281,7 +286,7 @@ func (app *resourceRepository) retrieveTokenByHash(
 
 					// add the value to the builder:
 					errorString = ""
-					fieldName := resourceMethod.Builder()
+					fieldName := resourceMethodElement.Element()
 					retValue, err = callMethodOnInstanceWithParams(
 						fieldName,
 						retValue,
@@ -343,7 +348,7 @@ func (app *resourceRepository) fetchRetrievalFields(
 ) ([]string, []interface{}, error) {
 	var value []byte
 	return []string{
-			"resources_dashboards_viewport",
+			"tokens_dashboards_viewport",
 		},
 		[]interface{}{
 			&value,

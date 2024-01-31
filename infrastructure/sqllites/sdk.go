@@ -99,9 +99,9 @@ func NewResourceRepository(
 	viewportBuilder := viewports.NewBuilder()
 	cmdLayerBuilder := commands_layers.NewLayerBuilder()
 	builders := map[string]interface{}{
-		"resources_dashboards_viewport": viewports.NewBuilder(),
-		"resources_dashboards":          token_dashboards.NewBuilder(),
-		"resources":                     tokens.NewContentBuilder(),
+		"tokens_dashboards_viewport": viewports.NewBuilder(),
+		"tokens_dashboards":          token_dashboards.NewBuilder(),
+		"tokens":                     tokens.NewContentBuilder(),
 	}
 
 	return createResourceRepository(
