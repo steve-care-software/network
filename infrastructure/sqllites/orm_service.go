@@ -2,110 +2,76 @@ package sqllites
 
 import (
 	"database/sql"
-	"errors"
-	"fmt"
-	"reflect"
-	"strings"
 
 	"steve.care/network/domain/hash"
-	"steve.care/network/domain/orms/schemas"
-	"steve.care/network/domain/orms/schemas/roots"
-	schema_groups "steve.care/network/domain/orms/schemas/roots/groups"
-	schema_resources "steve.care/network/domain/orms/schemas/roots/groups/resources"
-	"steve.care/network/domain/programs/blocks/transactions/executions/actions/resources"
-	"steve.care/network/domain/programs/blocks/transactions/executions/actions/resources/tokens"
+	"steve.care/network/domain/orms"
+	"steve.care/network/domain/orms/skeletons"
 )
 
-type resourceService struct {
+type ormService struct {
 	hashAdapter hash.Adapter
-	schema      schemas.Schema
+	skeleton    skeletons.Skeleton
 	txPtr       *sql.Tx
 }
 
-func createResourceService(
+func createOrmService(
 	hashAdapter hash.Adapter,
-	schema schemas.Schema,
+	skeleton skeletons.Skeleton,
 	txPtr *sql.Tx,
-) resources.Service {
-	out := resourceService{
+) orms.Service {
+	out := ormService{
 		hashAdapter: hashAdapter,
-		schema:      schema,
+		skeleton:    skeleton,
 		txPtr:       txPtr,
 	}
 
 	return &out
 }
 
-// Insert inserts a resource
-func (app *resourceService) Insert(ins resources.Resource) error {
-	token := ins.Token()
-	err := app.insertToken(token)
-	if err != nil {
-		return err
-	}
-
-	sigBytes, err := ins.Signature().Bytes()
-	if err != nil {
-		return err
-	}
-
-	_, err = app.txPtr.Exec("INSERT INTO resource (hash, token, signature) VALUES (?, ?, ?)", ins.Hash().Bytes(), token.Hash().Bytes(), sigBytes)
-	if err != nil {
-		return err
-	}
-
+// Init initializes the service
+func (app *ormService) Init(name string) error {
 	return nil
 }
 
-func (app *resourceService) insertToken(ins tokens.Token) error {
-	content := ins.Content()
-	roots := app.schema.Roots()
-	fkHash, fieldName, err := app.insertRoots(content, roots)
-	if err != nil {
-		return err
-	}
-
-	queryStr := fmt.Sprintf("INSERT INTO token (hash, %s, created_on) VALUES (?, ?, ?)", fieldName)
-	_, err = app.txPtr.Exec(queryStr, ins.Hash().Bytes(), fkHash.Bytes(), ins.CreatedOn().Format(timeLayout))
-	if err != nil {
-		return err
-	}
-
+// Insert inserts an instance
+func (app *ormService) Insert(ins orms.Instance, path []string) error {
 	return nil
 }
 
-func (app *resourceService) insertRoots(
-	ins interface{},
+/*
+func (app *ormService) insertRoots(
+	ins orms.Instance,
 	roots roots.Roots,
-) (*hash.Hash, string, error) {
+) error {
 	list := roots.List()
 	for _, oneRoot := range list {
-		pHash, fieldName, err := app.insertRoot(ins, oneRoot)
+		err := app.insertRoot(ins, oneRoot)
 		if err != nil {
+			fmt.Printf("\n%s\n", err.Error())
 			continue
 		}
 
-		return pHash, fieldName, nil
+		return nil
 	}
 
-	return nil, "", errors.New("the instance could not be inserted using the provided schema")
+	return errors.New("the instance could not be inserted using the provided schema")
 }
 
-func (app *resourceService) insertRoot(
-	ins interface{},
+func (app *ormService) insertRoot(
+	ins orms.Instance,
 	root roots.Root,
-) (*hash.Hash, string, error) {
+) error {
 	name := root.Name()
 	chains := root.Chains()
 	return app.insertChains(ins, chains, name, root)
 }
 
-func (app *resourceService) insertGroup(
-	ins interface{},
+func (app *ormService) insertGroup(
+	ins orms.Instance,
 	group schema_groups.Group,
 	parentName string,
 	root roots.Root,
-) (*hash.Hash, string, error) {
+) error {
 	name := group.Name()
 	chains := group.Chains()
 	updatedParentName := name
@@ -116,35 +82,35 @@ func (app *resourceService) insertGroup(
 	return app.insertChains(ins, chains, updatedParentName, root)
 }
 
-func (app *resourceService) insertChains(
-	ins interface{},
+func (app *ormService) insertChains(
+	ins orms.Instance,
 	chains schema_groups.MethodChains,
 	parentName string,
 	root roots.Root,
-) (*hash.Hash, string, error) {
+) error {
 	list := chains.List()
 	for _, oneChain := range list {
-		pHash, fieldName, isInserted, err := app.insertChain(ins, oneChain, parentName, root)
+		isInserted, err := app.insertChain(ins, oneChain, parentName, root)
 		if err != nil {
-			return nil, "", err
+			return err
 		}
 
 		if !isInserted {
 			continue
 		}
 
-		return pHash, fieldName, nil
+		return nil
 	}
 
-	return nil, "", nil
+	return nil
 }
 
-func (app *resourceService) insertChain(
-	ins interface{},
+func (app *ormService) insertChain(
+	ins orms.Instance,
 	chain schema_groups.MethodChain,
 	parentName string,
 	root roots.Root,
-) (*hash.Hash, string, bool, error) {
+) (bool, error) {
 
 	errorString := ""
 	conditionMethodName := chain.Condition()
@@ -152,51 +118,57 @@ func (app *resourceService) insertChain(
 		conditionMethodName,
 	}, ins, &errorString)
 	if err != nil {
-		return nil, "", false, err
+		return false, err
 	}
 
 	typeName := reflect.TypeOf(&ins).Elem().Name()
 	if errorString != "" {
 		str := fmt.Sprintf("there was an error while calling a method chain's condition method (name: %s) on a reference instance (type: %s), the error was: %s", conditionMethodName, typeName, errorString)
-		return nil, "", false, errors.New(str)
+		return false, errors.New(str)
 	}
 
 	if boolValue, ok := retValue.(bool); ok {
 		if !boolValue {
-			return nil, "", false, nil
+			return false, nil
 		}
 
 		errorString := ""
 		retrieverMethodNames := chain.Retriever()
 		retValue, err := callMethodsOnInstance(retrieverMethodNames, ins, &errorString)
 		if err != nil {
-			return nil, "", false, err
+			return false, err
 		}
 
 		if errorString != "" {
 			str := fmt.Sprintf("there was an error while calling a method chain's value method (chain: %s) on a reference instance (type: %s), the error was: %s", strings.Join(retrieverMethodNames, ","), typeName, errorString)
-			return nil, "", false, errors.New(str)
+			return false, errors.New(str)
 		}
 
-		element := chain.Element()
-		pHash, fieldName, err := app.insertElement(retValue, element, parentName, root)
-		if err != nil {
-			return nil, "", false, err
+		if castedValue, ok := retValue.(orms.Instance); ok {
+			element := chain.Element()
+			err = app.insertElement(castedValue, element, parentName, root)
+			if err != nil {
+				return false, err
+			}
+
+			return true, nil
 		}
 
-		return pHash, fieldName, true, nil
+		str := fmt.Sprintf("the returned value was expected to contain an orms.Instance instance")
+		return false, errors.New(str)
+
 	}
 
 	str := fmt.Sprintf("there was an error while calling a method chain's condition method (name: %s) on a reference instance (type: %s), the returned value was expected to be a bool, but it was NOT", conditionMethodName, typeName)
-	return nil, "", false, errors.New(str)
+	return false, errors.New(str)
 }
 
-func (app *resourceService) insertElement(
-	ins interface{},
+func (app *ormService) insertElement(
+	ins orms.Instance,
 	element schema_groups.Element,
 	parentName string,
 	root roots.Root,
-) (*hash.Hash, string, error) {
+) error {
 	if element.IsResource() {
 		resource := element.Resource()
 		return app.insertResource(ins, resource, parentName, root)
@@ -206,12 +178,12 @@ func (app *resourceService) insertElement(
 	return app.insertGroup(ins, group, parentName, root)
 }
 
-func (app *resourceService) insertResource(
-	ins interface{},
+func (app *ormService) insertResource(
+	ins orms.Instance,
 	resource schema_resources.Resource,
 	parentName string,
 	root roots.Root,
-) (*hash.Hash, string, error) {
+) error {
 	key := resource.Key()
 	fieldNames := []string{
 		key.Name(),
@@ -222,12 +194,12 @@ func (app *resourceService) insertResource(
 	typeName := reflect.TypeOf(&ins).Elem().Name()
 	retPkValue, err := callMethodsOnInstance(keyMethods.Retriever(), ins, &errorString)
 	if err != nil {
-		return nil, "", err
+		return err
 	}
 
 	if errorString != "" {
 		str := fmt.Sprintf("there was an error while calling a field key method (names: %s) on a reference instance (type: %s), the error was: %s", strings.Join(keyMethods.Retriever(), ","), typeName, errorString)
-		return nil, "", errors.New(str)
+		return errors.New(str)
 	}
 
 	fieldValues := []interface{}{
@@ -244,17 +216,17 @@ func (app *resourceService) insertResource(
 		methods := oneField.Methods()
 		retValue, err := callMethodsOnInstance(methods.Retriever(), ins, &errorString)
 		if err != nil {
-			return nil, "", err
+			return err
 		}
 
 		if errorString != "" {
 			str := fmt.Sprintf("there was an error while calling a field method (names: %s) on a reference instance (type: %s), the error was: %s", strings.Join(methods.Retriever(), ","), typeName, errorString)
-			return nil, "", errors.New(str)
+			return errors.New(str)
 		}
 
 		if retValue == nil && !oneField.CanBeNil() {
 			str := fmt.Sprintf("the field (resource: %s, name: %s) is nil but is set as 'cannot be nil' in the schema", resource.Name(), oneField.Name())
-			return nil, "", errors.New(str)
+			return errors.New(str)
 		}
 
 		// do not set the field in the query if the value is nil:
@@ -270,12 +242,12 @@ func (app *resourceService) insertResource(
 			errorString := ""
 			retValue, err := callMethodsOnInstance([]string{retriever}, ins, &errorString)
 			if err != nil {
-				return nil, "", err
+				return err
 			}
 
 			if errorString != "" {
 				str := fmt.Sprintf("there was an error while calling a field dependency method (name: %s) on a reference instance (type: %s), the error was: %s", retriever, typeName, errorString)
-				return nil, "", errors.New(str)
+				return errors.New(str)
 			}
 
 			// fetch the resource:
@@ -284,16 +256,21 @@ func (app *resourceService) insertResource(
 			path := append(groupNames, resourceName)
 			retResourceSchema, err := root.Search(path)
 			if err != nil {
-				return nil, "", err
+				return err
 			}
 
 			// generate the parent name:
 			dependencyParentName := strings.Join(groupNames, groupNameDelimiterForTableNames)
 
 			// insert the resource value:
-			_, _, err = app.insertResource(retValue, retResourceSchema, dependencyParentName, root)
-			if err != nil {
-				return nil, "", err
+			if castedValue, ok := retValue.(orms.Instance); ok {
+				err = app.insertResource(castedValue, retResourceSchema, dependencyParentName, root)
+				if err != nil {
+					return err
+				}
+			} else {
+				str := fmt.Sprintf("the returned value was expected to contain an orms.Instance instance")
+				return errors.New(str)
 			}
 		}
 
@@ -308,23 +285,13 @@ func (app *resourceService) insertResource(
 	queryStr := fmt.Sprintf("INSERT INTO %s (%s) VALUES (%s)", tableName, fieldNamesStr, fieldValuePlaceHoldersStr)
 	_, err = app.txPtr.Exec(queryStr, fieldValues...)
 	if err != nil {
-		return nil, "", err
+		return err
 	}
 
-	if casted, ok := retPkValue.([]byte); ok {
-		pHash, err := app.hashAdapter.FromBytes(casted)
-		if err != nil {
-			return nil, "", err
-		}
+	return nil
+}*/
 
-		return pHash, tableName, nil
-	}
-
-	str := fmt.Sprintf("the returned value of the field key method (names: %s) on a reference instance (type: %s), was expected to contain []byte, but it was NOT", strings.Join(keyMethods.Retriever(), ","), typeName)
-	return nil, "", errors.New(str)
-}
-
-// Delete deletes a resource
-func (app *resourceService) Delete(hash hash.Hash) error {
+// Delete deletes an instance
+func (app *ormService) Delete(path []string, hash hash.Hash) error {
 	return nil
 }

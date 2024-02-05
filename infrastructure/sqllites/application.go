@@ -13,12 +13,12 @@ import (
 	resources_applications "steve.care/network/applications/applications/resources"
 	"steve.care/network/domain/accounts"
 	"steve.care/network/domain/encryptors"
-	"steve.care/network/domain/schemas"
-	"steve.care/network/domain/schemas/roots"
-	"steve.care/network/domain/schemas/roots/groups"
-	"steve.care/network/domain/schemas/roots/groups/resources"
-	"steve.care/network/domain/schemas/roots/groups/resources/fields"
-	field_types "steve.care/network/domain/schemas/roots/groups/resources/fields/types"
+	"steve.care/network/domain/orms/schemas"
+	"steve.care/network/domain/orms/schemas/roots"
+	"steve.care/network/domain/orms/schemas/roots/groups"
+	"steve.care/network/domain/orms/schemas/roots/groups/resources"
+	"steve.care/network/domain/orms/schemas/roots/groups/resources/fields"
+	field_types "steve.care/network/domain/orms/schemas/roots/groups/resources/fields/types"
 )
 
 type tableMetaData struct {
@@ -73,13 +73,13 @@ func (app *application) Init(name string) error {
 	}
 
 	// init the schema:
-	root := app.schema.Root()
-	tableMetaDataList, err := app.initRoot(root)
+	roots := app.schema.Roots()
+	tableMetaDataList, err := app.initRoots(roots)
 	if err != nil {
 		return err
 	}
 
-	connectionsMap, err := app.initRootForConnections(root, tableMetaDataList)
+	connectionsMap, err := app.initRootsForConnections(roots, tableMetaDataList)
 	if err != nil {
 		return err
 	}
@@ -174,6 +174,23 @@ func (app *application) generateSchema(metaData []*tableMetaData, connections ma
 
 	schema = fmt.Sprintf("%s\n\n%s\n%s\n\n%s\n%s", schema, dropTokenTable, createTokenTable, dropResourceTable, createResourceTable)
 	return schema, nil
+}
+
+func (app *application) initRootsForConnections(roots roots.Roots, metaData []*tableMetaData) (map[string][]string, error) {
+	output := map[string][]string{}
+	list := roots.List()
+	for _, oneRoot := range list {
+		retMap, err := app.initRootForConnections(oneRoot, metaData)
+		if err != nil {
+			return nil, err
+		}
+
+		for keyname, list := range retMap {
+			output[keyname] = list
+		}
+	}
+
+	return output, nil
 }
 
 func (app *application) initRootForConnections(root roots.Root, metaData []*tableMetaData) (map[string][]string, error) {
@@ -284,6 +301,21 @@ func (app *application) getTableNameByResourceName(resourceName string, metaData
 
 	str := fmt.Sprintf("there is no resource named '%s' in the provided schema", resourceName)
 	return "", errors.New(str)
+}
+
+func (app *application) initRoots(roots roots.Roots) ([]*tableMetaData, error) {
+	output := []*tableMetaData{}
+	list := roots.List()
+	for _, oneRoot := range list {
+		retList, err := app.initRoot(oneRoot)
+		if err != nil {
+			return nil, err
+		}
+
+		output = append(output, retList...)
+	}
+
+	return output, nil
 }
 
 func (app *application) initRoot(root roots.Root) ([]*tableMetaData, error) {

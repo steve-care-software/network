@@ -11,20 +11,24 @@ import (
 	"steve.care/network/domain/dashboards/widgets/viewports"
 	"steve.care/network/domain/encryptors"
 	"steve.care/network/domain/hash"
+	"steve.care/network/domain/orms"
+	"steve.care/network/domain/orms/schemas"
+	"steve.care/network/domain/orms/schemas/roots"
+	"steve.care/network/domain/orms/schemas/roots/groups"
+	"steve.care/network/domain/orms/schemas/roots/groups/methods"
+	schema_resources "steve.care/network/domain/orms/schemas/roots/groups/resources"
+	"steve.care/network/domain/orms/schemas/roots/groups/resources/fields"
+	field_methods "steve.care/network/domain/orms/schemas/roots/groups/resources/fields/methods"
+	field_types "steve.care/network/domain/orms/schemas/roots/groups/resources/fields/types"
+	"steve.care/network/domain/orms/schemas/roots/groups/resources/fields/types/dependencies"
+	root_methods "steve.care/network/domain/orms/schemas/roots/methods"
+	"steve.care/network/domain/orms/skeletons"
+	"steve.care/network/domain/orms/skeletons/connections"
+	skeleton_resources "steve.care/network/domain/orms/skeletons/resources"
 	"steve.care/network/domain/programs/blocks/transactions/executions/actions/resources"
 	"steve.care/network/domain/programs/blocks/transactions/executions/actions/resources/tokens"
 	token_dashboards "steve.care/network/domain/programs/blocks/transactions/executions/actions/resources/tokens/dashboards"
 	commands_layers "steve.care/network/domain/programs/logics/libraries/layers"
-	"steve.care/network/domain/schemas"
-	"steve.care/network/domain/schemas/roots"
-	"steve.care/network/domain/schemas/roots/groups"
-	"steve.care/network/domain/schemas/roots/groups/methods"
-	schema_resources "steve.care/network/domain/schemas/roots/groups/resources"
-	"steve.care/network/domain/schemas/roots/groups/resources/fields"
-	field_methods "steve.care/network/domain/schemas/roots/groups/resources/fields/methods"
-	field_types "steve.care/network/domain/schemas/roots/groups/resources/fields/types"
-	"steve.care/network/domain/schemas/roots/groups/resources/fields/types/dependencies"
-	root_methods "steve.care/network/domain/schemas/roots/methods"
 )
 
 const notActiveErrorMsg = "the application NEVER began a transactional state, therefore that method cannot be executed"
@@ -89,6 +93,62 @@ func NewAccountService(
 	)
 }
 
+// NewOrmRepository creates a new orm repository
+func NewOrmRepository(
+	skeleton skeletons.Skeleton,
+	dbPtr *sql.DB,
+) orms.Repository {
+	hashAdapter := hash.NewAdapter()
+	builders := map[string]interface{}{
+		"tokens_dashboards_widget":   widgets.NewWidgetBuilder(),
+		"tokens_dashboards_viewport": viewports.NewBuilder(),
+		"tokens_dashboards":          token_dashboards.NewBuilder(),
+		"tokens":                     tokens.NewContentBuilder(),
+	}
+
+	return createOrmRepository(
+		hashAdapter,
+		builders,
+		skeleton,
+		dbPtr,
+	)
+}
+
+// NewOrmService creates a new orm service
+func NewOrmService(
+	skeleton skeletons.Skeleton,
+	txPtr *sql.Tx,
+) orms.Service {
+	hashAdapter := hash.NewAdapter()
+	return createOrmService(
+		hashAdapter,
+		skeleton,
+		txPtr,
+	)
+}
+
+// NewSkeletonFactory creates a new skeleton factory
+func NewSkeletonFactory() skeletons.Factory {
+	builder := skeletons.NewBuilder()
+	resourcesBuilder := skeleton_resources.NewBuilder()
+	resourceBuilder := skeleton_resources.NewResourceBuilder()
+	fieldsBuilder := skeleton_resources.NewFieldsBuilder()
+	fieldBuilder := skeleton_resources.NewFieldBuilder()
+	kindBuilder := skeleton_resources.NewKindBuilder()
+	connectionsBuilder := connections.NewBuilder()
+	connectionBuilder := connections.NewConnectionBuilder()
+	return createSkeletonFactory(
+		builder,
+		resourcesBuilder,
+		resourceBuilder,
+		fieldsBuilder,
+		fieldBuilder,
+		kindBuilder,
+		connectionsBuilder,
+		connectionBuilder,
+	)
+}
+
 // NewResourceRepository creates a new resource repository
 func NewResourceRepository(
 	schema schemas.Schema,
@@ -141,7 +201,8 @@ func NewSchemaFactory(
 	keyFieldMethodNames []string,
 ) schemas.Factory {
 	builder := schemas.NewBuilder()
-	rootBuilder := roots.NewBuilder()
+	rootsBuilder := roots.NewBuilder()
+	rootBuilder := roots.NewRootBuilder()
 	rootMethodBuilder := root_methods.NewBuilder()
 	groupBuilder := groups.NewBuilder()
 	methodChainsBuilder := groups.NewMethodChainsBuilder()
@@ -159,6 +220,7 @@ func NewSchemaFactory(
 	fieldDependencyBuilder := dependencies.NewBuilder()
 	return createSchemaFactory(
 		builder,
+		rootsBuilder,
 		rootBuilder,
 		rootMethodBuilder,
 		groupBuilder,

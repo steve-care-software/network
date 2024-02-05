@@ -5,154 +5,82 @@ import (
 	"errors"
 	"fmt"
 	"strings"
-	"time"
 
-	"steve.care/network/domain/accounts/signers"
-	"steve.care/network/domain/dashboards/widgets/viewports"
 	"steve.care/network/domain/hash"
-	"steve.care/network/domain/orms/schemas"
+	"steve.care/network/domain/orms"
 	"steve.care/network/domain/orms/schemas/roots"
 	"steve.care/network/domain/orms/schemas/roots/groups"
-	schema_group_methods "steve.care/network/domain/orms/schemas/roots/groups/methods"
 	schema_resources "steve.care/network/domain/orms/schemas/roots/groups/resources"
 	field_types "steve.care/network/domain/orms/schemas/roots/groups/resources/fields/types"
-	schema_root_methods "steve.care/network/domain/orms/schemas/roots/methods"
-	"steve.care/network/domain/programs/blocks/transactions/executions/actions/resources"
-	"steve.care/network/domain/programs/blocks/transactions/executions/actions/resources/tokens"
-	token_dashboards "steve.care/network/domain/programs/blocks/transactions/executions/actions/resources/tokens/dashboards"
-	commands_layers "steve.care/network/domain/programs/logics/libraries/layers"
+	"steve.care/network/domain/orms/skeletons"
 )
 
-type resourceRepository struct {
-	hashAdapter      hash.Adapter
-	signatureAdapter signers.SignatureAdapter
-	builder          resources.Builder
-	tokenBuilder     tokens.Builder
-	dashboardBuilder token_dashboards.Builder
-	viewportBuilder  viewports.Builder
-	cmdLayerBuilder  commands_layers.LayerBuilder
-	builders         map[string]interface{}
-	schema           schemas.Schema
-	dbPtr            *sql.DB
+type ormRepository struct {
+	hashAdapter hash.Adapter
+	builders    map[string]interface{}
+	skeleton    skeletons.Skeleton
+	dbPtr       *sql.DB
 }
 
-func createResourceRepository(
+func createOrmRepository(
 	hashAdapter hash.Adapter,
-	signatureAdapter signers.SignatureAdapter,
-	builder resources.Builder,
-	tokenBuilder tokens.Builder,
-	dashboardBuilder token_dashboards.Builder,
-	viewportBuilder viewports.Builder,
-	cmdLayerBuilder commands_layers.LayerBuilder,
 	builders map[string]interface{},
-	schema schemas.Schema,
+	skeleton skeletons.Skeleton,
 	dbPtr *sql.DB,
-) resources.Repository {
-	out := resourceRepository{
-		hashAdapter:      hashAdapter,
-		signatureAdapter: signatureAdapter,
-		builder:          builder,
-		tokenBuilder:     tokenBuilder,
-		dashboardBuilder: dashboardBuilder,
-		viewportBuilder:  viewportBuilder,
-		cmdLayerBuilder:  cmdLayerBuilder,
-		builders:         builders,
-		schema:           schema,
-		dbPtr:            dbPtr,
+) orms.Repository {
+	out := ormRepository{
+		hashAdapter: hashAdapter,
+		builders:    builders,
+		skeleton:    skeleton,
+		dbPtr:       dbPtr,
 	}
 
 	return &out
 }
 
-// Amount returns the amount of resources
-func (app *resourceRepository) Amount() (uint, error) {
+// AmountByQuery returns the amount of instance by criteria
+func (app *ormRepository) AmountByQuery(query hash.Hash) (uint, error) {
 	return 0, nil
 }
 
-// AmountByQuery returns the amount of resources by criteria
-func (app *resourceRepository) AmountByQuery(criteria hash.Hash) (uint, error) {
-	return 0, nil
-}
-
-// ListByQuery lists resource hashes by criteria
-func (app *resourceRepository) ListByQuery(criteria hash.Hash) ([]hash.Hash, error) {
+// ListByQuery lists insatnce hashes by criteria
+func (app *ormRepository) ListByQuery(query hash.Hash) ([]hash.Hash, error) {
 	return nil, nil
 }
 
-// RetrieveByQuery retrieves a resource by criteria
-func (app *resourceRepository) RetrieveByQuery(criteria hash.Hash) (resources.Resource, error) {
+// RetrieveByQuery retrieves an instance by criteria
+func (app *ormRepository) RetrieveByQuery(query hash.Hash) (orms.Instance, error) {
 	return nil, nil
 }
 
-// RetrieveByHash retrieves a resource by hash
-func (app *resourceRepository) RetrieveByHash(hash hash.Hash) (resources.Resource, error) {
-	rows, err := app.dbPtr.Query("SELECT token, signature FROM resource WHERE hash = ?", hash.Bytes())
-	if err != nil {
-		return nil, err
-	}
-
-	defer rows.Close()
-	if !rows.Next() {
-		str := fmt.Sprintf("the given hash (%s) do NOT match a Layer instance", hash.String())
-		return nil, errors.New(str)
-	}
-
-	var retSignatureBytes []byte
-	var retTokenHashBytes []byte
-	err = rows.Scan(&retTokenHashBytes, &retSignatureBytes)
-	if err != nil {
-		return nil, err
-	}
-
-	err = rows.Err()
-	if err != nil {
-		return nil, err
-	}
-
-	pTokenHash, err := app.hashAdapter.FromBytes(retTokenHashBytes)
-	if err != nil {
-		return nil, err
-	}
-
-	token, err := app.retrieveTokenByRootsAndHash(*pTokenHash, app.schema.Roots())
-	if err != nil {
-		return nil, err
-	}
-
-	signature, err := app.signatureAdapter.ToSignature(retSignatureBytes)
-	if err != nil {
-		return nil, err
-	}
-
-	return app.builder.Create().
-		WithToken(token).
-		WithSignature(signature).
-		Now()
+// RetrieveByHash retrieves an instance by hash
+func (app *ormRepository) RetrieveByHash(path []string, hash hash.Hash) (orms.Instance, error) {
+	return nil, nil
 }
 
-func (app *resourceRepository) retrieveTokenByRootsAndHash(
+func (app *ormRepository) retrieveInstanceByRootsAndHash(
 	hash hash.Hash,
 	roots roots.Roots,
-) (tokens.Token, error) {
+) (orms.Instance, error) {
 	list := roots.List()
 	for _, oneRoot := range list {
-		retToken, err := app.retrieveTokenByRootAndHash(hash, oneRoot)
+		retInstance, err := app.retrieveInstanceByRootAndHash(hash, oneRoot)
 		if err != nil {
 			continue
 		}
 
-		return retToken, nil
+		return retInstance, nil
 	}
 
-	str := fmt.Sprintf("the token (hash: %s) could not be retrieved", hash.String())
+	str := fmt.Sprintf("the instance (hash: %s) could not be retrieved", hash.String())
 	return nil, errors.New(str)
 }
 
-func (app *resourceRepository) retrieveTokenByRootAndHash(
+func (app *ormRepository) retrieveInstanceByRootAndHash(
 	hash hash.Hash,
 	root roots.Root,
-) (tokens.Token, error) {
-	fieldNames, values, err := app.fetchRetrievalFields(root)
+) (orms.Instance, error) {
+	/*fieldNames, values, err := app.fetchRetrievalFields(root)
 	if err != nil {
 		return nil, err
 	}
@@ -362,12 +290,12 @@ func (app *resourceRepository) retrieveTokenByRootAndHash(
 		}
 
 		// error
-	}
+	}*/
 
 	return nil, nil
 }
 
-func (app *resourceRepository) fetchRetrievalFields(
+func (app *ormRepository) fetchRetrievalFields(
 	root roots.Root,
 ) ([]string, []interface{}, error) {
 	parentName := root.Name()
@@ -386,7 +314,7 @@ func (app *resourceRepository) fetchRetrievalFields(
 	return fieldNames, values, nil
 }
 
-func (app *resourceRepository) fetchRetrievalFieldsFromGroup(
+func (app *ormRepository) fetchRetrievalFieldsFromGroup(
 	parentName string,
 	group groups.Group,
 ) ([]string, error) {
@@ -396,7 +324,7 @@ func (app *resourceRepository) fetchRetrievalFieldsFromGroup(
 	return app.fetchRetrievalFieldsFromMethodChains(updatedParentName, chains)
 }
 
-func (app *resourceRepository) fetchRetrievalFieldsFromMethodChains(
+func (app *ormRepository) fetchRetrievalFieldsFromMethodChains(
 	parentName string,
 	chains groups.MethodChains,
 ) ([]string, error) {
@@ -424,7 +352,7 @@ func (app *resourceRepository) fetchRetrievalFieldsFromMethodChains(
 	return names, nil
 }
 
-func (app *resourceRepository) retrieveResourceValue(
+func (app *ormRepository) retrieveResourceValue(
 	resource schema_resources.Resource,
 	hash hash.Hash,
 	parentName string,
@@ -592,7 +520,7 @@ func (app *resourceRepository) retrieveResourceValue(
 	return nil, errors.New(str)
 }
 
-func (app *resourceRepository) generateValueFromType(typ field_types.Type) interface{} {
+func (app *ormRepository) generateValueFromType(typ field_types.Type) interface{} {
 	if typ.IsKind() {
 		pKind := typ.Kind()
 		return app.generateValue(*pKind)
@@ -602,7 +530,7 @@ func (app *resourceRepository) generateValueFromType(typ field_types.Type) inter
 	return app.generateValue(kind)
 }
 
-func (app *resourceRepository) generateValue(kind uint8) interface{} {
+func (app *ormRepository) generateValue(kind uint8) interface{} {
 	if kind == field_types.KindInteger {
 		var value int
 		return value
