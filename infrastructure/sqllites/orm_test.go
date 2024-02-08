@@ -85,7 +85,9 @@ func TestOrm_Success(t *testing.T) {
 
 		// insert instance:
 		err = service.Insert(oneInstance, []string{
-			"tokens",
+			"dashboard",
+			"widget",
+			"viewport",
 		})
 
 		if err != nil {

@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"reflect"
 	"strings"
 
 	"steve.care/network/domain/hash"
@@ -92,7 +93,160 @@ func (app *ormService) Init() error {
 
 // Insert inserts an instance
 func (app *ormService) Insert(ins orms.Instance, path []string) error {
+	resource, err := app.skeleton.Resources().FetchByPath(path)
+	if err != nil {
+		return err
+	}
+
+	tableName := strings.Join(path, resourceNameDelimiter)
+	return app.insertResource(tableName, ins, resource)
+}
+
+func (app *ormService) insertResource(
+	tableName string,
+	ins orms.Instance,
+	resource resources.Resource,
+) error {
+	key := resource.Key()
+	keyValue, err := app.fetchFieldValue(ins, key)
+	if err != nil {
+		return err
+	}
+
+	fields := resource.Fields()
+	fieldValues, err := app.fetchFieldsValueList(ins, fields)
+	if err != nil {
+		return err
+	}
+
+	fieldNames := app.fetchFieldNamesList(fields)
+	allFieldNames := []string{
+		key.Name(),
+	}
+
+	allFieldNames = append(allFieldNames, fieldNames...)
+	fieldValuePlaceHolders := []string{}
+	for range allFieldNames {
+		fieldValuePlaceHolders = append(fieldValuePlaceHolders, "?")
+	}
+
+	fieldNamesStr := strings.Join(allFieldNames, ",")
+	fieldValuePlaceHoldersStr := strings.Join(fieldValuePlaceHolders, ",")
+	queryStr := fmt.Sprintf("INSERT INTO %s (%s) VALUES (%s)", tableName, fieldNamesStr, fieldValuePlaceHoldersStr)
+
+	allFieldValues := []interface{}{
+		keyValue,
+	}
+
+	allFieldValues = append(allFieldValues, fieldValues...)
+	_, err = app.txPtr.Exec(queryStr, allFieldValues...)
+	if err != nil {
+		return err
+	}
+
 	return nil
+}
+
+func (app *ormService) fetchFieldNamesList(
+	fields resources.Fields,
+) []string {
+	names := []string{}
+	list := fields.List()
+	for _, oneField := range list {
+		names = append(names, oneField.Name())
+	}
+
+	return names
+}
+
+func (app *ormService) fetchFieldsValueList(
+	ins orms.Instance,
+	fields resources.Fields,
+) ([]interface{}, error) {
+	output := []interface{}{}
+	list := fields.List()
+	for _, oneField := range list {
+		retValue, err := app.fetchFieldValue(ins, oneField)
+		if err != nil {
+			return nil, err
+		}
+
+		output = append(output, retValue)
+	}
+
+	return output, nil
+}
+
+func (app *ormService) fetchFieldValue(
+	ins orms.Instance,
+	field resources.Field,
+) (interface{}, error) {
+	if field.HasCondition() {
+		errorStr := ""
+		condition := field.Condition()
+		retConditionValue, err := app.callMethodsOnInstanceReturnOneValue(ins, []string{
+			condition,
+		}, &errorStr)
+
+		if err != nil {
+			return nil, err
+		}
+
+		if errorStr != "" {
+			str := fmt.Sprintf("there was an error while calling the condition (%s) on the field (name: %s): %s", condition, field.Name(), err.Error())
+			return nil, errors.New(str)
+		}
+
+		if boolValue, ok := retConditionValue.(bool); ok {
+			if !boolValue {
+				return nil, nil
+			}
+		}
+	}
+
+	errorStr := ""
+	retriever := field.Retriever()
+	retValue, err := app.callMethodsOnInstanceReturnOneValue(ins, retriever, &errorStr)
+	if err != nil {
+		return nil, err
+	}
+
+	if errorStr != "" {
+		str := fmt.Sprintf("there was an error while calling the retriever (%s) on the field (name: %s): %s", strings.Join(retriever, ","), field.Name(), err.Error())
+		return nil, errors.New(str)
+	}
+
+	return retValue, nil
+}
+
+func (app *ormService) callMethodsOnInstanceReturnOneValue(
+	ins orms.Instance,
+	methods []string,
+	pErrorStr *string,
+) (interface{}, error) {
+	defer func() {
+		if r := recover(); r != nil {
+			value := fmt.Sprint(r)
+			*pErrorStr = value
+		}
+	}()
+
+	value := reflect.ValueOf(ins.(interface{}))
+	for _, oneMethod := range methods {
+		if value.IsNil() {
+			return nil, nil
+		}
+
+		retValues := value.MethodByName(oneMethod).Call([]reflect.Value{})
+		if len(retValues) != 1 {
+			str := fmt.Sprintf("%d values were returned, %d were expected, when calling the method (name %s) in the method chain (%s)", len(retValues), 1, oneMethod, strings.Join(methods, ","))
+			return nil, errors.New(str)
+		}
+
+		value = retValues[0]
+	}
+
+	return value.Interface(), nil
 }
 
 func (app *ormService) writeSchema(
