@@ -2,26 +2,66 @@ package sqllites
 
 import (
 	"database/sql"
+	"errors"
+	"fmt"
+	"strings"
 
 	"steve.care/network/domain/hash"
 	"steve.care/network/domain/orms"
+	field_types "steve.care/network/domain/orms/schemas/roots/groups/resources/fields/types"
 	"steve.care/network/domain/orms/skeletons"
+	"steve.care/network/domain/orms/skeletons/connections"
+	"steve.care/network/domain/orms/skeletons/resources"
 )
+
+type table struct {
+	name     string
+	key      field
+	fields   []field
+	children []table
+}
+
+type field struct {
+	name     string
+	kind     kind
+	canBeNil bool
+}
+
+type kind struct {
+	pNative     *uint8
+	pForeignKey *foreignKey
+	pConnection *connection
+}
+
+type foreignKey struct {
+	localField       field
+	foreignTableName string
+	foreignField     field
+}
+
+type connection struct {
+	middleTableName string
+	from            foreignKey
+	to              foreignKey
+}
 
 type ormService struct {
 	hashAdapter hash.Adapter
 	skeleton    skeletons.Skeleton
+	dbPtr       *sql.DB
 	txPtr       *sql.Tx
 }
 
 func createOrmService(
 	hashAdapter hash.Adapter,
 	skeleton skeletons.Skeleton,
+	dbPtr *sql.DB,
 	txPtr *sql.Tx,
 ) orms.Service {
 	out := ormService{
 		hashAdapter: hashAdapter,
 		skeleton:    skeleton,
+		dbPtr:       dbPtr,
 		txPtr:       txPtr,
 	}
 
@@ -29,7 +69,24 @@ func createOrmService(
 }
 
 // Init initializes the service
-func (app *ormService) Init(name string) error {
+func (app *ormService) Init() error {
+	resources := app.skeleton.Resources()
+	connections := app.skeleton.Connections()
+	tables, err := app.generateTables(resources, resources, connections)
+	if err != nil {
+		return err
+	}
+
+	schema, err := app.writeSchema(tables, "")
+	if err != nil {
+		return err
+	}
+
+	_, err = app.dbPtr.Exec(schema)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -38,258 +95,516 @@ func (app *ormService) Insert(ins orms.Instance, path []string) error {
 	return nil
 }
 
-/*
-func (app *ormService) insertRoots(
-	ins orms.Instance,
-	roots roots.Roots,
-) error {
-	list := roots.List()
-	for _, oneRoot := range list {
-		err := app.insertRoot(ins, oneRoot)
+func (app *ormService) writeSchema(
+	tables []table,
+	parentName string,
+) (string, error) {
+	output := []string{}
+	for _, oneTable := range tables {
+		retTables, err := app.writeSchemaTable(oneTable, parentName)
 		if err != nil {
-			fmt.Printf("\n%s\n", err.Error())
-			continue
+			return "", err
 		}
 
-		return nil
+		output = append(output, retTables...)
 	}
 
-	return errors.New("the instance could not be inserted using the provided schema")
+	connectionTablesList, err := app.writeSchemaConnectionTables(tables, parentName)
+	if err != nil {
+		return "", err
+	}
+
+	output = append(output, connectionTablesList...)
+	return strings.Join(output, endOfLine), nil
 }
 
-func (app *ormService) insertRoot(
-	ins orms.Instance,
-	root roots.Root,
-) error {
-	name := root.Name()
-	chains := root.Chains()
-	return app.insertChains(ins, chains, name, root)
-}
-
-func (app *ormService) insertGroup(
-	ins orms.Instance,
-	group schema_groups.Group,
+func (app *ormService) writeSchemaTable(
+	table table,
 	parentName string,
-	root roots.Root,
-) error {
-	name := group.Name()
-	chains := group.Chains()
-	updatedParentName := name
+) ([]string, error) {
+	keyFieldStr, err := app.writeSchemaTableField(true, table.key)
+	if err != nil {
+		return nil, err
+	}
+
+	fieldsStrList, err := app.writeSchemaTableFieldsList(table.fields)
+	if err != nil {
+		return nil, err
+	}
+
+	foreignKeysList := app.writeSchemaTableFieldsForeignKeysList(table.fields)
+
+	allFieldsList := []string{
+		keyFieldStr,
+	}
+
+	allFieldsList = append(allFieldsList, fieldsStrList...)
+
+	if len(foreignKeysList) > 0 {
+		allFieldsList = append(allFieldsList, foreignKeysList...)
+	}
+
+	fieldsStr := strings.Join(allFieldsList, fmt.Sprintf("%s%s", ",", endOfLine))
+
+	tableName := table.name
 	if parentName != "" {
-		updatedParentName = fmt.Sprintf("%s%s%s", parentName, groupNameDelimiterForTableNames, name)
+		tableName = fmt.Sprintf("%s%s%s", parentName, resourceNameDelimiter, tableName)
 	}
 
-	return app.insertChains(ins, chains, updatedParentName, root)
-}
+	dropTableStr := fmt.Sprintf("DROP TABLE IF EXISTS %s;", tableName)
+	createTableStr := fmt.Sprintf("CREATE TABLE %s (%s%s%s);", tableName, endOfLine, fieldsStr, endOfLine)
 
-func (app *ormService) insertChains(
-	ins orms.Instance,
-	chains schema_groups.MethodChains,
-	parentName string,
-	root roots.Root,
-) error {
-	list := chains.List()
-	for _, oneChain := range list {
-		isInserted, err := app.insertChain(ins, oneChain, parentName, root)
+	childrenSchemaStr := ""
+	if len(table.children) > 0 {
+		retChildrenSchema, err := app.writeSchema(table.children, tableName)
 		if err != nil {
-			return err
+			return nil, err
 		}
 
-		if !isInserted {
+		childrenSchemaStr = retChildrenSchema
+	}
+
+	tableSchema := strings.Join(
+		[]string{
+			dropTableStr,
+			createTableStr,
+			endOfLine,
+		},
+		endOfLine,
+	)
+
+	output := []string{
+		tableSchema,
+	}
+
+	output = append(output, childrenSchemaStr)
+	return output, nil
+}
+
+func (app *ormService) writeSchemaTableFieldsList(
+	fields []field,
+) ([]string, error) {
+	fieldsList := []string{}
+	for _, oneField := range fields {
+		fieldStr, err := app.writeSchemaTableField(false, oneField)
+		if err != nil {
+			return nil, err
+		}
+
+		if fieldStr == "" {
 			continue
 		}
 
-		return nil
+		fieldsList = append(fieldsList, fieldStr)
 	}
 
-	return nil
+	return fieldsList, nil
 }
 
-func (app *ormService) insertChain(
-	ins orms.Instance,
-	chain schema_groups.MethodChain,
-	parentName string,
-	root roots.Root,
-) (bool, error) {
+func (app *ormService) writeSchemaTableField(
+	isPrimaryKey bool,
+	field field,
+) (string, error) {
+	if field.kind.pConnection != nil {
+		return "", nil
+	}
 
-	errorString := ""
-	conditionMethodName := chain.Condition()
-	retValue, err := callMethodsOnInstance([]string{
-		conditionMethodName,
-	}, ins, &errorString)
+	notNullStr := ""
+	if !field.canBeNil {
+		notNullStr = " NOT NULL"
+	}
+
+	primaryKeyStr := ""
+	if isPrimaryKey {
+		primaryKeyStr = " PRIMARY KEY"
+	}
+
+	kindStr, err := app.writeSchemaTableFieldKind(field.kind)
 	if err != nil {
-		return false, err
+		return "", err
 	}
 
-	typeName := reflect.TypeOf(&ins).Elem().Name()
-	if errorString != "" {
-		str := fmt.Sprintf("there was an error while calling a method chain's condition method (name: %s) on a reference instance (type: %s), the error was: %s", conditionMethodName, typeName, errorString)
-		return false, errors.New(str)
+	fieldStr := fmt.Sprintf(
+		"%s %s %s%s",
+		field.name,
+		kindStr,
+		primaryKeyStr,
+		notNullStr,
+	)
+
+	return fieldStr, nil
+}
+
+func (app *ormService) writeSchemaTableFieldKind(
+	kind kind,
+) (string, error) {
+	if kind.pForeignKey != nil {
+		return app.writeSchemaTableFieldKind(kind.pForeignKey.localField.kind)
 	}
 
-	if boolValue, ok := retValue.(bool); ok {
-		if !boolValue {
-			return false, nil
-		}
+	return app.writeSchemaTableFieldKindNative(*kind.pNative), nil
+}
 
-		errorString := ""
-		retrieverMethodNames := chain.Retriever()
-		retValue, err := callMethodsOnInstance(retrieverMethodNames, ins, &errorString)
+func (app *ormService) writeSchemaConnectionTables(
+	tables []table,
+	parentName string,
+) ([]string, error) {
+	output := []string{}
+	for _, oneTable := range tables {
+		retTables, err := app.writeSchemaConnectionTable(oneTable, parentName)
 		if err != nil {
-			return false, err
+			return nil, err
 		}
 
-		if errorString != "" {
-			str := fmt.Sprintf("there was an error while calling a method chain's value method (chain: %s) on a reference instance (type: %s), the error was: %s", strings.Join(retrieverMethodNames, ","), typeName, errorString)
-			return false, errors.New(str)
-		}
-
-		if castedValue, ok := retValue.(orms.Instance); ok {
-			element := chain.Element()
-			err = app.insertElement(castedValue, element, parentName, root)
-			if err != nil {
-				return false, err
-			}
-
-			return true, nil
-		}
-
-		str := fmt.Sprintf("the returned value was expected to contain an orms.Instance instance")
-		return false, errors.New(str)
-
+		output = append(output, retTables...)
 	}
 
-	str := fmt.Sprintf("there was an error while calling a method chain's condition method (name: %s) on a reference instance (type: %s), the returned value was expected to be a bool, but it was NOT", conditionMethodName, typeName)
-	return false, errors.New(str)
+	return output, nil
 }
 
-func (app *ormService) insertElement(
-	ins orms.Instance,
-	element schema_groups.Element,
+func (app *ormService) writeSchemaConnectionTable(
+	table table,
 	parentName string,
-	root roots.Root,
-) error {
-	if element.IsResource() {
-		resource := element.Resource()
-		return app.insertResource(ins, resource, parentName, root)
+) ([]string, error) {
+	output := []string{}
+	for _, oneField := range table.fields {
+		retFieldTable, err := app.writeSchemaConnectionField(oneField, parentName)
+		if err != nil {
+			return nil, err
+		}
+
+		if retFieldTable == "" {
+			continue
+		}
+
+		output = append(output, retFieldTable)
 	}
 
-	group := element.Group()
-	return app.insertGroup(ins, group, parentName, root)
+	return output, nil
 }
 
-func (app *ormService) insertResource(
-	ins orms.Instance,
-	resource schema_resources.Resource,
+func (app *ormService) writeSchemaConnectionField(
+	field field,
 	parentName string,
-	root roots.Root,
-) error {
+) (string, error) {
+	if field.kind.pConnection == nil {
+		return "", nil
+	}
+
+	pConnection := field.kind.pConnection
+	fromForeignKey := pConnection.from
+	fromForeignKeyStr := app.writeSchemaForeignKey(fromForeignKey)
+	fromFieldStr, err := app.writeSchemaTableField(false, fromForeignKey.localField)
+	if err != nil {
+		return "", nil
+	}
+
+	toForeignKey := pConnection.to
+	toForeignKeyStr := app.writeSchemaForeignKey(toForeignKey)
+	toFieldStr, err := app.writeSchemaTableField(false, toForeignKey.localField)
+	if err != nil {
+		return "", nil
+	}
+
+	fieldsStr := strings.Join(
+		[]string{
+			fromFieldStr,
+			toFieldStr,
+			fromForeignKeyStr,
+			toForeignKeyStr,
+		},
+		fmt.Sprintf("%s%s", ",", endOfLine),
+	)
+
+	tableName := pConnection.middleTableName
+	dropTableStr := fmt.Sprintf("DROP TABLE IF EXISTS %s;", tableName)
+	createTableStr := fmt.Sprintf("CREATE TABLE %s (%s%s%s);", tableName, endOfLine, fieldsStr, endOfLine)
+	tableSchema := strings.Join(
+		[]string{
+			dropTableStr,
+			createTableStr,
+			endOfLine,
+		},
+		endOfLine,
+	)
+
+	return tableSchema, nil
+}
+
+func (app *ormService) writeSchemaTableFieldsForeignKeysList(
+	fields []field,
+) []string {
+	output := []string{}
+	for _, oneField := range fields {
+		foreignKey := app.writeSchemaTableFieldForeignKeysList(oneField)
+		if foreignKey == "" {
+			continue
+		}
+
+		output = append(output, foreignKey)
+	}
+
+	return output
+}
+
+func (app *ormService) writeSchemaTableFieldForeignKeysList(
+	field field,
+) string {
+	kind := field.kind
+	if kind.pForeignKey == nil {
+		return ""
+	}
+
+	return app.writeSchemaForeignKey(*kind.pForeignKey)
+}
+
+func (app *ormService) writeSchemaForeignKey(
+	foreignKey foreignKey,
+) string {
+	return fmt.Sprintf(
+		"FOREIGN KEY(%s) REFERENCES %s(%s)",
+		foreignKey.localField.name,
+		foreignKey.foreignTableName,
+		foreignKey.foreignField.name,
+	)
+}
+
+func (app *ormService) writeSchemaTableFieldKindNative(
+	native uint8,
+) string {
+	if field_types.KindInteger == native {
+		return "INTEGER"
+	}
+
+	if field_types.KindFloat == native {
+		return "REAL"
+	}
+
+	if field_types.KindString == native {
+		return "TEXT"
+	}
+
+	return "BLOB"
+}
+
+func (app *ormService) generateTables(
+	resources resources.Resources,
+	allResources resources.Resources,
+	allConnections connections.Connections,
+) ([]table, error) {
+	output := []table{}
+	list := resources.List()
+	for _, oneResource := range list {
+		pTable, err := app.generateTable(oneResource, allResources, allConnections)
+		if err != nil {
+			return nil, err
+		}
+
+		output = append(output, *pTable)
+	}
+
+	return output, nil
+}
+
+func (app *ormService) generateTable(
+	resource resources.Resource,
+	resources resources.Resources,
+	connections connections.Connections,
+) (*table, error) {
+	name := resource.Name()
 	key := resource.Key()
-	fieldNames := []string{
-		key.Name(),
-	}
-
-	errorString := ""
-	keyMethods := key.Methods()
-	typeName := reflect.TypeOf(&ins).Elem().Name()
-	retPkValue, err := callMethodsOnInstance(keyMethods.Retriever(), ins, &errorString)
+	keyName := key.Name()
+	pCreatedKey, err := app.generateField(keyName, key, resources, connections)
 	if err != nil {
-		return err
+		str := fmt.Sprintf("there was a problem while generating the key field for table (resource: %s): %s", name, err.Error())
+		return nil, errors.New(str)
 	}
 
-	if errorString != "" {
-		str := fmt.Sprintf("there was an error while calling a field key method (names: %s) on a reference instance (type: %s), the error was: %s", strings.Join(keyMethods.Retriever(), ","), typeName, errorString)
-		return errors.New(str)
+	fields := resource.Fields()
+	createdKeys, err := app.generateFields(fields, resources, connections)
+	if err != nil {
+		str := fmt.Sprintf("there was a problem while generating a field for table (resource: %s): %s", name, err.Error())
+		return nil, errors.New(str)
 	}
 
-	fieldValues := []interface{}{
-		retPkValue,
+	output := table{
+		name:   name,
+		key:    *pCreatedKey,
+		fields: createdKeys,
 	}
 
-	fieldValuePlaceHolders := []string{
-		"?",
-	}
+	if resource.HasChildren() {
+		children := resource.Children()
+		tables, err := app.generateTables(
+			children,
+			resources,
+			connections,
+		)
 
-	fieldsList := resource.Fields().List()
-	for _, oneField := range fieldsList {
-		errorString := ""
-		methods := oneField.Methods()
-		retValue, err := callMethodsOnInstance(methods.Retriever(), ins, &errorString)
 		if err != nil {
-			return err
+			return nil, err
 		}
 
-		if errorString != "" {
-			str := fmt.Sprintf("there was an error while calling a field method (names: %s) on a reference instance (type: %s), the error was: %s", strings.Join(methods.Retriever(), ","), typeName, errorString)
-			return errors.New(str)
-		}
-
-		if retValue == nil && !oneField.CanBeNil() {
-			str := fmt.Sprintf("the field (resource: %s, name: %s) is nil but is set as 'cannot be nil' in the schema", resource.Name(), oneField.Name())
-			return errors.New(str)
-		}
-
-		// do not set the field in the query if the value is nil:
-		if retValue == nil {
-			continue
-		}
-
-		typ := oneField.Type()
-		if typ.IsDependency() {
-			// call the depenency retriever on the instance:
-			dependency := typ.Dependency()
-			retriever := dependency.Retriever()
-			errorString := ""
-			retValue, err := callMethodsOnInstance([]string{retriever}, ins, &errorString)
-			if err != nil {
-				return err
-			}
-
-			if errorString != "" {
-				str := fmt.Sprintf("there was an error while calling a field dependency method (name: %s) on a reference instance (type: %s), the error was: %s", retriever, typeName, errorString)
-				return errors.New(str)
-			}
-
-			// fetch the resource:
-			groupNames := dependency.Groups()
-			resourceName := dependency.Resource()
-			path := append(groupNames, resourceName)
-			retResourceSchema, err := root.Search(path)
-			if err != nil {
-				return err
-			}
-
-			// generate the parent name:
-			dependencyParentName := strings.Join(groupNames, groupNameDelimiterForTableNames)
-
-			// insert the resource value:
-			if castedValue, ok := retValue.(orms.Instance); ok {
-				err = app.insertResource(castedValue, retResourceSchema, dependencyParentName, root)
-				if err != nil {
-					return err
-				}
-			} else {
-				str := fmt.Sprintf("the returned value was expected to contain an orms.Instance instance")
-				return errors.New(str)
-			}
-		}
-
-		fieldNames = append(fieldNames, oneField.Name())
-		fieldValues = append(fieldValues, retValue)
-		fieldValuePlaceHolders = append(fieldValuePlaceHolders, "?")
+		output.children = tables
 	}
 
-	fieldNamesStr := strings.Join(fieldNames, ", ")
-	fieldValuePlaceHoldersStr := strings.Join(fieldValuePlaceHolders, ", ")
-	tableName := fmt.Sprintf("%s%s%s", parentName, groupNameDelimiterForTableNames, resource.Name())
-	queryStr := fmt.Sprintf("INSERT INTO %s (%s) VALUES (%s)", tableName, fieldNamesStr, fieldValuePlaceHoldersStr)
-	_, err = app.txPtr.Exec(queryStr, fieldValues...)
+	return &output, nil
+}
+
+func (app *ormService) generateFields(
+	fields resources.Fields,
+	resources resources.Resources,
+	connections connections.Connections,
+) ([]field, error) {
+	output := []field{}
+	list := fields.List()
+	for _, oneField := range list {
+		fieldName := oneField.Name()
+		pCreatedField, err := app.generateField(fieldName, oneField, resources, connections)
+		if err != nil {
+			return nil, err
+		}
+
+		output = append(output, *pCreatedField)
+	}
+
+	return output, nil
+}
+
+func (app *ormService) generateField(
+	name string,
+	fieldIns resources.Field,
+	resources resources.Resources,
+	connections connections.Connections,
+) (*field, error) {
+	kind := fieldIns.Kind()
+	createdKind, err := app.generateFieldKind(name, kind, resources, connections)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
-}*/
+	return &field{
+		name:     name,
+		kind:     *createdKind,
+		canBeNil: fieldIns.HasCondition(),
+	}, nil
+}
+
+func (app *ormService) generateFieldKind(
+	fieldName string,
+	kindIns resources.Kind,
+	resources resources.Resources,
+	connections connections.Connections,
+) (*kind, error) {
+	output := kind{}
+	if kindIns.IsConnection() {
+		if connections == nil {
+			str := fmt.Sprintf("the field (name: %s) contains a connection, but the skeleton does not contain any", fieldName)
+			return nil, errors.New(str)
+		}
+
+		connectionName := kindIns.Connection()
+		retConnection, err := connections.Fetch(connectionName)
+		if err != nil {
+			return nil, err
+		}
+
+		pCreatedConn, err := app.createConnection(resources, retConnection, connections)
+		if err != nil {
+			return nil, err
+		}
+
+		output.pConnection = pCreatedConn
+	}
+
+	if kindIns.IsReference() {
+		reference := kindIns.Reference()
+		pForeignKey, err := app.createForeignKey(resources, reference, fieldName, connections)
+		if err != nil {
+			return nil, err
+		}
+
+		output.pForeignKey = pForeignKey
+	}
+
+	if kindIns.IsNative() {
+		pNative := kindIns.Native()
+		output.pNative = pNative
+	}
+
+	return &output, nil
+}
+
+func (app *ormService) createConnection(
+	resources resources.Resources,
+	connectionIns connections.Connection,
+	connections connections.Connections,
+) (*connection, error) {
+	from := connectionIns.From()
+	fromName := from.Name()
+	fromPath := from.Path()
+	fromTableName := strings.Join(fromPath, resourceNameDelimiter)
+
+	to := connectionIns.To()
+	toName := to.Name()
+	toPath := to.Path()
+	toTableName := strings.Join(toPath, resourceNameDelimiter)
+
+	tableName := strings.Join(
+		[]string{
+			fromTableName,
+			toTableName,
+		},
+		connectionNameDelimiter,
+	)
+
+	pFrom, err := app.createForeignKey(resources, fromPath, fromName, connections)
+	if err != nil {
+		return nil, err
+	}
+
+	pTo, err := app.createForeignKey(resources, toPath, toName, connections)
+	if err != nil {
+		return nil, err
+	}
+
+	return &connection{
+		middleTableName: tableName,
+		from:            *pFrom,
+		to:              *pTo,
+	}, nil
+}
+
+func (app *ormService) createForeignKey(
+	resources resources.Resources,
+	path []string,
+	localFieldName string,
+	connections connections.Connections,
+) (*foreignKey, error) {
+	foreignTableName := strings.Join(path, resourceNameDelimiter)
+	retResource, err := resources.FetchByPath(path)
+	if err != nil {
+		return nil, err
+	}
+
+	key := retResource.Key()
+	pLocalField, err := app.generateField(localFieldName, key, resources, connections)
+	if err != nil {
+		return nil, err
+	}
+
+	foreignFieldName := key.Name()
+	pForeignField, err := app.generateField(foreignFieldName, key, resources, connections)
+	if err != nil {
+		return nil, err
+	}
+
+	return &foreignKey{
+		localField:       *pLocalField,
+		foreignTableName: foreignTableName,
+		foreignField:     *pForeignField,
+	}, nil
+}
 
 // Delete deletes an instance
 func (app *ormService) Delete(path []string, hash hash.Hash) error {

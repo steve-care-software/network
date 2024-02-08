@@ -7,14 +7,15 @@ import (
 )
 
 type skeletonFactory struct {
-	builder            skeletons.Builder
-	resourcesBuilder   resources.Builder
-	resourceBuilder    resources.ResourceBuilder
-	fieldsBuilder      resources.FieldsBuilder
-	fieldBuilder       resources.FieldBuilder
-	kindBuilder        resources.KindBuilder
-	connectionsBuilder connections.Builder
-	connectionBuilder  connections.ConnectionBuilder
+	builder                skeletons.Builder
+	resourcesBuilder       resources.Builder
+	resourceBuilder        resources.ResourceBuilder
+	fieldsBuilder          resources.FieldsBuilder
+	fieldBuilder           resources.FieldBuilder
+	kindBuilder            resources.KindBuilder
+	connectionsBuilder     connections.Builder
+	connectionBuilder      connections.ConnectionBuilder
+	connectionFieldBuilder connections.FieldBuilder
 }
 
 func createSkeletonFactory(
@@ -26,16 +27,18 @@ func createSkeletonFactory(
 	kindBuilder resources.KindBuilder,
 	connectionsBuilder connections.Builder,
 	connectionBuilder connections.ConnectionBuilder,
+	connectionFieldBuilder connections.FieldBuilder,
 ) skeletons.Factory {
 	out := skeletonFactory{
-		builder:            builder,
-		resourcesBuilder:   resourcesBuilder,
-		resourceBuilder:    resourceBuilder,
-		fieldsBuilder:      fieldsBuilder,
-		fieldBuilder:       fieldBuilder,
-		kindBuilder:        kindBuilder,
-		connectionsBuilder: connectionsBuilder,
-		connectionBuilder:  connectionBuilder,
+		builder:                builder,
+		resourcesBuilder:       resourcesBuilder,
+		resourceBuilder:        resourceBuilder,
+		fieldsBuilder:          fieldsBuilder,
+		fieldBuilder:           fieldBuilder,
+		kindBuilder:            kindBuilder,
+		connectionsBuilder:     connectionsBuilder,
+		connectionBuilder:      connectionBuilder,
+		connectionFieldBuilder: connectionFieldBuilder,
 	}
 
 	return &out
@@ -322,13 +325,19 @@ func (app *skeletonFactory) concreteConnections() connections.Connections {
 	return app.connections([]connections.Connection{
 		app.connection(
 			"dashboard_widgets",
-			[]string{
+			app.connectionField(
 				"dashboard",
-			},
-			[]string{
-				"dashboard",
+				[]string{
+					"dashboard",
+				},
+			),
+			app.connectionField(
 				"widget",
-			},
+				[]string{
+					"dashboard",
+					"widget",
+				},
+			),
 		),
 	})
 }
@@ -349,13 +358,29 @@ func (app *skeletonFactory) connections(
 
 func (app *skeletonFactory) connection(
 	name string,
-	from []string,
-	to []string,
+	from connections.Field,
+	to connections.Field,
 ) connections.Connection {
 	ins, err := app.connectionBuilder.Create().
 		WithName(name).
 		From(from).
 		To(to).
+		Now()
+
+	if err != nil {
+		panic(err)
+	}
+
+	return ins
+}
+
+func (app *skeletonFactory) connectionField(
+	name string,
+	path []string,
+) connections.Field {
+	ins, err := app.connectionFieldBuilder.Create().
+		WithName(name).
+		WithPath(path).
 		Now()
 
 	if err != nil {

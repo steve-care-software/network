@@ -4,8 +4,8 @@ import "errors"
 
 type connectionBuilder struct {
 	name string
-	from []string
-	to   []string
+	from Field
+	to   Field
 }
 
 func createConnectionBuilder() ConnectionBuilder {
@@ -30,13 +30,13 @@ func (app *connectionBuilder) WithName(name string) ConnectionBuilder {
 }
 
 // From adds a from to the builder
-func (app *connectionBuilder) From(from []string) ConnectionBuilder {
+func (app *connectionBuilder) From(from Field) ConnectionBuilder {
 	app.from = from
 	return app
 }
 
 // To adds a to to the builder
-func (app *connectionBuilder) To(to []string) ConnectionBuilder {
+func (app *connectionBuilder) To(to Field) ConnectionBuilder {
 	app.to = to
 	return app
 }
@@ -47,20 +47,12 @@ func (app *connectionBuilder) Now() (Connection, error) {
 		return nil, errors.New("the name is mandatory in order to build a Connection instance")
 	}
 
-	if app.from != nil && len(app.from) <= 0 {
-		app.from = nil
-	}
-
 	if app.from == nil {
-		return nil, errors.New("the from reference is mandatory in order to build a Connection instance")
-	}
-
-	if app.to != nil && len(app.to) <= 0 {
-		app.to = nil
+		return nil, errors.New("the from field is mandatory in order to build a Connection instance")
 	}
 
 	if app.to == nil {
-		return nil, errors.New("the to reference is mandatory in order to build a Connection instance")
+		return nil, errors.New("the to field is mandatory in order to build a Connection instance")
 	}
 
 	return createConnection(

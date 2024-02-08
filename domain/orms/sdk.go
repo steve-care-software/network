@@ -42,7 +42,7 @@ type ServiceBuilder interface {
 // Service represents a an instance service
 type Service interface {
 	// Init initializes the service
-	Init(name string) error
+	Init() error
 
 	// Insert inserts an instance
 	Insert(ins Instance, path []string) error

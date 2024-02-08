@@ -1,6 +1,9 @@
 package resources
 
-import "errors"
+import (
+	"errors"
+	"fmt"
+)
 
 type builder struct {
 	list []Resource
@@ -35,5 +38,16 @@ func (app *builder) Now() (Resources, error) {
 		return nil, errors.New("there must be at least 1 Resource in order to build a Resources instance")
 	}
 
-	return createResources(app.list), nil
+	mp := map[string]Resource{}
+	for _, oneResource := range app.list {
+		name := oneResource.Name()
+		if idx, ok := mp[name]; ok {
+			str := fmt.Sprintf("the Resource (index: %d, name: %s) already exists", idx, name)
+			return nil, errors.New(str)
+		}
+
+		mp[name] = oneResource
+	}
+
+	return createResources(mp, app.list), nil
 }

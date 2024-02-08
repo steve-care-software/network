@@ -43,7 +43,7 @@ func TestOrm_Success(t *testing.T) {
 		return
 	}
 
-	service := NewOrmService(skeleton, pTx)
+	service := NewOrmService(skeleton, pDB, pTx)
 
 	// build viewport resource:
 	//	pRandomHash, _ := hash.NewAdapter().FromBytes([]byte("this is some bytes"))
@@ -77,7 +77,7 @@ func TestOrm_Success(t *testing.T) {
 
 	for idx, oneInstance := range instances {
 		// init our service:
-		err = service.Init(dbName)
+		err = service.Init()
 		if err != nil {
 			t.Errorf("index: %d, the error was expected to be nil, error returned: %s", idx, err.Error())
 			return

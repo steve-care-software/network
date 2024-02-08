@@ -38,6 +38,10 @@ const timeLayout = "2006-01-02T15:04:05.999999999Z07:00"
 
 const groupNameDelimiterForTableNames = "_"
 
+const resourceNameDelimiter = "_"
+const connectionNameDelimiter = "$"
+const endOfLine = "\n"
+
 // NewApplication creates a new application
 func NewApplication(
 	schema schemas.Schema,
@@ -117,12 +121,14 @@ func NewOrmRepository(
 // NewOrmService creates a new orm service
 func NewOrmService(
 	skeleton skeletons.Skeleton,
+	dbPtr *sql.DB,
 	txPtr *sql.Tx,
 ) orms.Service {
 	hashAdapter := hash.NewAdapter()
 	return createOrmService(
 		hashAdapter,
 		skeleton,
+		dbPtr,
 		txPtr,
 	)
 }
@@ -137,6 +143,7 @@ func NewSkeletonFactory() skeletons.Factory {
 	kindBuilder := skeleton_resources.NewKindBuilder()
 	connectionsBuilder := connections.NewBuilder()
 	connectionBuilder := connections.NewConnectionBuilder()
+	connectionFieldBuilder := connections.NewFieldBuilder()
 	return createSkeletonFactory(
 		builder,
 		resourcesBuilder,
@@ -146,6 +153,7 @@ func NewSkeletonFactory() skeletons.Factory {
 		kindBuilder,
 		connectionsBuilder,
 		connectionBuilder,
+		connectionFieldBuilder,
 	)
 }
 
