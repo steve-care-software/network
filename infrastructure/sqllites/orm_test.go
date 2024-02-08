@@ -95,6 +95,13 @@ func TestOrm_Success(t *testing.T) {
 			return
 		}
 
+		// commit:
+		err := pTx.Commit()
+		if err != nil {
+			t.Errorf("index: %d, the error was expected to be nil, error returned: %s", idx, err.Error())
+			return
+		}
+
 		/*insHash := oneInstance.Hash()
 		retInstance, err := repository.RetrieveByHash(insHash)
 		if err != nil {
