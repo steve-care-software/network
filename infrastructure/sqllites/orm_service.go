@@ -119,12 +119,11 @@ func (app *ormService) insertResource(
 		return err
 	}
 
-	fieldNames := app.fetchFieldNamesList(fields)
 	allFieldNames := []string{
 		key.Name(),
 	}
 
-	allFieldNames = append(allFieldNames, fieldNames...)
+	allFieldNames = append(allFieldNames, fields.Names()...)
 	fieldValuePlaceHolders := []string{}
 	for range allFieldNames {
 		fieldValuePlaceHolders = append(fieldValuePlaceHolders, "?")
@@ -145,18 +144,6 @@ func (app *ormService) insertResource(
 	}
 
 	return nil
-}
-
-func (app *ormService) fetchFieldNamesList(
-	fields resources.Fields,
-) []string {
-	names := []string{}
-	list := fields.List()
-	for _, oneField := range list {
-		names = append(names, oneField.Name())
-	}
-
-	return names
 }
 
 func (app *ormService) fetchFieldsValueList(

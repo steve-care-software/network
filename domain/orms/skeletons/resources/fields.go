@@ -18,3 +18,13 @@ func createFields(
 func (obj *fields) List() []Field {
 	return obj.list
 }
+
+// Names returns the field names
+func (obj *fields) Names() []string {
+	output := []string{}
+	for _, oneField := range obj.list {
+		output = append(output, oneField.Name())
+	}
+
+	return output
+}

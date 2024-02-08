@@ -7,6 +7,7 @@ import (
 	"steve.care/network/domain/accounts"
 	account_encryptors "steve.care/network/domain/accounts/encryptors"
 	"steve.care/network/domain/accounts/signers"
+	"steve.care/network/domain/dashboards"
 	"steve.care/network/domain/dashboards/widgets"
 	"steve.care/network/domain/dashboards/widgets/viewports"
 	"steve.care/network/domain/encryptors"
@@ -104,6 +105,9 @@ func NewOrmRepository(
 ) orms.Repository {
 	hashAdapter := hash.NewAdapter()
 	builders := map[string]interface{}{
+		"dashboard_widget_viewport":  viewports.NewBuilder(),
+		"dashboard_widget":           widgets.NewWidgetBuilder(),
+		"dashboard":                  dashboards.NewDashboardBuilder(),
 		"tokens_dashboards_widget":   widgets.NewWidgetBuilder(),
 		"tokens_dashboards_viewport": viewports.NewBuilder(),
 		"tokens_dashboards":          token_dashboards.NewBuilder(),

@@ -1,6 +1,7 @@
 package sqllites
 
 import (
+	"bytes"
 	"database/sql"
 	"os"
 	"path/filepath"
@@ -35,7 +36,7 @@ func TestOrm_Success(t *testing.T) {
 		return
 	}
 
-	//repository := NewOrmRepository(skeleton, pDB)
+	repository := NewOrmRepository(skeleton, pDB)
 
 	pTx, err := pDB.Begin()
 	if err != nil {
@@ -83,12 +84,15 @@ func TestOrm_Success(t *testing.T) {
 			return
 		}
 
-		// insert instance:
-		err = service.Insert(oneInstance, []string{
+		// create the path:
+		path := []string{
 			"dashboard",
 			"widget",
 			"viewport",
-		})
+		}
+
+		// insert instance:
+		err = service.Insert(oneInstance, path)
 
 		if err != nil {
 			t.Errorf("index: %d, the error was expected to be nil, error returned: %s", idx, err.Error())
@@ -102,8 +106,8 @@ func TestOrm_Success(t *testing.T) {
 			return
 		}
 
-		/*insHash := oneInstance.Hash()
-		retInstance, err := repository.RetrieveByHash(insHash)
+		insHash := oneInstance.Hash()
+		retInstance, err := repository.RetrieveByHash(path, insHash)
 		if err != nil {
 			t.Errorf("index: %d, the error was expected to be nil, error returned: %s", idx, err.Error())
 			return
@@ -112,6 +116,6 @@ func TestOrm_Success(t *testing.T) {
 		if !bytes.Equal(retInstance.Hash().Bytes(), insHash.Bytes()) {
 			t.Errorf("index: %d, the returned insatnce is invalid", idx)
 			return
-		}*/
+		}
 	}
 }
